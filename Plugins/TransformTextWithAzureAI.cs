@@ -31,7 +31,6 @@ namespace Plugins
 
             string normas = "1) El resultado debe ser un JSON plano, sin texto adicional, sin comillas externas ni bloques de código. 2) Todos los nombres de campo deben ir en minúsculas. 3) Los valores no deben tener comas, puntos ni espacios al inicio o final. 4) Los nombres pueden contener espacios internos (por ejemplo, 'juan pérez lópez'). 5) Las fechas deben tener formato 'yyyy-MM-dd'. 6) Si un valor representa un booleano como 'sí', 'no', 'true', 'false', etc., debe devolverse como true o false (sin comillas). 7) Si un valor representa un número en palabras (por ejemplo, 'cuarenta y cinco coma diez'), debe devolverse como número decimal con punto (ej. 45.10). 8) Usa punto como separador decimal, nunca coma. 9) Si un campo tiene varios valores, elige el primero claramente definido. Ejemplo de salida válida: {\"nombre\":\"ana trujillo\",\"decimal\":3.5}";
 
-
             var result = GetOpenAIResponse(texto, normas);
             context.OutputParameters["response"] = result;
         }
