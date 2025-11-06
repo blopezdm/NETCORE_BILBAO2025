@@ -1,60 +1,54 @@
-### Resumen técnico
-El repositorio presenta una solución que utiliza reconocimiento de voz, procesamiento de texto con IA, y síntesis de audio, integrándose principalmente con Dynamics 365 CRM. La arquitectura es modular y orientada hacia servicios, con dependencias externas como Azure Speech SDK y Azure OpenAI. Integra backend, procesamiento en tiempo real y plugins para enriquecer la experiencia del usuario en un entorno empresarial.
+### Breve Resumen Técnico:
+Este repositorio contiene integraciones avanzadas de entrada de voz, procesamiento de texto en formularios dinámicos de CRM mediante Azure Speech SDK y Azure OpenAI. Los archivos están organizados en un sistema híbrido de frontend (JavaScript) y backend (C# plugins), con funcionalidades para manipular formularios, realizar solicitudes API, y transformar datos en tiempo real.
 
-### Descripción de arquitectura
-La solución combina múltiples componentes organizados por roles en la arquitectura:
-- **Frontend:** Procesamiento de formularios por voz con funciones JavaScript, que interactúan con Dynamics 365 y SDKs externos.
-- **Backend:** Plugin en C# para normalizar y transformar textos de entrada utilizando Azure OpenAI.
-- **Servicios externos:** Comunicación con Azure Speech SDK para el reconocimiento y síntesis de voz, así como con Azure OpenAI para IA de transformación de texto.
+---
 
-La arquitectura sigue principios de **n capas** y **event-driven programming**, donde diferentes bloques tienen roles bien definidos y delegan operaciones específicas, como carga de SDKs, procesamiento de datos y comunicación con APIs externas.
+### Descripción de Arquitectura:
+La solución implementa una arquitectura **n-capas** con integración directa a un sistema CRM, distribuyendo responsabilidades entre:
+1. **Frontend JS**: Manejo de voz y texto directamente desde formularios interactivos en el cliente.
+2. **Backend C#**: Plugins que procesan datos y utilizan servicios de Azure (OpenAI) para enriquecer y transformar los datos.
 
-### Tecnologías usadas
-1. **Frontend (JavaScript):**
-   - JavaScript ES6+.
-   - Azure Speech SDK (importado desde CDN).
-   - Dinámica basada en eventos.
-   - Uso de tecnologías específicas de Dynamics 365 para interacción con formularios.
+El sistema opera como una extensión de Dynamics CRM:
+- **Frontend**: Funciones para capturar entrada de voz, sintetizar texto, y actualizar campos del CRM.
+- **Backend**: Plugins que interactúan con el modelo de datos CRM y procesan datos mediante Azure OpenAI.
 
-2. **Backend (C#):**
-   - .NET Framework para soporte de Dynamics CRM SDK.
-   - Azure OpenAI para procesamiento de texto.
-   - HTTP Client para integraciones RESTful.
-   - Serialización/deserialización con Newtonsoft.Json y System.Text.Json.
+---
 
-3. **Servicios externos:**
-   - Azure Speech SDK para reconocimiento/síntesis de voz.
-   - Azure OpenAI API para transformación de texto.
+### Tecnologías Usadas:
+1. **Frontend**:
+   - **JavaScript**: Manipulación del DOM, funciones modulares.
+   - **Azure Speech SDK**: Para entrada y salida de voz/transcripción.
+   - **Dynamics 365 Web API**: Comunicación con el sistema CRM.
+2. **Backend**:
+   - **C#** con .NET Framework: Plugins basados en Dynamics CRM SDK.
+   - **Azure OpenAI API**: Procesamiento de texto usando modelos GPT (ej. GPT-4).
+   - **HttpClient, System.Text.Json**: Para interacción HTTP y manipulación de datos JSON.
+   - **Newtonsoft.Json**: Procesamiento de estructuras JSON avanzadas.
+3. **Modelo de integración**:
+   - SaaS (Azure Speech y OpenAI están configurados como dependencias externas).
+   - Repositorio-like Pattern para interactuar con datos del CRM.
 
-### Dependencias o componentes externos
-1. **Azure Speech SDK:** Procesamiento de voz (reconocimiento y síntesis).
-2. **Azure OpenAI API:** Inteligencia artificial para transformación de texto.
-3. **Dynamics 365 CRM SDK:** Contexto de formularios y plugins.
-4. **Newtonsoft.Json / System.Text.Json:** Manejo de objetos JSON.
-5. **HTTP Client:** Comunicación REST con servicios externos.
+---
 
-### Diagrama Mermaid
+### Diagrama Mermaid (GitHub Compatible):
+
 ```mermaid
 graph TD
-    A["Frontend/JS: readForm.js"] --> B["Extractor datos visibles"]
-    B --> C["SDK Azure Speech [Lectura/Síntesis]"]
-    A --> D["Configurador SDK Voz"]
-    
-    E["Frontend/JS: speechForm.js"] --> F["Reconocimiento de voz"]
-    F --> G["Procesamiento IA o manual"]
-    G --> H["Aplicación en formularios Dynamics"]
-    G --> I["API personalizada en Dynamics"]
+    A["Frontend JS"]
+    B["Dynamics CRM Frontend"]
+    C["Azure Speech SDK"]
+    D["Backend C# Plugin"]
+    E["Server Dynamics CRM"]
+    F["Azure OpenAI"]
 
-    J["Backend/Plugins: TransformTextWithAzureAI.cs"] --> K["Obtener texto del CRM"]
-    K --> L["Transformación con Azure OpenAI"]
-    L --> M["Salida JSON normalizado"]
-    
-    H --> CRM["Dynamics 365 Form"]
-    I --> CRM
-    C --> AzureSpeech["Azure Speech SDK"]
-    L --> AzureAI["Azure OpenAI API"]
-    AzureAI --> M
+    A --> B
+    B --> E
+    A --> C
+    E --> D
+    D --> F
 ```
 
-### Conclusión final
-La solución está orientada a mejorar la experiencia de usuarios de Dynamics 365 mediante funciones avanzadas de entrada/salida por voz y procesamiento inteligente de datos. Es una arquitectura definida por responsabilidad en **n capas** con integración de servicios externos. Los patrones destacados incluyen event-driven programming, desacoplamiento modular, y pipelines con IA. Aunque funcional, podría beneficiarse de mejoras en seguridad, como el manejo de claves externas mediante gestores seguros.
+---
+
+### Conclusión Final:
+La solución combina tecnologías para lograr una integración avanzada entre entrada de voz y procesamiento de datos en un entorno de CRM. Utiliza una arquitectura **n-capas**, dividiendo claramente las responsabilidades entre frontend y backend, y aprovechando servicios de Azure para sintetizar voz, transcribir datos, y aplicar inteligencia artificial. Sin embargo, ciertas áreas, como la gestión de credenciales (API Keys) y escalabilidad en el plugin, pueden mejorarse para fortalecer la seguridad y rendimiento, especialmente en ambientes empresariales con alta demanda.
