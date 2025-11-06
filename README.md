@@ -1,66 +1,55 @@
-### Breve Resumen Técnico
+### Breve resumen técnico
+El repositorio contiene componentes orientados a integrar funcionalidades de voz, textos y procesamiento avanzado mediante Azure Speech SDK, Dynamics 365 y Azure OpenAI. Los archivos analizados sugieren la implementación de un sistema híbrido que combina frontend para manejo de formularios y voz, lógica de CRM en forma de plugins y procesamiento avanzado de IA utilizando APIs externas.
 
-El repositorio se centra en la integración de sistemas CRM con tecnologías de reconocimiento de voz y procesamiento mediante IA. Los archivos proporcionados tienen responsabilidades específicas: los scripts JavaScript gestionan la interacción entre usuarios y formularios dinámicos mediante reconocimiento de voz y síntesis de texto, mientras que el plugin en C# conecta la plataforma Dynamics CRM con servicios de Azure OpenAI para transformaciones avanzadas de texto en formatos estructurados (JSON). 
+---
 
-### Descripción de Arquitectura
+### Descripción de arquitectura
+La solución sigue una arquitectura **n-capas** con integración a sistemas externos:
+1. **Presentación** (Frontend): Interactúa con usuarios mediante formularios, reconoce voz (Speech SDK) y actualiza datos.
+2. **Lógica de negocio** (Plugins de Dynamics 365): Realiza transformaciones, validaciones y conexión con Azure OpenAI para tareas especializadas.
+3. **Datos** (Dynamics CRM): Gestión de datos empresariales y almacenamiento de contexto.
+4. **Servicios externos**: Azure Speech y OpenAI proporcionan funcionalidades avanzadas como reconocimiento de voz y transformación de texto.
 
-La arquitectura del sistema tiene un enfoque basado en **microservicios** e integración con APIs para tareas específicas. Los scripts en JavaScript están diseñados como componentes modulares que implementan lógica focalizada de transcripción de voz, síntesis, y procesamiento de datos en el cliente dentro de formularios Dynamics CRM. Por otro lado, el plugin en C# actúa como un conector entre Dynamics CRM y Azure OpenAI, aislando la lógica en un encargado específico.
+La estructura modular garantiza que cada unidad funcional esté bien definida, con responsabilidades separadas según propósito.
 
-Aunque las funciones están distribuidas entre cliente y servidor, el sistema tiene una estructura orientada funcionalmente, con cierta modularidad y un marco de trabajo basado en eventos.
+---
 
-### Tecnologías, Frameworks y Patrones Usados
+### Tecnologías usadas
+1. **Frontend**:
+   - **JavaScript**: Procesamiento de formularios, detección y síntesis de voz.
+   - **Azure Speech SDK**: Reconocimiento de voz y síntesis de texto a audio.
 
-#### **Frontend:**
-1. **Tecnologías:**  
-   - JavaScript (compatible con navegadores).
-   - Browser APIs como DOM manipulation y micrófono.
-   - Azure Speech SDK para síntesis y transcripción de voz.
-   - Microsoft Dynamics API para trabajar con formularios y entidades CRM.
+2. **Backend**:
+   - **Dynamics CRM Plugins (.NET Framework)**: Extensiones escritas en C# integradas al entorno Dynamics.
+   - **Azure OpenAI**: API REST para transformación avanzada de texto usando IA.
 
-2. **Patrones:**  
-   - Modularización: funciones especializadas.
-   - Delegación: Encapsulación de tareas dentro de métodos específicos (`startVoiceInput`, `callCustomApi`).
-   - Integración: comunicación directa con servicios externos mediante SDKs y APIs HTTP.
+3. **Frameworks/Dependencias**:
+   - **Microsoft Dynamics SDK (`Xrm.WebApi`)**: Gestión de datos en CRM desde JavaScript y las APIs.
+   - **JSON.NET (`Newtonsoft.Json`)**: Procesamiento avanzado de JSON en .NET.
 
-#### **Backend:**
-1. **Tecnologías:**  
-   - Microsoft Dynamics SDK para extensibilidad del sistema CRM.
-   - Azure OpenAI (GPT-4) para procesamiento avanzado de lenguaje.
-   - HTTP y JSON.
-   - Newtonsoft.Json para manipulación de objetos JSON.
+---
 
-2. **Patrones:**  
-   - **Plugin architecture:** Conexión al framework Dynamics para amplificar capacidades del CRM.  
-   - **Facade/Adapter:** Implementa un adaptador para encapsular la lógica de comunicación entre el plugin y Azure OpenAI API.
-   - **Microservicios:** Funcionalidad discreta para transformar datos mediante IA.
-
-### **Diagrama Mermaid**
-
-Este diagrama muestra las relaciones funcionales entre los elementos principales del sistema, así como las dependencias clave.
-
+### Diagrama **Mermaid** válido para GitHub
 ```mermaid
-graph TD
-  A["Frontend - VoiceInputHandler.js"]
-  B["SpeechInputHandler.js"]
-  C["C# Plugin - TransformTextWithAzureAI"]
-  D["Azure OpenAI (GPT-4)"]
-  E["Azure Speech SDK"]
-  F["Browser APIs (DOM, Microphone)"]
-  G["Microsoft Dynamics Web API"]
-  H["CRM Forms"]
+graph LR
+  A["Frontend JS Script"]
+  B["Dynamics CRM Form Fields"]
+  C["Azure Speech SDK"]
+  D["Backend C# Plugin"]
+  E["Azure OpenAI API"]
+  F["Dynamics CRM Database"]
 
-  A --> E
-  A --> F
-  A --> H
-  
-  B --> E
-  B --> G
-  B --> H
-
-  A --> C
-  C --> D
+  A-->B
+  A-->C
+  B-->D
+  D-->E
+  D-->F
+  C-->A
 ```
 
-### **Conclusión Final**
+---
 
-Este repositorio construye un sistema centrado en el procesamiento de voz y texto para su integración con Microsoft Dynamics CRM, habilitando una experiencia enriquecida para los usuarios con capacidades de síntesis, transcripción y generación de contenido estructurado con IA. Su arquitectura modular basada en microservicios otorga flexibilidad y escalabilidad al sistema, destacando por el uso de servicios avanzados de Azure (Speech SDK y OpenAI) combinados con el marco Dynamics CRM.
+### Conclusión final
+Esta solución 💡 está diseñada para gestionar eficientemente el flujo de interacción entre usuarios humanos, un sistema de CRM empresarial y capacidades avanzadas de IA. La integración de voz (Azure Speech), procesamiento de texto (OpenAI) y manejo de datos en Dynamics refleja una arquitectura inteligente y orientada a la robustez:
+- **Ventaja principal:** Modularidad y capacidad de escalar tanto en servicios externos como en lógica interna de negocio.
+- **Conclusión:** Se trata de una solución híbrida de **n-capas** que emplea patrones modernos de integración y funcionamiento eficiente en entornos empresariales.
