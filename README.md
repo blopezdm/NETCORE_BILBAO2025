@@ -1,63 +1,60 @@
 ### Breve resumen técnico
-El repositorio analiza la funcionalidad de conversión de datos a texto hablado y entrada de voz en formularios CRM basados en Dynamics 365, con integración al Azure Speech SDK y OpenAI de Azure. Además, implementa un plugin en Dynamics CRM que utiliza modelos de OpenAI para procesamiento de texto según reglas predefinidas.
+El repositorio analizado incluye partes de una solución que combina un frontend basado en JavaScript, SDKs externos como Azure Speech SDK, y un backend vinculado a Microsoft Dynamics CRM utilizando C#. Este sistema está pensado para habilitar accesibilidad por voz y realizar transformaciones mediante Inteligencia Artificial (IA) usando OpenAI, integrando servicios de Azure.
 
 ---
 
-### Descripción de la arquitectura
-1. **Tipo de solución**: Solución híbrida con enfoque en una **aplicación cliente (frontend)** integrada en un sistema CRM, complementada por un **plugin de servidor** basado en Dynamics.
-2. **Tipo de arquitectura**: Predominantemente arquitectura **n-capas**:
-   - Capa **presentación**: Formulario y lógica de procesamiento con JavaScript para la interfaz y funcionalidades asociadas.
-   - Capa **business logic (BLoC)**: Plugin de Dynamics 365 que aplica reglas y utiliza OpenAI.
-   - Capa **data**: API de Dynamics CRM y servicios externos como Azure OpenAI y Azure Speech SDK.
-3. **Patrones usados**:
-   - **Modularidad** para cada archivo y método.
-   - **Cliente-Servidor** para la comunicación entre las capas de frontend y el plugin basado en APIs.
-   - **Repositorio** para manejar inserciones, consultas y modificaciones en Dynamics CRM.
-   - **Carga dinámica de dependencias** como el Azure Speech SDK.
+### Descripción de arquitectura
+1. **Tipo de solución**:  
+   - Se trata de una solución híbrida que incluye:
+     - **Frontend**: Lógica en JavaScript para habilitar la accesibilidad por voz y manipular datos del formulario.
+     - **Backend/Plugins**: Extensiones de Dynamics CRM procesando datos y comunicándose con el servicio de Azure OpenAI para el procesamiento de texto.
+   - Usos: Mejorar la accesibilidad y adoptar el uso de tecnologías de IA en escenarios empresariales, como Dynamics.
+
+2. **Arquitectura**:  
+   - **Frontend** (en N capas): Usa modularización con funciones especializadas para una arquitectura estructurada en un único contenedor.
+   - **Backend**: Plugin de Microsoft Dynamics implementado bajo un enfoque estructurado, con conexión a APIs externas.
+   - **Modelo híbrido con servicios externos**: Aprovecha servicios de Azure (Speech SDK y OpenAI) como componentes externos, de forma asincrónica.
+
+3. **Patrones importantes**:  
+   - **Frontend**: Modularización, callbacks, asincronía, y uso de Factory Methods.
+   - **Backend**: Plugin de Dynamics CRM, conexión a microservicios, y dependencia de servicios externos (Azure).
 
 ---
 
 ### Tecnologías usadas
-1. **Frontend**: JavaScript (integrado con Dynamics 365), funcionalidades adaptadas para sintetizar y procesar voz.
-   - Framework o librerías externas: Azure Speech SDK.
-2. **Plugins (backend)**: C#:
-   - Dependencias: `Microsoft.Xrm.Sdk`, Azure OpenAI (API de OpenAI), API para interacción externa con CRM.
-   - Servicio externo de inteligencia artificial: GPT-4 o equivalente de Azure OpenAI.
-   - Serialización JSON (`Newtonsoft.Json` y `System.Text.Json`).
-3. **Plataforma CRM**: Dynamics 365
-   - API personalizada (`trial_TransformTextWithAzureAI`) para operaciones específicas.
+1. **Frontend (JavaScript)**:
+   - **Azure Speech SDK**: Texto a voz y reconocimiento de voz.
+   - **API de Microsoft Dynamics CRM WebApi**: Manipulación del contexto de entornos CRM.
+   - DOM Manipulation.
+
+2. **Backend (C#)**:
+   - **Microsoft Dynamics SDK**: Implementación estándar de plugins en Dynamics CRM.
+   - **Azure OpenAI API**: Procesamiento avanzado de texto con IA.
+   - **Newtonsoft.Json**: Manipulación de mensajes en formato JSON estructurado.
+   - **System.Net.Http y System.Text**: Comunicación con servicios externos.
 
 ---
 
-### Dependencias o componentes externos presentes
-1. **Azure Speech SDK**: Para la síntesis y reconocimiento de voz en el frontend.
-2. **Azure OpenAI API**: Plugin dinámico utiliza este modelo para transformar texto de usuario.
-3. **Dynamics 365 WebAPI**: Lógica de negocio y gestión de datos sobre CRM.
-4. **Newtonsoft.Json**: Para trabajar con estructuras JSON en el plugin.
-5. **System.Net.Http**: Para realizar solicitudes HTTP a servicios como OpenAI.
+### Diagrama Mermaid válido para GitHub
 
----
-
-### Diagrama Mermaid:
 ```mermaid
 graph TD
-    A["Frontend - JS | FORMULARIO"]
-    B["Azure Speech SDK"]
-    C["Dynamics CRM API"]
-    D["CustomPlugin - TransformTextWithAzureAI"]
-    E["Azure OpenAI"]
-    F["Usuario"]
+A["Frontend - voiceInputHandler.js"]
+B["LeerFormulario"]
+C["ProcesarTexto - Azure Speech SDK"]
+D["Backend - TransformTextWithAzureAI.cs"]
+E["API OpenAI"]
+F["Microsoft Dynamics CRM Plugin"]
 
-    F --> A
-    A --> B
-    A --> C
-    B --> C
-    D --> E
-    C --> D
-    E --> D
+A --> B
+B --> C
+C --> D
+D --> F
+D --> E
+E --> F
 ```
 
 ---
 
 ### Conclusión final
-El repositorio representa una solución integrada que utiliza tecnologías de Microsoft y Azure para extender funcionalidades de Dynamics CRM con capacidades avanzadas de interacción por voz y procesamiento de texto con IA. La estructura de la solución está modularizada para cumplir con buenas prácticas de software: código claro y responsabilidad separada en capas y servicios. Aunque depende de múltiples servicios externos, como Azure Speech y OpenAI, la solución se mantiene robusta y extensible mediante patrones como carga dinámica y separación de intereses en lógica cliente-servidor.
+La arquitectura del repositorio destaca por la integración entre tecnologías y servicios externos para potenciar funcionalidades avanzadas de accesibilidad y procesamiento de texto con IA. La solución combina patrones de modularidad y servicios externos (Azure Speech SDK y OpenAI API), manteniendo un enfoque lógico para separar responsabilidades en Frontend y Backend. Aunque es robusta, podría mejorarse el manejo de claves API para mantener la seguridad.
