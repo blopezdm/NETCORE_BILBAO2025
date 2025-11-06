@@ -1,5 +1,3 @@
-
-
 function startVoiceInput(executionContext) {
     ensureSpeechSDKLoaded(() => {
         leerFormulario(executionContext);
