@@ -1,49 +1,92 @@
-# Breve Resumen Técnico
-Esta solución es una arquitectura híbrida que combina componentes front-end en JavaScript y plugins en C# para la integración con Microsoft Dynamics CRM. Se enfoca en interacción con formularios a través de voz y texto, utilizando Azure Speech SDK y Azure OpenAI API como servicios externos.
+### Breve resumen técnico
 
-# Descripción de Arquitectura
-La arquitectura adopta un enfoque de **n capas**, dividida en:
-1. **Capa de Interfaz (Frontend)**: Implementada en JavaScript, interactúa con el usuario mediante entrada/salida por voz y procesamiento de formularios dinámicos.
-2. **Capa de Servicios (Plugins)**: Implementada en C#, extiende la funcionalidad de CRM con la capacidad de utilizar IA basada en Azure OpenAI para procesar texto y manejar operaciones específicas en el contexto CRM.
-3. **Capas Externas**: Se integra con servicios de Azure Speech SDK y Azure OpenAI API.
+El repositorio presenta los siguientes componentes:
 
-# Tecnologías Usadas
-1. **Frontend**:
-   - JavaScript.
-   - **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
-   - **HTML DOM**: Manipulación directa.
-   - Dynamics CRM SDK (JS API).
+1. **Frontend JavaScript:**
+   - `readForm.js`: Recopila datos visibles de un formulario dinámico en Microsoft Dynamics CRM y los sintetiza en voz usando Azure Speech SDK.
+   - `speechForm.js`: Captura comandos hablados, los transcribe usando Azure Speech SDK, procesa las transcripciones (manualmente o mediante AI) y actualiza valores en un formulario CRM.
 
-2. **Backend (Plugins)**:
-   - C#.
-   - **Microsoft Dynamics CRM SDK**: Extensiones de CRM.
-   - **Newtonsoft.Json.Linq** y **System.Text.Json**: Manejo de JSON.
-   - **System.Net.Http**: Llamadas HTTP hacia Azure APIs.
-   - **Azure OpenAI API**: Transformación de texto mediante IA.
+2. **Plugin .NET para Dynamics CRM:**
+   - `TransformTextWithAzureAI.cs`: Plugin que transforma texto mediante Azure OpenAI en formato JSON para actualizar dinámicamente valores en el CRM.
 
-# Dependencias o Componentes Externos
-1. **Azure Speech SDK**: Integración para reconocimiento y síntesis de voz.
-2. **Azure OpenAI API**: Interacción con IA para procesamiento y transformación textual.
-3. **Xrm.WebApi**: API propia de Microsoft Dynamics CRM.
-4. **Newtonsoft.Json**: Procesamiento de JSON en el backend.
-5. **API personalizada**: `trial_TransformTextWithAzureAI`.
+---
 
-# Diagrama Mermaid
+### Descripción de arquitectura
+
+#### 1. **Tipo de solución**
+   - **Principal:** Integración entre frontend (JavaScript en Dynamics CRM) y backend (Plugin .NET) para mejorar la experiencia interactiva con formularios en un CRM.
+   - **Detalles:** Utiliza servicios de Microsoft Azure para síntesis de voz y transformación de texto.
+
+#### 2. **Patrones y tecnologías**
+   - **Frontend:**
+     - **Tecnologías:** 
+       - JavaScript (DOM manipulación, promesas).
+       - Azure Speech SDK.
+       - Dynamics CRM APIs (Xrm.WebApi).
+     - **Patrones:** Lazy Loading, Modularidad, Pipeline de transformación.
+   - **Backend:**
+     - **Tecnologías:** 
+       - .NET Framework, Azure OpenAI API.
+       - JSON manipulación (Newtonsoft).
+       - Dynamics CRM SDK.
+     - **Patrones:** Plugin Design, API Integration.
+
+#### 3. **Arquitectura global**
+   - **Estilo:** N capas, donde el frontend maneja la presentación e interacción directa, y el plugin procesa datos en el backend.
+   - **Front-back integration:** A través de APIs de Microsoft Dynamics y Azure.
+
+#### 4. **Dependencias externas**
+   - **Frontend:**
+     - Azure Speech SDK (JavaScript).
+     - Dynamics CRM `Xrm.WebApi`.
+   - **Backend:**
+     - API de Azure OpenAI (GPT-4 hosted endpoint).
+     - Dynamics SDK (`IPlugin`).
+     - Librerías auxiliares para HTTP y JSON.
+   - Configuración de claves y regiones para servicios Azure.
+
+---
+
+### Diagrama Mermaid para GitHub Markdown
+
 ```mermaid
 graph TD
-    A["Frontend: JS Module"]
-    B["Azure Speech SDK"]
-    C["Azure OpenAI API"]
-    D["Plugins: TransformTextWithAzureAI.cs"]
-    E["Microsoft Dynamics CRM"]
-
-    A --> B
-    A --> C
-    A --> E
-    B --> A
-    C --> D
-    D --> E
+  A["Frontend JS"]
+  B["readForm.js"]
+  C["speechForm.js"]
+  D["Azure Speech SDK"]
+  E["Microsoft Dynamics CRM"]
+  F["Backend (.NET Plugin)"]
+  G["TransformTextWithAzureAI.cs"]
+  H["Azure OpenAI GPT API"]
+  
+  A --> B
+  A --> C
+  B --> D
+  C --> D
+  C --> E
+  
+  E --> F
+  F --> G
+  G --> H
 ```
 
-# Conclusión Final
-La solución implementa una **arquitectura de n capas** diseñada para extender funcionalidades de Microsoft Dynamics CRM, mientras aprovecha capacidades de Azure como servicios de reconocimiento de voz y procesamiento de lenguaje natural. Este enfoque facilita una interacción moderna con CRM mediante entrada y salida de voz, integrando IA para interpretación avanzada de texto estructurado. Las dependencias externas están bien encapsuladas, y la modularidad del código permite fácil mantenimiento y escalabilidad. Sin embargo, podría beneficiarse de optimizaciones en la gestión de claves API para mayor seguridad.
+---
+
+### Tecnologías usadas
+
+- **Frontend:**
+  - **JavaScript APIs:** DOM manipulación, Promesas.
+  - **Azure Speech SDK:** Para síntesis y captura de voz.
+  - **Microsoft Dynamics APIs:** Integración directa con formularios.
+
+- **Backend:**
+  - **.NET Framework:** Desarrollo del plugin en C#.
+  - **Azure OpenAI API:** GPT-4 para transformación de texto.
+  - **Newtonsoft.Json:** Manipulación y procesamiento JSON estructurado.
+
+---
+
+### Conclusión final
+
+La solución implementada representa una integración sólida entre componentes frontend y backend para enriquecer la experiencia de usuario en Microsoft Dynamics CRM. La síntesis de voz y transcripción de comandos hablados desde el frontend complementan la transformación avanzada de texto mediante AI en el backend. La arquitectura es modular y utiliza patrones de carga diferida para optimizar recursos. Sin embargo, la solución podría beneficiarse de estrategias más robustas para el manejo de errores y ajustar configuraciones en servicios externos como Azure OpenAI.
