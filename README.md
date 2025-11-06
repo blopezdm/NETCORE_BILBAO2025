@@ -1,59 +1,57 @@
-### Breve resumen técnico
-El proyecto integra funcionalidades relacionadas con voz e inteligencia artificial (IA) en una solución basada en Dynamics 365. Utiliza Azure Speech SDK para la síntesis y el reconocimiento de voz, Dynamics Web API para manipular datos del CRM, y Azure OpenAI para transformaciones avanzadas de texto. Los archivos analizados reflejan una solución híbrida que combina lógica de backend y frontend con componentes externos.
+### Breve resumen técnico:
+El repositorio incluye tres componentes principales que trabajan con funcionalidades de entrada/salida de voz y texto en formularios de Dynamics 365 mediante Azure Speech SDK y Azure OpenAI. Los archivos representan una solución híbrida de frontend, backend y plugin para integraciones avanzadas con servicios en la nube.
 
 ---
 
-### Descripción de arquitectura
-Este proyecto presenta una **arquitectura de múltiples capas**:
-1. **Frontend**: Controla la entrada/salida de voz y la integración con formularios mediante Azure Speech SDK.
-2. **Backend**: Plugin desarrollado en C# para realizar transformaciones de texto mediante Azure OpenAI en el contexto de Dynamics 365.
-3. **Interacción con servicios externos**:
-   - Azure Speech Services: Síntesis y reconocimiento de voz.
-   - Azure OpenAI: Transformación avanzada de texto.
-   - CRM Dynamics Web API: Manipulación y mapeo de datos dentro de formularios.
+### Descripción de arquitectura:
+Basado en los archivos analizados, la arquitectura general es **n capas**: una capa de frontend que captura y sintetiza audio usando Azure Speech SDK, una capa de lógica intermedia que gestiona la entrada de voz y su mapeo a formularios mediante APIs, y una capa de backend/plugin que transforma datos utilizando Azure OpenAI para ampliación funcional y normas personalizadas.
 
-Se implementa una arquitectura **modular** donde cada archivo tiene funcionalidades específicas que contribuyen al flujo global del sistema.
+Si bien existe separación de responsabilidades, el frontend (JavaScript) y backend (C# plugin) interactúan usando APIs externas y Dynamics 365 como hub central, evidenciando elementos de una solución orientada a servicios (SOA).
 
 ---
 
-### Tecnologías usadas
-1. **Frontend**:
-   - **JavaScript** para implementar lógica de voz y procesamiento de datos.
-   - **Azure Speech SDK** para síntesis y reconocimiento de voz.
-   - **Dynamics 365 Web API** para manipulación de formularios.
-2. **Backend**:
-   - **C# .NET Framework** (Microsoft.Xrm.Sdk para integrar plugins en Dynamics).
-   - **Azure OpenAI** para transformaciones inteligentes de texto.
-   - **Newtonsoft.Json** para procesamiento JSON.
+### Tecnologías usadas:
+1. **Frontend JavaScript**:
+   - **Azure Speech SDK**: Para reconocimiento de voz, síntesis de texto y conversión de audio.
+   - **Promise/async-await**: Gestión de concurrencia.
+   - **Dynamics 365 API**: Manipulación y actualización de datos en formularios.
+   - **DOM**: Para trabajar con estructuras de formularios dinámicos.
+   
+2. **Backend C#**:
+   - **Microsoft.Xrm.Sdk**: Gestión de datos en Dynamics CRM.
+   - **Azure OpenAI**: Transformación y estructurado avanzado de texto.
+   - **System.Net.Http**: Consumir APIs externas.
+   - **Newtonsoft.Json**: Convertir datos JSON complejos.
 
-3. **Patrones utilizados**:
-   - **Plugin pattern**: Flujo configurado para ejecutar extensiones basadas en Dynamics (C#).
-   - **Callback pattern**: Garantiza la carga controlada del SDK en el frontend.
-   - **Adapter**: Encapsula la interacción con Azure Speech y OpenAI.
-   - **Delegación de responsabilidades**: Separación entre acceso al SDK, procesamiento, mapeo y aplicación de datos.
+3. **Patrones de diseño**:
+   - **Carga dinámica**: SDK externo es cargado condicionalmente.
+   - **Modularidad funcional**: Cada funcionalidad está encapsulada en sus propios métodos.
+   - **Plugin architecture**: Backend basado en plugins para eventos específicos.
+   - **Integración SOA**: APIs externas (Azure y Dynamics).
 
 ---
 
-### Diagrama Mermaid
-
+### Diagrama Mermaid compatible con GitHub Markdown:
 ```mermaid
 graph TD
-    A["Frontend: readForm.js"] --> B["Azure Speech SDK: síntesis de voz"]
-    C["Frontend: speechForm.js"] --> D["Captura de entrada de voz"]
-    D --> E["Dynamics Form Context"]
-    E --> F["Mapeo de datos del formulario"]
-    F --> G["Aplicación de valores en formulario"]
+    A["Frontend JS - VoiceInputHandler.js"]
+    B["Frontend JS - SpeechInputHandler.js"]
+    C["Backend Plugin - TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Azure OpenAI API"]
+    F["Dynamics 365 API"]
+    G["Usuario"]
 
-    H["Backend: TransformTextWithAzureAI.cs"] --> I["Azure OpenAI: Transformación de texto"]
-    I --> J["Plugin Dynamics CRM: mapeo avanzado"]
-
-    B --> K["Azure Speech Services API"]
-    D --> K
-    G --> L["Dynamics Web API"]
-    J --> L
+    G --> A
+    A --> B
+    B --> F
+    B --> D
+    B --> E
+    C --> F
+    C --> E
 ```
 
 ---
 
-### Conclusión final
-La solución combina un frontend enfocado en la interacción de voz y formularios con un backend que aplica inteligencia artificial avanzada. La arquitectura modular permite que cada componente sea reutilizable y favoriza la separación de preocupaciones. La integración con servicios externos como Azure Speech y OpenAI posiciona esta solución como una herramienta robusta para automatización en entornos Dynamics 365. Es adecuada para escenarios empresariales donde la entrada y salida de voz integrada con CRM son esenciales. Sin embargo, es importante mejorar la seguridad de la configuración para la clave API y garantizar buenas prácticas de gestión de claves.
+### Conclusión final:
+La solución muestra una arquitectura híbrida entre **n capas** y **SOA**. La capa de frontend gestiona la experiencia de usuario mediante entrada de voz, mientras que el backend amplía funcionalidad con aplicaciones de Azure AI. Dynamics 365 actúa como el núcleo operativo integrando todas las capas. La estructura modular garantiza una buena separación de responsabilidades, pero una posible mejora sería externalizar configuraciones sensibles como claves API.
