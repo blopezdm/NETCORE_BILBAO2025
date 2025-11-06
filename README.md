@@ -1,69 +1,63 @@
-### Análisis del Repositorio
-
-#### 1. Breve resumen técnico:
-El repositorio presenta módulos de software con funcionalidades relacionadas con la captura, transformación y síntesis de datos en aplicaciones empresariales que interactúan con formularios de Dynamics 365. Los componentes principales son un frontend basado en JavaScript que implementa procesamiento de entrada de voz y un plugin de servidor en C# que transforma texto utilizando el servicio Azure OpenAI.
+### Breve Resumen Técnico
+Este repositorio contiene tres secciones principales que interactúan entre sí para ofrecer una solución de síntesis y reconocimiento de voz integrados con formularios CRM. Utiliza el **Azure Speech SDK** para la síntesis y reconocimiento de voz, y el **Azure OpenAI API** para transformar texto mediante inteligencia artificial. El sistema está dirigido a automatizar e integrar datos hablados en interfaces administrativas dinámicas, como formularios CRM.
 
 ---
 
-#### 2. Descripción de arquitectura:
-La solución utiliza una **arquitectura de capas** donde cada capa tiene un propósito específico:
-- **Frontend**: Proporciona interacción con el usuario, centrándose en la captura y procesamiento de entrada de voz.
-- **Backend Plugin**: Actúa como intermediario entre el Dynamics CRM y Azure OpenAI, transformando datos textual según configuraciones dinámicas.
-- **API/SaaS Services** (Azure Speech SDK y Azure OpenAI): Incorporación de servicios cloud para externalizar el procesamiento de lenguaje y síntesis de voz.
+### Descripción de la Arquitectura
+La arquitectura general se puede clasificar como una solución **de capas orientadas a microservicios**. Se observa un enfoque modular, con partes definidas para frontend (JavaScript basado en navegador), integración directa con el CRM mediante plugins en C#, y comunicación con servicios de terceros (Azure Speech SDK y Azure AI).
+La estructura del repositorio sigue un diseño desacoplado con:
+1. **Capa de presentación:** Archivos en la carpeta `FRONTEND/JS`, que gestionan la interacción del usuario y la integración con el SDK de Azure Speech para la síntesis de voz y captura de datos de formularios. Evidentemente es un frontend ligero enfocado a la manipulación del DOM y SDK.
+2. **Capa de negocio:**
+   - **JavaScript (FRONTEND/JS/speechForm.js):** Procesa y transforma datos de voz en texto relacionado con campos CRM, con callbacks y promesas para eventos asíncronos.
+   - **C# plugin (Plugins/TransformTextWithAzureAI.cs):** Interactúa con Azure OpenAI para transformar texto en estructuras JSON adaptadas para la lógica CRM.
+3. **Capa de integración:** Comunicación con servicios externos como el **Azure AI REST API**, **Azure Speech SDK**, y **Dynamics CRM API (Xrm.WebApi)**.
 
-Adicionalmente, el código utiliza patrones típicos del desarrollo empresarial como:
-- **Callback Design**: Para garantizar la carga de dependencias en el frontend.
-- **ETL**: Integración de datos de formularios en el frontend mediante extracción, transformación y carga hacia un formato procesable.
-- **Plugin Pattern**: Para ejecutar reglas de negocio en Dynamics CRM desde el backend, integrado con servicios Azure.
-
----
-
-#### 3. Tecnologías usadas:
-En el proyecto se identifican diversas tecnologías y librerías:
-- **Frontend**:
-  - JavaScript/ECMAScript: Lenguaje principal.
-  - Azure Speech SDK (via `https://aka.ms/csspeech/jsbrowserpackageraw`): Para síntesis de voz y reconocimiento de audio.
-  - Dynamics 365 API (`Xrm.WebApi`): Para interactuar con datos del CRM en tiempo real.
-- **Backend**:
-  - C#: Lenguaje para el desarrollo de Plugins en Dynamics CRM.
-  - Dynamics CRM SDK: Realiza integraciones con el sistema CRM.
-  - HTTP Client y JSON Libraries:
-    - `System.Net.Http`
-    - `System.Text.Json` y `Newtonsoft.Json.Linq`: Tratamiento de datos estructurados.
-  - Azure OpenAI: Integración API para procesamiento de texto via IA.
-- **Infraestructura cloud**:
-  - Azure Speech (SDK) y OpenAI como servicios fuera de este conjunto de módulos.
+El diseño sigue principios como modularidad, separación de responsabilidades y reutilización.
 
 ---
 
-#### 4. Dependencias o componentes externos:
-Este sistema depende de:
-- **Microsoft Azure Speech SDK**: Usado en frontend para síntesis y reconocimiento de voz.
-- **Microsoft Dynamics 365 API**: En el frontend para acceso al modelo de datos de formularios CRM y en el plugin como acceso de alto nivel a `IOrganizationService`.
-- **Azure OpenAI Service**: Para procesamiento avanzado en plugins.
-- **HTTP & JSON Libraries**: Realizan operaciones de red y procesan datos (principalmente en plugins).
-- **JavaScript**: En frontend para la integración dinámica con el usuario.
+### Tecnologías Usadas
+1. **Frontend:**
+   - **JavaScript**: Con soporte para eventos asíncronos, Promise y manipulación dinámica del DOM.
+   - **Azure Speech SDK**: Integración directa para síntesis de texto a voz y procesamiento de voz.
+   - **Microsoft Dynamics CRM API** (`Xrm.WebApi`): Para la manipulación del contexto CRM.
 
-Potenciales dependencias externas basadas en contexto:
-- Idiomas y configuraciones personalizados en Azure Speech/OpenAI para mejorar integración.
-- API personalizada dentro del sistema CRM.
+2. **Backend (Plugins):**
+   - **C#**: Código alojado como plugin en Microsoft Dynamics CRM.
+   - **Azure AI REST API**: Servicio externo para transformar texto mediante el modelo GPT-4o.
+   - **Bibliotecas .NET**: `System.Net.Http`, `Newtonsoft.Json`, y `System.Text.Json`.
+
+3. **Arquitectura en Microservicios**:
+   - Delegación de tareas complejas como transformación de texto y procesamiento de voz hacia servicios externos de Azure.
+
+4. **Patrones:**
+   - **Listener/Event-driven**: Para reconocimiento de voz y manejo de eventos del SDK.
+   - **Adapter**: Mapeo entre resultados de voz, CRM y API externa.
+   - **Plugin CRM**: Implementación de lógica en C# integrada mediante `IPlugin`.
 
 ---
 
-#### 5. Mermaid Diagram válido para GitHub Markdown:
+### Diagrama Mermaid
+
 ```mermaid
 graph TD
-    A["Usuario con Formulario"] --> B["Frontend - voiceInputHandler.js"]
-    A --> C["Frontend - speechForm.js"]
-    B --> D["Azure Speech SDK para síntesis de voz"]
-    C --> E["Azure Speech SDK para reconocimiento"]
-    C --> F["Dynamics API para gestionar formularios"]
-    F --> G["Backend Plugin - TransformTextWithAzureAI.cs"]
-    G --> H["Azure OpenAI para procesamiento de texto"]
-    G --> I["Dynamics API para funciones de negocio"]
+  A["Frontend: readForm.js"] --> B["Azure Speech SDK"]
+  B --> C["Form Data Extraction"]
+  C --> D["Voice-to-Text"]
+  D --> E["Frontend: speechForm.js"]
+  E --> F["CRM Integration (Xrm.WebApi)"]
+  E --> G["Custom API Call"]
+  F --> H["Form Field Mapping"]
+  G --> I["TransformTextWithAzureAI.cs"]
+  I --> J["Azure AI API GPT-4o"]
 ```
 
 ---
 
-### Conclusión final:
-Este repositorio implementa una solución híbrida para automatización de procesamiento de datos en entornos empresariales de Dynamics CRM. Su arquitectura de capas separa las responsabilidades entre frontend para interacción directa del usuario y un plugin backend que delega lógica más avanzada a servicios externos como Azure OpenAI y Dynamics API. Los patrones utilizados, como integración API y procesamiento ETL, son idóneos para maximizar la eficiencia de un sistema altamente conectado. Para mejorar la seguridad, se recomienda gestionar claves de API mediante configuraciones en un sistema de almacenamiento seguro como Azure Key Vault.
+### Conclusión Final
+El repositorio representa una solución **integrada y modular** para interacción con formularios CRM mediante tecnologías de **síntesis y reconocimiento de voz**, incluyendo transformación de texto con Inteligencia Artificial. Los componentes están claramente divididos para facilitar mantenimiento y escalabilidad:
+- **Frontend:** Ligero y dirigido directamente a eventos del usuario y rendimiento del navegador.
+- **Backend/Plugins:** Servicios específicos como transformación de texto o mapeo de datos integrados con el CRM.
+- **Microservicios externos:** Uso de Azure Speech SDK y Azure OpenAI para delegar tareas complejas.
+
+El diagrama en Mermaid es completamente compatible con **GitHub Markdown** y proporciona una representación clara de la relación entre los elementos del sistema.
