@@ -1,61 +1,62 @@
-# Breve Resumen Técnico
-
-Este repositorio parece ser parte de una solución Dynamics CRM personalizada para administrar formularios dinámicos y funciones relacionadas con entrada de voz, síntesis, y procesamiento de texto usando servicios de Azure (Speech SDK, OpenAI API). La solución incluye un frontend desarrollado con JavaScript, conectado con múltiples APIs y plugins para trabajar sobre el contexto CRM.
-
----
-
-# Descripción de Arquitectura
-
-La arquitectura es **modular con integración de servicios externos**. Esto es evidente por:
-- Frontend: Capacidades para gestionar entrada por voz y datos de formularios en tiempo real.
-- Plugins: Extensión mediante Dynamics CRM para transformar texto usando Azure AI, interactuando con el contexto CRM.
-- Patrones Service/Repository: Uso de técnicas que encapsulan el acceso a API externas y objeto formulario.
-- Microservicios: Integración directa con Azure Speech y Azure OpenAI refleja una arquitectura orientada a servicios (aunque no completamente un sistema de microservicios).
+### Breve resumen técnico
+El repositorio contiene una solución híbrida que combina frontend (JavaScript y plugins en Dynamics CRM) y backend interactuando con Azure Speech SDK y Azure OpenAI. La solución está orientada principalmente a la transformación de datos (procesamiento de texto y voz en tiempo real), manipulación de formularios de Dynamics 365, y generación de respuestas para la experiencia de usuario.
 
 ---
 
-# Tecnologías Usadas
+### Descripción de arquitectura
+La solución tiene una arquitectura **n capas** enfocada en integrar varias tecnologías en módulos descentralizados:
 
-1. **Frontend:**
-   - **JavaScript:** Funcionalidades dinámicas en el navegador.
-   - **Azure Speech SDK:** Para entrada de voz y síntesis de texto hablado.
-   - **Dynamics 365 APIs:** Interacciones con formularios y datos del sistema.
+1. **Capa de presentación (JavaScript en frontend)**:
+   - Interacción directa del usuario a través de formularios dinámicos de Dynamics.
+   - Procesamiento de voz mediante el Azure Speech SDK.
+   - Actualización de campos en tiempo real con transcripciones y datos procesados por IA.
 
-2. **Backend Plugin:**
-   - **Microsoft Dynamics CRM SDK:** Desarrollo del plugin para extender capacidades en Dynamics 365.
-   - **Azure OpenAI API:** Procesamiento de texto con modelos como GPT.
-   - **.NET Framework/Core (C#):** Implementación del plugin mediante el estándar de Dynamics CRM.
+2. **Capa de lógica de negocios (Plugins y validaciones)**:
+   - Manipulación y procesamiento de datos ingresados por el usuario.
+   - Transformación avanzada de texto mediante el servicio Azure OpenAI, encapsulado en un plugin.
 
-3. **Entorno Externo:**
-   - **Azure Hosting**: Servicios escalables y de IA para Speech y OpenAI.
-   - **JSON Libraries:** `Newtonsoft.Json` para estructuración y serialización JSON.
+3. **Capa de acceso a datos**:
+   - Acceso y manipulación directa de los atributos y datos del formulario en Dynamics 365.
+   - Integración con APIs externas como Azure Speech SDK y OpenAI.
 
 ---
 
-# Diagrama Mermaid (Válido para GitHub Markdown)
+### Tecnologías usadas
+1. **Frontend**:
+   - JavaScript (con estructuras modulares y enfoque basado en funciones).
+   - Dynamics 365 Client API (`Xrm.WebApi`, `Form Context`).
 
+2. **Backend**:
+   - C#, .NET para plugins personalizados de Dynamics CRM (`IPlugin`).
+   - Azure OpenAI API (llamada directa a modelos GPT-4).
+   - HTTP Requests (para integración con APIs externas).
+
+3. **Dependencias externas**:
+   - Azure Speech SDK: Para sintetización y reconocimiento de voz.
+   - Azure OpenAI: Procesamiento de lenguaje natural y generación de texto predictivo.
+   - Dynamics 365 APIs: Acceso y manipulación de datos del CRM.
+   - Newtonsoft.Json para procesamiento JSON en C#.
+
+---
+
+### Diagrama Mermaid válido para GitHub
 ```mermaid
 graph TD
-    UI["Frontend: Forms + VoiceInput"]
-    VoiceInput["JS: Voice Input Handling"]
-    API_Dynamics["Dynamics 365 API"]
-    TextProcessing["Plugin: TransformTextWithAzureAI"]
-    AzureSpeech["Azure Speech SDK"]
-    AzureOpenAI["Azure OpenAI API"]
-    FORM["Dynamics Form Context"]
-    
-    UI --> VoiceInput
-    VoiceInput --> AzureSpeech
-    VoiceInput --> API_Dynamics
-    API_Dynamics --> FORM
-    TextProcessing --> FORM
-    TextProcessing --> AzureOpenAI
+    A[Usuario] --> B[Formulario Dynamics]
+    B --> C["Azure Speech SDK - Síntesis de voz"]
+    B --> D["Azure Speech SDK - Reconocimiento de voz"]
+    D --> E["Actualización dinámica en formulario"]
+    E --> F["Mapping de campos visibles"]
+    E --> G["Llamada a API personalizada con texto transcrito"]
+
+    G --> H["Azure OpenAI - GPT-4 Text Transformation"]
+    H --> I["Respuesta estructurada JSON"]
+    I --> J["Plugin Dynamics CRM (TransformTextWithAzureAI)"]
+    F --> J
+    J --> K["Actualización final en campos del formulario"]
 ```
 
 ---
 
-# Conclusión Final
-
-La solución combina capacidades avanzadas de reconocimiento de voz y procesamiento de texto mediante Azure servicios y Dynamics CRM. Su arquitectura modular facilita la integración, separación de responsabilidades, y escalabilidad. No obstante, hay áreas que podrían beneficiarse de mejoras, como asegurar la configuración segura de claves API y optimizar el flujo de datos entre las partes.
-
-Este repositorio resulta ideal para escenarios en los que la interacción del usuario requiere procesamiento de voz y automatización dinámica de formularios, integrándose fuertemente con servicios de Microsoft.
+### Conclusión final
+La solución presentada en el repositorio tiene una arquitectura **n capas** orientada a la modularidad y reutilización de funciones. Está diseñada para procesar información de formularios dinámicos en Dynamics 365, utilizando servicios externos para reconocimiento y síntesis de voz (Azure Speech SDK) y procesamiento avanzado de texto (Azure OpenAI). Este enfoque se adapta bien a entornos corporativos que buscan mejorar la accesibilidad y la automatización de procesos mediante herramientas inteligentes y servicios basados en la nube.
