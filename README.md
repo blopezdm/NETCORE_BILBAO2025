@@ -1,70 +1,57 @@
-### Breve resumen técnico:
-El repositorio contiene soluciones que integran servicios de voz y procesamiento de texto mediante **Azure SDK** y **Azure OpenAI** en un ecosistema de Dynamics CRM. Los archivos se dividen principalmente en módulos frontend (JavaScript) y extensiones en backend (Plugins en C#). Se observa un enfoque hacia la automatización en CRM mediante voz y procesamientos estructurados de texto.
+## Análisis técnico de la solución
 
----
+### Breve resumen técnico:
+El repositorio es parte de una solución que integra un sistema de entrada y procesamiento de datos basado en reconocimiento y síntesis de voz utilizando **Azure Speech SDK** y **Azure OpenAI API**. La solución incluye:
+- **FRONTEND:** JavaScript para procesar datos del usuario mediante voz e invocar APIs.
+- **Plugins:** Código backend en C# para procesamiento de texto con Azure OpenAI, integrado con el ecosistema de Dynamics CRM.
 
 ### Descripción de arquitectura:
-La arquitectura observada se divide en tres capas principales:
-1. **Frontend:** Scripts en JavaScript integrados con el SDK de speech y CRM (navegador/cliente de Dynamics).
-2. **Backend:** Plugins de Dynamics CRM en C#, que actúan como extensiones del sistema y utilizan Azure OpenAI para procesamiento avanzado.
-3. **Servicios externos:** Alta dependencia de APIs de Microsoft Azure (Speech SDK y OpenAI).
+La arquitectura utilizada parece estar enfocada a **n-capas**:
+1. **Presentación (frontend):** Código en JavaScript que maneja entrada de voz y actualiza formularios de usuario.
+2. **Lógica de negocio (plugins):** Procesamiento de texto con Azure OpenAI.
+3. **Acceso a datos (Dynamics 365 Web API):** Mapeo y actualización de datos en el sistema CRM.
 
-El sistema podría clasificarse como una arquitectura **n-capas**, donde:
-- Las capas frontend y backend interactúan dinámicamente con servicios externos.
-- Existe integración directa a través de Dynamics CRM y servicios API.
-
----
+También incorpora elementos de **event-driven architecture** por el uso de callbacks en el frontend para controlar flujos relacionados con reconocimiento y síntesis de voz. Por último, la solución utiliza **servicios externos (Azure)** como parte de su operación.
 
 ### Tecnologías usadas:
-1. **Frontend:**
-   - Lenguaje: **JavaScript**
-   - Frameworks/SDK: **Azure Speech SDK**
-   - Servicios externos: **Azure Speech**, **API Dynamics CRM WebApi**
-   - Funcionamiento: Procesamiento de voz, manipulación DOM, asincronismo.
+- **Frontend:**
+  - Lenguaje: JavaScript.
+  - Servicio externo: Azure Speech SDK.
+  - Tecnologías complementarias: Dynamics CRM Web API.
+  
+- **Backend:**
+  - Lenguaje: C#.
+  - SDKs: Microsoft.Xrm.SDK, Newtonsoft.Json para manipulación de JSON, y `System.Net.Http` para hacer peticiones HTTP.
+  - Servicio externo: Azure OpenAI API.
 
-2. **Backend:**
-   - Lenguajes: **C#**
-   - Frameworks/SDK:
-     - **Microsoft Dynamics API** (management and integration)
-     - **System.Net.Http** (HTTP-Requests Azure AI API)
-   - Servicios externos: **Azure OpenAI**, Comunicación REST.
-   - Funcionamiento: Transcripción e interpretación de voz/texto, generación JSON.
+### Dependencias y componentes externos:
+1. **Azure Speech SDK:**
+   - Reconocimiento y síntesis de voz.
+   - Claves y región de acceso colocadas de forma estática en los scripts.
+   
+2. **Azure OpenAI API:**
+   - Transformación de texto aplicando reglas (normas) definidas.
+   
+3. **Dynamics CRM Web API:**
+   - Para interactuar con formularios (e.g., lectura y modificación de campos de datos).
+   
+4. **Bibliotecas del backend:**
+   - `System.Text.Json` y `Newtonsoft.Json.Linq` para serialización y manipulación JSON.
+   - `System.Net.Http` para integración con APIs externas de Azure.
 
-3. **Servicios externos:**
-   - **Azure Speech SDK:** Synthesis y recognition.
-   - **Azure OpenAI:** Procesamiento avanzado para generar información en JSON.
+### Diagrama Mermaid válido para GitHub:
 
-Patrones observados:
-- Modularity: Funciones y responsabilidades separadas.
-- Dependency Injection (en plugins, mediante `IServiceProvider` de Dynamics).
-
----
-
-### Diagrama Mermaid válido para **GitHub Markdown**:
 ```mermaid
 graph TD
-    A["Frontend - JavaScript"]
-    A1["VoiceInputHandler.js"]
-    A2["SpeechToCRM.js"]
-    B["Backend - Plugins en C#"]
-    B1["TransformTextWithAzureAI.cs"]
-
-    C["Servicios externos - Azure"]
-    C1["Speech SDK - Voz"]
-    C2["OpenAI - Texto a JSON"]
-    C3["Dynamics CRM WebApi"]
-
-    A --> C1
-    A --> C3
-    A1 --> C1
-    A2 --> C1
-    A2 --> C3
-    B --> C2
-    B --> C3
-    B1 --> C2
+  A["Usuario realiza entrada de voz"] --> B["Frontend invoca Azure Speech SDK"]
+  B --> C["Azure Speech SDK reconoce texto y sintetiza voz"]
+  C --> D["Datos recogidos del formulario visibles"]
+  D --> E["Frontend realiza llamadas a la API de Dynamics 365"]
+  D --> F["Frontend envía texto a Azure OpenAI para procesamiento"]
+  F --> G["Azure OpenAI devuelve JSON estructurado"]
+  G --> H["Plugin de Dynamics CRM ejecuta lógica adicional"]
+  H --> I["Dynamics CRM actualiza campos con datos procesados"]
 ```
 
----
-
 ### Conclusión final:
-El diseño del repositorio está centrado en la automatización y conversión de datos en un entorno CRM mediante tecnologías de Azure. La solución implementa arquitecturas robustas de **n-capas**, combinando frontend modular y backend extensible con servicios externos. La integración con Dynamics CRM mediante APIs asegura funcionalidades avanzadas de procesamiento de datos en tiempo real. Sin embargo, se pueden optimizar aspectos como manejo de errores y redundancias en dependencias.
+Este repositorio implementa una solución orientada a la entrada de datos mediante voz, que interactúa con formularios, transforma texto usando inteligencia artificial de Azure OpenAI y vincula los resultados a una plataforma de gestión empresarial (Dynamics CRM). Es una arquitectura de **n-capas** apoyada en servicios de nube que facilita modularidad, escalabilidad y flexibilidad. Sin embargo, los puntos donde las configuraciones (como claves de Azure y región) están estáticamente escritas en el código representan un área de mejora en términos de seguridad y manejo dinámico de la configuración.
