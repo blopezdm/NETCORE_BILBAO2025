@@ -1,63 +1,62 @@
-### Breve resumen técnico
-
-La solución descrita parece ser una plataforma diseñada para implementar interacción por voz, reconocimiento de lenguaje natural y síntesis de texto para formularios integrados en Microsoft Dynamics CRM, con Azure como proveedor de servicios clave. Utiliza integración directa con APIs de Azure (Speech SDK, OpenAI) y una arquitectura basada en eventos y plugins para extender capacidades del CRM.
-
----
-
-### Descripción de arquitectura
-
-La arquitectura del repositorio consta de varios niveles colaborativos:
-1. **Frontend**:
-   - Funcionalidad de reconocimiento por voz y síntesis de voz a través del Azure Speech SDK.
-   - Interacciones dinámicas con formularios en Dynamics CRM para lectura (VoiceInputHandler.js) y escritura basada en comandos naturales (speechInputHandler.js).
-   
-2. **Backend (Plugin)**:
-   - Transformaciones textuales vía Azure OpenAI Service para estructurar datos en formato JSON, usando lógica de plugin en Dynamics CRM.
-
-3. **Capacidades extendidas**:
-   - Uso de Azure Speech SDK para integrar voz y lectura automatizada de formularios.
-   - Integración REST para interacción con el Azure OpenAI Service.
-
-La arquitectura general puede clasificarse como **n-capas distribuida**, donde los módulos de frontend interactúan con un CRM basado en Dynamics, mientras que los plugins implementan lógica de backend para transformación avanzada, comunicándose con APIs externas en Azure.
+### Breve resumen técnico:
+El repositorio describe múltiples archivos que juntos implementan una solución para interacción avanzada entre formularios de Microsoft Dynamics, Azure Speech SDK y Azure OpenAI. Los componentes incluyen:
+- **Frontend JavaScript** para síntesis y reconocimiento de voz.
+- **Plugins de Dynamics CRM** como extensiones para transformación de texto.
+- **Azure Speech SDK y Azure OpenAI API** como recursos externos.
 
 ---
 
-### Tecnologías usadas
-
-1. **JavaScript**:
-   - Herramientas del frontend para interacción dinámica y eventos del CRM.
-   
-2. **Azure Speech SDK**:
-   - Síntesis y reconocimiento de voz.
-   
-3. **Dynamics CRM SDK (`Microsoft.Xrm.Sdk`)**:
-   - Framework para plugins del backend en Dynamics 365.
-   
-4. **Azure OpenAI Service**:
-   - Implementación de modelos avanzados de procesamiento de lenguaje natural.
-
-5. **Librerías JSON (Newtonsoft.Json.Linq y System.Text.Json)**:
-   - Serialización/deserialización en el plugin `TransformTextWithAzureAI.cs`.
+### Descripción de la arquitectura:
+La solución utiliza una arquitectura **combinada de capas y servicios externos**, organizada como:
+1. **Frontend en Dynamics CRM**: Proporciona interactividad mediante integración con Azure Speech SDK.
+2. **Backend bajo Dynamics CRM**: Utiliza plugins para manejar lógica avanzada como transformación de texto con IA.
+3. **Azure Speech y OpenAI APIs**: Servicios de procesamiento externo para voz y texto.
+4. **Integración modular**: Código segmentado en funciones independientes con patrones como Factory, Request-Response, y SOA.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Tecnologías usadas:
+1. **Frontend:**
+   - Lenguaje: JavaScript.
+   - Framework: Sin framework necesariamente; uso directo de APIs como Azure Speech SDK.
+   - Integración: Llamadas a Dynamics CRM y APIs externas mediante modularización.
 
+2. **Backend:**
+   - Lenguaje: C#.
+   - Ecosistema: Dynamics CRM SDK.
+   - Librerías: `System.Net.Http`, `Microsoft.Xrm.Sdk`, `Newtonsoft.Json`, entre otras.
+   - Servicio: Azure OpenAI API.
+
+3. **Servicios externos:**
+   - Azure Speech SDK: Para reconocimiento de voz y síntesis textual.
+   - Azure OpenAI API: Para transformación avanzada de texto.
+
+4. **Patrones utilizados:**
+   - **Factory Pattern**: Configuración de Speech SDK para síntesis.
+   - **Request-Response**: Interacción directa de plugins con APIs Azure.
+   - **SOA**: Delegación de procesos IA al servicio OpenAI.
+   - **Modularidad**: Funciones de asistencia (ex. `processTranscript`, `applyValueToField`).
+
+---
+
+### Diagrama Mermaid válido para GitHub:
 ```mermaid
 graph TD
-    A["Frontend: VoiceInputHandler.js"] --> B["Azure Speech SDK - Synthesizer"]
-    C["Frontend: speechInputHandler.js"] --> D["Azure Speech SDK - Recognizer"]
-    C --> E["Dynamics Web API"]
-    B --> F["Form Context"]
-    D --> F
-    F --> G["CRM Form Data"]
-    G --> H["Backend Plugin: TransformTextWithAzureAI.cs"]
-    H --> I["Azure OpenAI Service"]
-    I --> J["Processed JSON Output"]
-```
+    A["Frontend VoiceInputHandler.js y SpeechRecognitionHandler.js"]
+    B["Dynamics CRM Form Context y API"]
+    C["Azure Speech SDK - Servicios de voz"]
+    D["Custom API - Transformación texto con IA"]
+    E["Backend Plugin: TransformTextWithAzureAI.cs"]
+    F["Azure OpenAI API"]
 
+    A --> B
+    B --> C
+    B --> D
+    D --> F
+    E --> F
+    C --> B
+```
 ---
 
-### Conclusión final
-
-El repositorio proporciona una solución extensible y moderna que ejecuta tareas especializadas de interacción de voz y procesamiento inteligente de texto en un entorno Dynamics CRM. El diseño modular está orientado a la reutilización y escalabilidad, aprovechando patrones como integración SDK y comunicación directa con servicios externos (Azure Speech y OpenAI). La arquitectura, aunque distribuida, tiene una marcada separación de capas, facilitando la gestión independiente de frontend, lógica CRM y procesamiento en Azure. Esta solución está preparada para entornos empresariales con necesidades avanzadas de voz y texto.
+### Conclusión final:
+La solución integra **tecnologías de frontend, servicios de voz**, y **backend con inteligencia artificial** para automatizar la interacción de usuarios a través de formularios dinámicos en Microsoft Dynamics CRM. El uso de capas y la interacción con servicios externos lo convierte en un ejemplo sólido de una **arquitectura SOA híbrida**, con dependencia de servicios externos (Azure Speech SDK y OpenAI) para manejar lógica avanzada y procesamiento externo. Aunque modular, la solución está fuertemente acoplada a Microsoft Dynamics y los servicios de Azure, limitando su portabilidad fuera de este ecosistema.
