@@ -1,56 +1,64 @@
-### Breve Resumen Técnico
-El repositorio corresponde a una solución integrada que conecta formularios de Dynamics 365 con servicios de Azure Speech SDK y Azure OpenAI GPT. Su propósito es capturar datos del formulario mediante síntesis y reconocimiento de voz, transformarlos en texto procesable y aplicar valores a campos del formulario. También cuenta con un plugin que permite transformar texto en estructuras JSON utilizando Azure OpenAI.
+### Breve resumen técnico
+
+Este repositorio incluye componentes orientados al procesamiento de formularios mediante entrada y salida de voz integrada con Azure Speech SDK y Dynamics 365 CRM. Adicionalmente, utiliza servicios como **Azure OpenAI API** para ampliar capacidades avanzadas de procesamiento basado en inteligencia artificial (IA). La solución está diseñada con orientación modular y se centra en interacciones entre un frontend (JavaScript), un backend CRM (plugins .NET), y servicios externos como Azure.
 
 ---
 
-### Descripción de Arquitectura
-La arquitectura global combina los siguientes elementos:
-1. **Patrón Modular**: Las funcionalidades están separadas en archivos según responsabilidades específicas (captura de voz y proceso de transformación de texto).
-2. **Integración de Servicios Externos**: El sistema se apoya en servicios externos como Azure Speech SDK y Azure OpenAI, además de la API interna de Dynamics 365.
-3. **Frontend**: Procesos relacionados con la captura y lectura de voz están implementados en JavaScript para interacción directa con el usuario en los formularios.
-4. **Backend Plugin**: Plug-in desarrollado en C# para extender el comportamiento del CRM mediante llamadas al servicio Azure OpenAI.
+### Descripción de arquitectura
 
-**Tipo de arquitectura:** 
-La solución implementa una arquitectura distribuida de **n capas** con:
-- **Capa de presentación**: Archivos JavaScript en el frontend gestionan la interfaz de usuario y conectan el contexto del formulario con APIs.
-- **Capa de integración**: Comunicación con APIs externas, como Azure Speech SDK y OpenAI.
-- **Capa de negocio**: Lógica de negocio implementada principalmente en el plug-in (`TransformTextWithAzureAI.cs`) y en funciones Javascript relacionadas con Dynamics 365.
+La arquitectura general puede clasificarse como **n capas**, con responsabilidades distribuidas entre frontend, backend, y servicios externos:
 
----
-
-### Tecnologías Usadas
 1. **Frontend**:
-   - JavaScript DOM para manipulación de formularios y lógica de voz.
-   - Azure Speech SDK para síntesis y reconocimiento de voz.
-   - Patrones asincrónicos como Promesas y Callbacks para manejo de eventos y comunicación con APIs.
+   - Manejo de entrada de voz y datos de formularios utilizando **JavaScript**.
+   - Interacción directa con Azure Speech SDK.
+   - Lógica específica para mapeo dinámico de campos en formularios.
 
 2. **Backend**:
-   - C# (.NET Framework): Plug-in que extiende y personaliza la funcionalidad en Dynamics CRM.
-   - Microsoft Dynamics CRM SDK (`Microsoft.Xrm.Sdk`) para acceso al contexto del sistema.
-   - Azure OpenAI para procesamiento avanzado.
-   - `System.Net.Http` para conexiones HTTP REST.
-   - Manejo de JSON (`System.Text.Json`, `Newtonsoft.Json.Linq`) para estructura de datos.
+   - Plugins en Dynamics CRM desarrollados en **C#**.
+   - Funcionalidad orientada a ejecutar lógica predefinida con el servicio Azure OpenAI API.
 
-3. **Servicios Externos**:
-   - Azure Speech SDK: Conversión de datos entre texto y voz.
-   - Azure OpenAI GPT: Transformación de texto dentro del plugin.
+3. **Servicios externos**:
+   - Uso del **Azure Speech SDK** para voz.
+   - Interacción con Dynamics 365 API para manejo de datos del ecosistema CRM.
+   - Azure OpenAI para reglas avanzadas de procesamiento de texto.
 
 ---
 
-### Diagrama Mermaid para Representar la Estructura y Flujo
+### Tecnologías usadas
+
+1. **Frontend (JavaScript)**:
+   - Azure Speech SDK: Para reproducción de texto en voz y reconocimiento de voz.
+   - Integración directa con entornos como Dynamics 365 CRM.
+
+2. **Backend (C#)**:
+   - Dynamics 365 SDK (Microsoft.Xrm): Para plugins personalizados dentro del ecosistema CRM.
+   - Azure OpenAI API: Para transformación de texto basado en IA.
+
+3. **Patrones**:
+   - **Modularidad**: Código distribuido en funciones y clases con responsabilidades claramente definidas.
+   - **Carga dinámica**: Uso de carga dinámica para SDKs y recursos externos.
+   - **Service-Oriented Architecture (SOA)**: Delegación de procesamiento en servicios externos.
+
+---
+
+### Diagrama basado en Mermaid
+
 ```mermaid
 graph TD
-  A["Frontend: Captura de voz"] --> B["Azure Speech SDK"]
-  B --> C["Texto transcrito por voz"]
-  C --> D["Dynamics 365 Formulario"]
-  D --> E["Backend Plugin"]
-  E --> F["Azure OpenAI GPT"]
-  F --> G["JSON transformado"]
-  G --> D["Campos Visibles - Actualizados"]
+    A["Frontend: JS"] --> B["SDK: Azure Speech"]
+    A --> C["Dynamics API"]
+    B --> D["Reproducción Voz"]
+    A --> E["Transcripciones"]
+    E --> F["API personalizada"]
+    F --> G["Procesamiento Avanzado con IA"]
+    G --> H["Azure OpenAI"]
+    C --> I["Backend: Plugin .NET"]
+    I --> G
+    I --> J["Dynamics Database"]
 ```
 
 ---
 
-### Conclusión Final
-La solución representa un sistema distribuido para extender Dynamics 365 mediante Azure Speech SDK y Azure OpenAI. Su arquitectura de **n capas** organiza claramente la lógica del frontend y backend, delegando tareas específicas como síntesis y procesamiento de voz al cliente, y transformación avanzada al servicio OpenAI en el servidor. Este enfoque modular mejora la mantenibilidad, escalabilidad y facilita la integración con otros sistemas basados en IA y voz.
+### Conclusión final
 
+El repositorio ilustra una solución de **entrada y salida de voz** integrada con formularios en Dynamics 365. Usa tecnologías avanzadas como Azure Speech SDK y Azure OpenAI para ofrecer capacidades robustas y flexibles de síntesis, reconocimiento y transformación de voz/texto. La arquitectura modular facilita la reutilización de lógica y la integración con servicios externos, destacando el enfoque en desacoplamiento y modularidad.
