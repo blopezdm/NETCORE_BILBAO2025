@@ -1,57 +1,51 @@
-### Breve resumen técnico
-El repositorio consiste en una solución híbrida, cuya principal funcionalidad gira en torno a la integración entre formularios de Dynamics 365 y servicios de Azure (Azure Speech SDK y Azure OpenAI). Se implementa conversión texto-a-voz, reconocimiento de voz para formularios, y transformación de texto con inteligencia artificial. Por lo tanto, la solución implica una combinación de frontend funcional con procesamiento en tiempo real y plugins backend basados en RESTful.
+### Breve resumen técnico:
+El repositorio analiza tres archivos principales que implementan funcionalidades clave:
+1. **Frontend:** Interacción en tiempo real con formularios accesibles mediante procesamiento de datos y síntesis/reconocimiento de voz en integración con Azure Speech SDK.
+2. **Plugins:** Transformación de texto en Dynamics CRM mediante la API de Azure OpenAI, estructurándolo como JSON según reglas especificadas.
+3. **Reconocimiento de voz:** Uso activo de Azure Speech SDK, procesamiento de datos y análisis semántico/estructurado.
+
+El enfoque del proyecto está orientado al reconocimiento de voz, interacción dinámica y procesamiento estructurado de datos entregables.
 
 ---
 
-### Descripción arquitectónica
-La arquitectura se puede clasificar como **modular híbrida**:
-- **Frontend:** Implementado con JavaScript/HTML para interactuar con Dynamics 365 mediante manipulación de formulario (DOM) y el SDK de Azure para conversión texto-voz y reconocimiento de voz.
-- **Backend:** Plugins .NET que extienden las capacidades de Dynamics CRM usando Microsoft.Xrm.Sdk y Azure OpenAI.
-- **Interacción con servicios externos:** Tanto en el frontend como el backend se delega el procesamiento especializado a APIs de Azure (Speech Recognition/SDK y OpenAI).
-
-Se observa un enfoque **n-capas**:
-1. **Capa de presentación:** Frontend basado en JavaScript.
-2. **Capa de negocio:** Plugins (TransformTextWithAzureAI.cs) en Dynamics CRM.
-3. **Capa de datos:** Manipulación de datos de formulario de Dynamics 365 mediante APIs internas (`Xrm.WebApi`) y servicios externos (Azure).
-
-Además, usa patrones como **modular**, **event-driven** (frontend) y **plugin-based** (backend).
+### Descripción de arquitectura:
+La solución tiene características compatibles con arquitectura orientada a servicios (SOA), combinada con integración a **APIs de terceros** (Azure Speech SDK, Azure OpenAI) como microservicios. Integra un **backend basado en plugin** acoplado a Dynamics CRM (Plugin-based Architecture). A nivel de frontend, la aplicación sigue un diseño **modular en capas**, donde el procesamiento de formularios y la integración con APIs están segregados en funciones orientadas a tareas específicas.
 
 ---
 
-### Tecnologías utilizadas
+### Tecnologías usadas:
 1. **Frontend:**
-   - HTML/JavaScript.
-   - Azure Speech SDK (Dynamic Loading via URL).
-   - Dynamics 365 APIs (`Xrm.WebApi`).
-   - Azure APIs.
-   - REST para consumir servicios externos (backend).
-
-2. **Backend:**
-   - C# .NET (Microsoft.Xrm.Sdk y extensiones como `Newtonsoft.Json` y `System.Net.Http`).
-   - Azure OpenAI API.
-   - Plugins en Dynamics CRM.
-
-3. **Servicios Externos:**
-   - Azure Speech SDK: Conversión texto-a-voz y reconocimiento de voz en tiempo real.
-   - Azure OpenAI: Procesamiento avanzado del texto.
+   - **JavaScript ES6:** Programación de lógica de usuario en el navegador.
+   - **Azure Speech SDK:** Síntesis y reconocimiento de voz.
+   - **Microsoft Dynamics Forms API:** Manipulación de datos de formularios dinámicos.
+2. **Backend/Plugins en Dynamics CRM:**
+   - **C#:** Implementación de lógica de negocio con clases y métodos orientados a servicios.
+   - **Azure OpenAI SDK:** Consumo y procesamiento de datos mediante GPT (modelo `gpt-4o`).
+   - **HTTPClient / REST APIs:** Comunicación síncrona con endpoints de OpenAI.
+   - **JSON Utilities (Newtonsoft + System.Text.Json):** Para serialización y transformación de datos.
+3. **SDKs y APIs Externas:**
+   - **Dynamics SDK API:** Extensiones específicas de sistemas empresariales.
+   - **Azure Speech to Text y Text to Speech APIs.**
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Diagrama Mermaid:
+
 ```mermaid
 graph TD
-A["Usuario Dinamics 365"] --> B["Formulario Web Dynamics 365"]
-B --> C["Integración frontend (JS): SDK voz y APIs"]
-C --> D["Azure Speech SDK para texto-a-voz"]
-C --> E["Azure Speech SDK para reconocimiento de voz"]
-B --> F["Xrm.WebApi - Manipular datos Dynamics"]
-F --> G["Plugins backend"]
-G --> H["Transformación texto con Azure OpenAI"]
-C --> I["API externa personalizada - Text analysis"]
-H --> J["Azure OpenAI API para generación JSON"]
+    A["User - Voice Input"] --> B["Frontend JS"]
+    B --> C["Azure Speech SDK"]
+    B --> D["Form Context (Dynamics API)"]
+    C --> E["Speech Recognition / Synthesis"]
+    D --> F["Form Data Extraction"]
+    E --> G["Processed Text as Output"]
+    G --> H["Custom API"]
+    H --> I["Transform Plugin"]
+    I --> J["Azure OpenAI Service"]
+    J --> K["Output (Transformed JSON)"]
 ```
 
 ---
 
-### Conclusión final
-La solución presentada combina tecnologías modernas (Servicios Cloud de Azure, Dynamics 365, y API RESTful) con un enfoque híbrido. Evalúa y manipula datos contextuales del sistema central de Dynamics CRM mediante integración web y plugins especializados. Con arquitectura modular y n-capas, es lo suficientemente extensible y dinámica para soportar casos de uso avanzados de interacción entre usuarios y datos, procesados con inteligencia artificial basada en la nube.
+### Conclusión final:
+La solución presenta una arquitectura híbrida, integrando modularidad en frontend con capacidad de realizar reconocimiento de voz y síntesis de texto en tiempo real gracias a Azure Speech SDK. El backend acoplado al entorno Dynamics CRM utiliza arquitecturas plugin y SOA para la transformación de textos mediante Azure OpenAI, consolidando una integración efectiva de microservicios. El diseño cumple estándares de accesibilidad, modernidad e interoperabilidad entre sistemas, siendo una solución apta para sistemas empresariales de formularios interactivos accesibles y procesamientos IA.
