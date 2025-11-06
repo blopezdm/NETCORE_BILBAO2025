@@ -1,47 +1,51 @@
-### Breve resumen técnico:
+### Breve Resumen Técnico:
+El repositorio contiene componentes de frontend en JavaScript específicamente orientados a la interacción con formularios mediante entrada y salida de voz, además de un plugin en C# que conecta Microsoft Dynamics CRM con la API de Azure OpenAI para realizar transformaciones de texto.
 
-El repositorio describe elementos de un ecosistema híbrido entre frontend, backend y servicios alojados en la nube. Los archivos analizados implementan una solución que integra **Azure Speech SDK**, **Azure OpenAI**, y **Dynamics 365 CRM**. Esto indica que la solución ofrece funcionalidades para el reconocimiento y síntesis de voz, además de transformación avanzada de datos enriquecidos mediante inteligencia artificial.
+---
 
-### Descripción de arquitectura:
+### Descripción de la Arquitectura:
+La solución tiene una arquitectura híbrida basada en **modularización de funciones** para tareas específicas. Los componentes de frontend tienen patrones **orientados a servicios**, integrándose con APIs externas (Azure Speech SDK y APIs personalizadas). Los plugins en C# implementan una **arquitectura basada en plugins** para CRM Dynamics y establecen una conexión tipo **API Gateway** con Azure OpenAI.
 
-La arquitectura del repositorio utiliza una combinación de enfoques:
-1. **Arquitectura de Microservicios**: Integración con servicios externos como Azure Speech SDK y Azure OpenAI para procesamiento de voz y transformación de texto.
-2. **Capas n-tier**: Relación entre frontend (JavaScript para reconocimiento/síntesis de voz), respaldo API REST con plugins en Dynamics 365, y servicios cloud.
-3. Uso de **Azure Platforms** fomenta un diseño descentralizado (backends separados para procesamiento de IA y lógica CRM).
+Aunque no cumple estrictamente con la definición de microservicios, sí aprovecha la idea de integración con servicios externos y división funcional, siendo una aplicación orientada a servicios (SOA).
 
-### Tecnologías usadas:
+---
 
-1. **Frontend:**  
-   - **JavaScript**: Para manejar reconocimiento de voz, síntesis de texto a voz, y procesamiento dinámico en el navegador.  
-   - **Azure Speech SDK**: Carga dinámica del SDK desde una fuente externa para funcionalidad relacionada con voz (syntheses y recognition).  
+### Tecnologías Utilizadas:
+1. **Frontend:**
+   - JavaScript (para manipulación de formularios y flujo de voz).
+   - SDK de Azure Speech para funciones de síntesis y reconocimiento de voz.
+   - Lazy loading para cargar el SDK dinámicamente.
 
-2. **Backend:**  
-   - **C#**: Utilizado para implementar plugins en Dynamics 365 CRM.  
-   - **Microsoft Dynamics CRM SDK**: Facilita la integración y personalización de los formularios y datos en Dynamics.  
-   - **Azure OpenAI**: Procesamiento avanzado basado en inteligencia artificial.  
+2. **Backend (Plugin con C#):**
+   - Microsoft Dynamics SDK (`Microsoft.Xrm.Sdk`) para personalización.
+   - Azure OpenAI API para transformación de texto.
+   - `System.Net.Http` y `System.Text.Json`/`Newtonsoft.Json.Linq` para comunicación con APIs y manejo de JSON.
 
-3. **Dependencias externas:**  
-   - **Azure Speech SDK**: Biblioteca de JavaScript dinámica para reconocimiento de entrada de voz.  
-   - **Azure OpenAI**: Endpoint para procesamiento de texto y respuesta en formato JSON.  
-   - **Microsoft Dynamics CRM**: Se conecta como núcleo del negocio para manipular formularios y datos vinculados al procesamiento.  
-   - **Newtonsoft.Json / System.Text.Json**: Para serialización/estructuración de datos JSON en el código backend.
+3. **Otros Patrones:**
+   - Lazy Loading (carga condicional de SDK).
+   - Responsabilidad Única: Funciones diseñadas para tareas específicas.
+   - Modularización de código tanto en frontend como backend.
 
-### Diagrama Mermaid válido para GitHub:
+---
+
+### Diagrama Mermaid:
+
+Este diagrama muestra los componentes de la solución y sus interacciones.
 
 ```mermaid
 graph TD
-    A["User Interface - Formulario Dynamics 365"] -->|Evento User| B["voiceInputHandler.js"]
-    B --> |Reconocimiento/Síntesis| C["Azure Speech SDK"]
-    C -->|Texto procesado| D["Azure OpenAI para AI"]
-    B -->|Reconocimiento| E["SpeechRecognitionHandler.js"]
-    E --> |Transcripción text| F["Dynamics Custom API"]
-    F -->|Plugin Dynamics| G["TransformTextWithAzureAI.cs"]
-    G -->|JSON estructurado| H["Microsoft Dynamics CRM"]
-
-    E --> |Acceso a Contexto| H
-    G --> |Respuesta| F
+    A["Frontend - JS Component"] --> B["Dynamics CRM Form Context"]
+    A --> C["Azure Speech SDK"]
+    B --> D["Backend Plugin (C#)"]
+    D --> E["Azure OpenAI API - Transformación de Texto"]
+    E --> F["Respuesta JSON Transformada"]
+    D --> G["Microsoft Dynamics SDK"]
+    G --> H["Dynamics CRM Service Layer"]
 ```
 
-### Conclusión final:
+---
 
-La solución descrita en el repositorio se centra en la integración entre capacidades avanzadas como reconocimiento y síntesis de voz, transformación de texto mediante inteligencia artificial, y manipulación de formularios en un CRM empresarial. La arquitectura está diseñada como un ecosistema descentralizado basado en **microservicios** con servicios en la nube siempre dependientes de componentes externos como **Azure Speech SDK** y **Azure OpenAI**. Sin embargo, hay indicios también de elementos monolíticos (en el plugin) y patrones como **Adapter** y **Lazy Loading**, lo que fortalece su modularidad y escalabilidad. Este enfoque es ideal para entornos empresariales que requieren automatización de decisiones y captura de datos mediante IA.
+### Conclusión Final:
+La solución presenta una arquitectura basada en servicios (SOA) integrada con APIs externas (Azure Speech y Azure OpenAI) y tiene como objetivo automatizar tareas en formularios de Dynamics CRM mediante entrada y salida de voz, además de realizar transformaciones avanzadas de texto. La propuesta se adapta bien a escenarios de automatización e interacción dinámica en sistemas CRM.
+
+Se destacan buenas prácticas como modularización, uso de Lazy Loading y estructuras orientadas a servicios. Sin embargo, tiene una dependencia directa de SDKs externos, la cual puede presentar desafíos en términos de mantenimiento ante cambios en las API.
