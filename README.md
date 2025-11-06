@@ -1,60 +1,65 @@
-# Breve resumen técnico
-El repositorio pertenece a una solución de integración que utiliza servicios de Azure para manejar la entrada y salida de voz en formularios dinámicos. Esta solución parece centrada en aprovechar APIs de procesamiento de lenguaje (Azure Speech SDK, Azure OpenAI) y es usada como una extensión o funcionalidad complementaria en un entorno moderno como Microsoft Dynamics CRM.
+### Resumen técnico
+Este repositorio implementa una solución integrada con diferentes componentes, enfocada en la interacción con el usuario a través de formularios, síntesis de voz, reconocimiento de voz y procesamiento avanzado mediante Azure servicios como **Azure Speech SDK** y **Azure OpenAI**. La funcionalidad se extiende mediante plugins en Dynamics CRM para transformar datos de entrada con inteligencia artificial.
 
 ---
 
-# Descripción de arquitectura
-La arquitectura del repositorio está orientada a *n capas*, donde se manejan distintas responsabilidades:
-1. **Frontend (JavaScript)**: Proporciona funcionalidades como lectura en voz alta y entrada de datos por voz. Utiliza SDKs externos (Azure Speech).
-2. **Backend (C# Plugin)**: Procesa texto utilizando reglas específicas con el servicio Azure OpenAI y lo devuelve como JSON estructurado para su uso en el frontend.
-3. **Integración API dinámica**: Ambas capas están altamente integradas mediante APIs y dependencias contextuales específicas (como Dynamics CRM).
+### Descripción de arquitectura
+La solución adopta una arquitectura **modular y orientada a servicios** con integración de servicios externos. Cada módulo encapsula funcionalidades específicas: 
+1. **Frontend**: Captura datos del formulario mediante reconocimiento y transformación de voz.
+2. **Backend**: Procesa datos con plugins diseñados para Dynamics CRM. Utiliza lógica basada en eventos y comunicación REST con Azure Services.
+
+Aunque la arquitectura está orientada al servicio (Service-Oriented Architecture), es posible distribuir el diseño en capas:
+1. **UI/UX layer**: Archivos de frontend como `readForm.js` y `speechForm.js`.
+2. **Data processing and transformation**: Plugins servidores como `TransformTextWithAzureAI.cs`.
+3. **Service integration layer**: SDKs y APIs de Azure (Speech y OpenAI).
 
 ---
 
-# Tecnologías usadas
-1. **Frontend**
-   - **JavaScript estándar**: Manipulación de datos del DOM y dependencias internas.
-   - **Azure Speech SDK**: Funcionalidades de conversión texto-voz y reconocimiento de voz.
-   - **Microsoft Dynamics API (Xrm)**: Para acceso y manipulación de datos en formularios.
-
-2. **Backend**
-   - **C# (.NET Framework)**: Desarrollo de plugin modular.
-   - **Azure OpenAI Service**: Interacción directa con servicios GPT mediante HTTP.
-
-3. **Patrones**
-   - *Carga dinámica*: SDKs como el Azure Speech se cargan solo cuando es necesario.
-   - *Separación de responsabilidades*: La lógica está bien segmentada en funciones específicas.
-   - *Integración basada en servicios*: Arquitectura orientada a APIs con Azure y Dynamics CRM.
+### Tecnologías usadas
+- **Lenguajes**:
+  - **JavaScript**: Frontend (interacción directa con formularios y SDK externo).
+  - **C#**: Plugins de backend en Dynamics CRM para transformación de datos con servicios de Azure.
+- **Frameworks y SDKs**:
+  - **Azure Speech SDK**: Síntesis y reconocimiento de voz.
+  - **Azure OpenAI**: Procesamiento de texto transformado por IA.
+  - **Newtonsoft.Json**: Manipulación JSON.
+- **Integración**:
+  - **Dynamics CRM SDK**: Gestión de datos empresariales y tipo de formulario.
+  - **REST APIs**: Comunicación con servicios externos de Azure.
+- **Estilo arquitectónico**:
+  - Modular: Encapsulación por módulos para funciones específicas.
+  - SOA: Uso de servicios externos como elementos estratégicos (Azure).
 
 ---
 
-# Diagrama **Mermaid** válido para GitHub
+### Diagrama Mermaid
+Aquí tienes un diagrama Mermaid compatible con GitHub Markdown que representa las conexiones y flujo lógico de los componentes:
 
 ```mermaid
 graph TD
-    A["Usuario"]
-    B["Frontend (JavaScript files)"]
-    C{"voiceInputHandler.js"}
-    D{"speechIntegration.js"}
-    E["Plugin Backend (TransformTextWithAzureAI.cs)"]
-    F["Microsoft Dynamics CRM"]
-    G["Azure Speech SDK"]
-    H["Azure OpenAI Service"]
-    I["Formulario dinámico"]
-    
+    A["Frontend UI layer"]
+    B["Formulario HTML - Captura datos visibles"]
+    C["Procesamiento de datos - Modular JS"]
+    D["Azure Speech SDK - Captura y síntesis de voz"]
+    E["Backend Plugin - Transformación del texto con IA"]
+    F["Dynamics CRM - Gestión de datos"]
+    G["Azure OpenAI - Procesamiento avanzado"]
+
     A --> B
-    B -->|Lectura de voz| C
-    C -->|SDK cargado| G
-    B -->|Entrada de voz y texto| D
-    D -->|Procesa datos| F
-    D -->|Transformación con IA| E
-    E -->|LLamadas API| H
-    F --> I
-    I -->|Campo visible| C
-    F -->|Manipulación / persistencia| B
+    B --> C
+    C --> D
+    D --> F
+    C --> F
+    F --> E
+    E --> G
 ```
 
 ---
 
-# Conclusión final
-El repositorio implementa una extensión modular de procesamiento de voz y texto para formularios dinámicos en un entorno empresarial como Dynamics CRM. La arquitectura utiliza una estructura **n capas** donde el frontend y backend están integrados mediante servicios de Azure. Destaca su enfoque modular, dinámico y orientado a APIs, lo que ofrece flexibilidad y escalabilidad en soluciones empresariales modernas.
+### Conclusión final
+La solución presentada es un sistema integrado que combina:
+- **Frontend interactivo** con captura/formulación de datos de voz.
+- **Backend orientado a servicios** que amplía la funcionalidad de Dynamics CRM mediante plugins personalizados.
+- **Interoperabilidad** con servicios externos de Microsoft Azure, transformando las interacciones del usuario y los datos en una experiencia empresarial más avanzada.
+
+La arquitectura modular y el uso de integraciones con servicios de Azure son ideales para escenarios empresariales de procesamiento y automatización. Sin embargo, en una implementación futura debería evaluarse la escalabilidad completa, la seguridad y la optimización de dependencias externas.
