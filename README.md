@@ -1,67 +1,48 @@
-# Breve Resumen Técnico
-
-El repositorio contiene tres componentes: dos scripts de frontend (`voiceInputHandler.js` y `speechForm.js`) y una clase de plugin en C# (`TransformTextWithAzureAI.cs`). Su objetivo principal es integrar funcionalidades de procesamiento de voz, reconocimiento de voz y transformación de texto mediante servicios de Azure (Speech SDK y Azure OpenAI) en entornos de Dynamics 365.
-
----
-
-# Descripción de la Arquitectura
-
-La solución utiliza una arquitectura en capas, donde cada componente cumple un rol específico:
-1. **Frontend**: Scripts que interactúan con Azure Speech SDK para sintetizar texto en voz y convertir voz en texto; además, integran estos datos con el formulario de Dynamics 365.
-2. **Servicios**: Comunicación entre scripts de frontend y APIs de Dynamics CRM, y llamadas a la API personalizada `TransformTextWithAzureAI`.
-3. **Backend (Plugin)**: Plugin en C# en Dynamics 365 que transforma texto según reglas y utiliza Azure OpenAI para generar contenido estructurado.
-
-Se trata de una arquitectura concentrada en servicios (Service-Oriented Architecture, SOA), donde cada capa interactúa de manera modular y desacoplada.
+### Breve resumen técnico:
+El repositorio analiza y gestiona integración entre formularios dinámicos (Dynamics 365), servicios de voz y procesamiento AI mediante Azure Speech SDK y Azure OpenAI. Los archivos exhiben una solución orientada a integrar módulos de frontend con procesamiento externo (speech-to-text, text-to-speech y AI). El objetivo primario es capturar datos del usuario mediante voz, procesarlos en formulación estructurada y sintetizarlos o almacenarlos en sistemas como Dynamics CRM.
 
 ---
 
-# Tecnologías Usadas
-
-1. **Lenguajes**:
-   - JavaScript (en frontend, para Azure Speech SDK y DOM interactions).
-   - C# (en backend, para implementación de Dynamics CRM plugins).
-
-2. **Frameworks y SDK**:
-   - **Azure Speech SDK** (procesamiento de voz).
-   - **Azure OpenAI Service** (transformación de texto mediante inteligencia artificial).
-   - **Dynamics 365 API** (`Xrm.WebApi` y `IPluginExecutionContext`) para interacción directa con datos y lógica del sistema CRM.
-
-3. **Patrones de Diseño y Arquitectura**:
-   - **Carga dinámica de módulos**: Condicional en SDK externo como Speech SDK en JavaScript.
-   - **Proxy Pattern**: Uso de intermediarios para procesamiento de datos en frontend (por ejemplo, `applyValueToField`) y backend (`GetOpenAIResponse`).
-   - **Plugin Pattern**: En el backend del CRM para extensibilidad.
-   - **Distribución por capas**: Dividiendo roles de frontend (interfaz/interacción), servicios (API externas) y backend (procesamiento lógico).
+### Descripción de arquitectura:
+La solución utiliza una arquitectura **n-capas**, separando claramente los módulos de frontend, servicios externos (speech/AI) y lógica correspondiente a los plugins CRM. Los componentes son desacoplados, delegando funciones críticas a SDKs externos de Azure. Cada funcionalidad está organizada modularmente mediante patrones como delegación y eventos, asumiendo un estilo cercano al diseño de servicios distribuidos para usar API junto a Dynamics 365.
 
 ---
 
-# Diagrama Mermaid
+### Tecnologías usadas:
+1. **Frontend:**
+   - **JavaScript:** Para manejar eventos del formulario, cargar SDKs, y procesar datos en tiempo real.
+   - **Azure Speech SDK:** Para síntesis y reconocimiento de voz en tiempo real.
+   - **Dynamics 365 Web API:** Facilitando actualizaciones dinámicas de formularios en contexto.
 
-El siguiente diagrama muestra los flujos y dependencias de alto nivel entre los componentes y servicios:
+2. **Backend (Plugins):**
+   - **C# con .NET Framework:** Desarrollando extensiones sobre Dynamics CRM mediante la interfaz `IPlugin`.
+   - **Azure OpenAI API (GPT-4):** Procesando texto con reglas específicas y transformándolo en JSON.
+
+3. **Patrones arquitectónicos:** 
+   - **Desacoplamiento modular:** Funciones independientes para síntesis, transcripción y procesamiento.
+   - **Uso de API Gateway:** Los plugins CRM actúan como intermediarios entre Dynamics y servicios externos.
+   - **Patrón Plugin:** En el archivo C# para extender funciones de Dynamics CRM con el modelo de lenguaje.
+
+---
+
+### Diagrama Mermaid válido para GitHub:
 
 ```mermaid
 graph TD
-  A["Frontend - voiceInputHandler.js"]
-  B["Frontend - speechForm.js"]
-  C["Backend Plugin - TransformTextWithAzureAI.cs"]
-  D["Azure Speech SDK"]
-  E["Dynamics CRM"]
-  F["Azure OpenAI API"]
-  G["Custom Dynamics API - trial_TransformTextWithAzureAI"]
-
-  A --> D
-  B --> D
-  A --> E
-  B --> E
-  C --> F
-  C --> E
-  B --> G 
-  G --> F
+    A["Frontend Form Integration"]
+    B["Azure Speech SDK"]
+    C["Dynamics 365 Web API"]
+    D["Azure OpenAI GPT-4 API"]
+    E["Plugins CRM"]
+    
+    A --> B
+    A --> C
+    B --> C
+    C --> D
+    C --> E
 ```
 
 ---
 
-# Conclusión Final
-
-La solución funciona como un sistema modular basado en servicios donde el procesamiento de voz y texto se distribuye entre una capa de frontend, servicios de Azure y un backend conectado a Dynamics CRM. Los scripts aprovechan el Azure Speech SDK para sintetizar y reconocer voz, mientras que el plugin de C# procesa texto con Azure OpenAI para cumplir con reglas definidas. La arquitectura, aunque sencilla, está bien estructurada para aprovechar servicios en la nube desacoplados. 
-
-Se recomienda vigilar la gestión segura de credenciales de las APIs de Azure y Dynamics CRM, especialmente en despliegues públicos. También, sería beneficioso considerar la integración de pruebas automatizadas para garantizar una experiencia consistente en el tiempo.
+### Conclusión final:
+El código muestra una arquitectura enfocada en **servicios distribuidos**, combinando capacidades de frontend y procesamiento externo con Dynamics CRM. La solución aprovecha eficientemente los **SDK de Azure** para la síntesis y transformación de datos y utiliza prácticas modernas como desacoplamiento modular, delegación y eventos asincrónicos. Esto resulta esencial para el diseño de una solución escalable que simplifique la interacción entre servicios cloud y sistemas empresariales locales (Dynamics).
