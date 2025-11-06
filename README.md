@@ -1,63 +1,69 @@
 ### Breve resumen técnico
-El repositorio integra múltiples componentes que interactúan con formularios y servicios como Dynamics 365, Azure Speech SDK, y Azure OpenAI. Se compone de elementos frontend (procesamiento de voz y formulario) y un backend en forma de plugin CRM, diseñado para validar y transformar datos mediante servicios de inteligencia artificial.
+
+El repositorio describe tres componentes principales que interactúan entre sí:
+1. **Front-end en JavaScript:** Funcionalidades para captura, síntesis y procesamiento de voz utilizando Azure Speech SDK en formularios (Dynamics 365).
+2. **Plugin para Dynamics:** Extiende las capacidades de Dynamics CRM usando Azure OpenAI para transformar texto según reglas específicas.
+3. **Dependencia de servicios Azure:** Los archivos hacen uso intensivo de Azure Speech SDK y Azure OpenAI API, integrándose con Dynamics CRM.
+
+Las funcionalidades están orientadas principalmente a mejorar la **accesibilidad** y promover la **automatización** en formularios.
 
 ---
 
-### Descripción de la arquitectura
-El sistema presenta una arquitectura **n-capas** que combina procesamiento frontend y backend:
-- **Frontend:** Código JavaScript para gestionar formularios y voz con Azure Speech SDK. Este módulo utiliza eventos y transformación de datos para procesar información en tiempo real.
-- **Backend:** Plugin en lenguaje C# implementado en Dynamics CRM como una extensión que actúa sobre eventos definidos del sistema. Invoca servicios externos como Azure OpenAI para transformar datos.
+### Descripción de arquitectura
+
+- **Arquitectura**: El sistema describe una arquitectura **n capas** que separa responsabilidades en tres niveles principales:
+   1. **Presentación (frontend):** JavaScript como controlador del cliente, interactuando directamente con datos de los formularios de Dynamics 365.
+   2. **Lógica de negocio (plugin):** Implementación de la lógica compleja que delega procesos a servicios externos como Azure OpenAI.
+   3. **Acceso e integración con servicios externos:** Uso de SDKs de Azure para comunicación a nivel de nube.
+
+- **Tecnología y patrones**:
+   - **Modularización:** Código organizado en funciones descritas por responsabilidades específicas.
+   - **Patrón adaptador:** El plugin convierte datos de Dynamics en formatos reconocidos por Azure OpenAI.
+   - **Sincronización basada en eventos:** Plugins en Dynamics CRM que interactúan con entradas de usuarios en tiempo de ejecución del CRM.
+   - **API orchestration:** Enfoque de middleware que usa Azure Speech SDK y OpenAI.
 
 ---
 
 ### Tecnologías usadas
-1. **Frontend:**
-   - Lenguaje: JavaScript.
-   - Frameworks/Bibliotecas: 
-     - Dynamics 365 (contexto de formulario).
-     - Azure Speech SDK (procesamiento de voz).
-   - Patrones: Modular Design, Event-driven Programming.
 
-2. **Backend:**
-   - Lenguaje: C#.
-   - Frameworks/Bibliotecas:
-     - Microsoft Dynamics SDK.
-     - System.Net.Http y Newtonsoft.Json (consumo de APIs y manipulación de JSON).
-     - Azure OpenAI (GPT-4) configurado en Azure.
-   - Patrones: Plugin CRM, integración de servicios externos (microservicio).
-
----
-
-### Dependencias y componentes externos
-1. **Dependencias del frontend:**
-   - Azure Speech SDK: Procesamiento de voz.
-   - Dynamics Web API (`Xrm.WebApi.online.execute`): Para acceder y manipular datos en los formularios.
+1. **Lenguajes y Frameworks:**
+   - **Frontend:** JavaScript (vanilla).
+   - **Backend:** C# para integración del plugin.
+   - **Dynamics 365 SDK:** Xrm.SDK para manipulación de datos y la capa CRM.
    
-2. **Dependencias del backend:**
-   - Dynamics SDK (Microsoft.Xrm.Sdk): Extender funcionalidad CRM.
-   - Azure OpenAI Services: Consumo de servicios GPT-4 para transformación de texto.
-   - HTTP y JSON libraries (System.Net.Http, Newtonsoft.Json): Interacción con APIs externas.
+2. **Terceros:**
+   - **Azure Speech SDK:** Capacidad para síntesis y reconocimiento de voz.
+   - **Azure OpenAI API:** Procesamientos avanzados de texto a nivel de IA.
+
+3. **Dependencias:**
+   - **Microsoft Dynamics CRM WebAPI:** Manipulación de formularios.
+   - **Newtonsoft.Json** para manipulación de datos JSON.
 
 ---
 
-### Diagrama Mermaid
-
-A continuación, se presenta un diagrama Mermaid compatible con GitHub Markdown, que representa la interacción de los componentes principales del sistema y sus servicios externos:
+### Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-    A["Frontend - HTML-formulario"] --> B["JavaScript-VoiceInputHandler.js"]
-    A --> C["JavaScript-speechForm.js"]
-    C --> D["Azure Speech SDK -Procesar voz"]
+    A["Frontend: Voice Input Handler.js"]
+    B["Frontend: Speech Form.js"]
+    C["Backend: TransformTextWithAzureAI.cs"]
+    D["Service: Azure Speech SDK"]
+    E["Service: Azure OpenAI API"]
+    F["Microsoft Dynamics CRM"]
+
+    A --> D
+    A --> F
     B --> D
-    D --> E["Dynamics Web API -FormContext"]
-    E --> F["Dynamics Form -Aplicar valores"]
-    F --> G["CRM Plugin -TransformTextWithAzureAI"]
-    G --> H["Azure OpenAI -GPT-4 (procesar texto)"]
-    H --> G
+    B --> F
+    C --> E
+    F --> C
 ```
 
 ---
 
 ### Conclusión final
-El repositorio combina funcionalidades frontend y backend para procesar texto y voz en tiempo real, integrándose estrechamente con servicios de Dynamics 365 y Azure AI. La arquitectura sigue el patrón n-capas, donde cada módulo tiene responsabilidades claras: procesamiento de datos en frontend y validación-transformación a través de plugins CRM en backend. Es una solución robusta para entornos de CRM enfocados en automatización y uso de inteligencia artificial.
+
+El repositorio presenta un sistema **n capas** enfocado en la integración entre una capa de presentación, un plugin que actúa como capa de lógica de negocio en Dynamics 365, y servicios de la nube (Azure Speech y OpenAI). Es una solución robusta para procesamiento de voz y texto en el contexto de formularios digitales donde se prioriza la accesibilidad y la inteligencia artificial.
+
+Si bien el diseño es modular y sigue patrones estándar como adaptadores y desacoplamiento, existen riesgos en la gestión estática de claves de acceso a servicios externos (por ejemplo, la clave de Azure en los diferentes archivos). Es recomendable implementar una estrategia de seguridad adecuada para proteger estas credenciales y cumplir con estándares modernos.
