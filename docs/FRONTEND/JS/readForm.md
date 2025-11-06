@@ -1,120 +1,119 @@
-# Documento Técnico
+# Archivo: FRONTEND/JS/readForm.js
 
-## Archivo Analizado: FRONTEND/JS/readForm.js
+## Descripción funcional
 
-### Descripción Funcional:
-El archivo JavaScript contiene funciones para ejecutar una lectura en voz alta de los datos visibles de un formulario en un sistema, basándose en la API de Azure Speech SDK. Implementa las siguientes funcionalidades principales:
-
-1. Carga dinámicamente el Azure Speech SDK si no está ya disponible.
-2. Recopila los valores visibles de los campos del formulario y los procesa.
-3. Convierte los datos procesados en un texto legible para ser sintetizado y leído en voz alta utilizando el servicio de Azure Speech.
-
-Este archivo está destinado a mejorar la accesibilidad y proporcionar capacidades de lectura de datos basada en interacción de voz.
+El archivo `readForm.js` implementa funciones para realizar síntesis de voz basada en los datos visibles de un formulario. Utiliza el SDK de Azure Speech para convertir los campos de formularios en texto hablado. Las funciones en este archivo automatizan la carga del SDK de Azure Speech, extraen y procesan los datos de formularios visibles, y finalmente sintetizan texto, facilitando la interacción por voz con formularios.
 
 ---
 
-## Descripción Técnica:
+## Descripción técnica
 
-El archivo incluye las siguientes funciones definidas por el usuario:
+### **Funciones definidas**
 
-### 1. `startVoiceInput(executionContext)`
-- **Lenguaje:** JavaScript
-- **Parámetros:**
-  - `executionContext`: Contexto del formulario, que contiene la información del formulario.
-- **Variables modificadas:** Ninguna.
-- **Condiciones, validaciones o requisitos:**
-  - Verifica que el Speech SDK esté cargado antes de ejecutar la acción.
-- **Descripción:**
-  Esta función sirve como punto de entrada. Se asegura de que el SDK de Azure Speech esté cargado y una vez confirmado, invoca la función `leerFormulario` para procesar y sintetizar los datos del formulario.   
-- **Valor de retorno:** No tiene valor de retorno.
-
----
-
-### 2. `leerFormulario(executionContext)`
-- **Lenguaje:** JavaScript
-- **Parámetros:**
-  - `executionContext`: Contexto del formulario para obtener los datos y metainformación del formulario.
-- **Variables modificadas:** Ninguna.
-- **Condiciones, validaciones o requisitos:**
-  - Verifica si el objeto global `window.SpeechSDK` está cargado.
-  - Verifica si los datos del formulario contienen campos visibles con valores.
-- **Descripción:**
-  Esta función recopila los datos visibles del formulario utilizando la función `getVisibleFieldData` y los convierte en un texto legible. Si no hay campos visibles o si el SDK no está cargado, muestra un mensaje de alerta. Posteriormente, pasa el texto resultante y las credenciales de Azure al método `speakText` para realizar la lectura en voz alta.
-- **Valor de retorno:** No tiene valor de retorno.
+#### 1. `startVoiceInput(executionContext)`
+- **Lenguaje**: JavaScript
+- **Parámetros**:
+  - `executionContext`: Contexto del formulario que contiene los datos a leer.
+- **Variables modificadas**: No modifica variables.
+- **Condiciones**:
+  - Depende de que el SDK de Azure Speech esté cargado correctamente para ejecutar las funciones posteriores.
+- **Descripción**: 
+  Esta función inicia el proceso de lectura por voz del formulario. Primero comprueba si el SDK de Azure Speech está cargado mediante la función `ensureSpeechSDKLoaded`. Una vez cargado, llama a la función `leerFormulario` pasando el `executionContext`.
+- **Valor de retorno**: Ninguno.
 
 ---
 
-### 3. `getVisibleFieldData(formContext)`
-- **Lenguaje:** JavaScript
-- **Parámetros:**
-  - `formContext`: Contexto del formulario, que proporciona acceso a la entidad y sus atributos.
-- **Variables modificadas:**
-  - Modifica el arreglo local `fieldData` con objetos que contienen `label` (etiqueta del campo) y `value` (valor procesado).
-- **Condiciones, validaciones o requisitos:**
-  - Cada atributo del formulario debe tener al menos un control visible para ser procesado.
-  - Verifica que exista una etiqueta (`label`) para procesar los datos de un campo.
-  - Invoca la función `getReadableValue` para validar y extraer un valor legible.
-- **Descripción:**
-  Esta función recorre los atributos de una entidad asociada al formulario, filtrando los campos visibles con etiquetas y valores procesables. Adiciona los datos de cada campo en un arreglo de objetos con las propiedades `label` y `value`. Si un atributo no cumple con las condiciones necesarias, lo omite.
-- **Valor de retorno:**
-  Devuelve un arreglo de objetos, cada uno representando la etiqueta y valor legible de los campos visibles del formulario.
+#### 2. `leerFormulario(executionContext)`
+- **Lenguaje**: JavaScript
+- **Parámetros**:
+  - `executionContext`: Contexto del formulario, utilizado para obtener información de sus campos.
+- **Variables modificadas**: No modifica variables globales, aunque utiliza constantes internas como:
+  - `azureKey`: Clave de suscripción a Azure Speech (hardcoded).
+  - `azureRegion`: Región de servicio de Azure Speech (hardcoded).
+- **Condiciones**:
+  - Verifica que el SDK de Azure Speech esté cargado (`window.SpeechSDK`).
+  - Evalúa si hay datos de campos visibles del formulario para lectura.
+- **Descripción**:
+  Esta función extrae los datos de los campos visibles del formulario utilizando la función `getVisibleFieldData`. Los datos extraídos se formatean como un texto estructurado (indicando etiquetas y valores). Si hay texto para leer, se llama a la función `speakText` con dicho texto y credenciales de Azure.
+- **Valor de retorno**: Ninguno.
 
 ---
 
-### 4. `getReadableValue(attr)`
-- **Lenguaje:** JavaScript
-- **Parámetros:**
-  - `attr`: Representa un atributo del formulario, desde el cual se obtienen su tipo y valor.
-- **Variables modificadas:** Ninguna.
-- **Condiciones, validaciones o requisitos:**
-  - Valida si el valor (`raw`) del atributo es nulo o `undefined` para retornar una cadena vacía.
-  - Utiliza un criterio basado en el tipo de atributo (`getAttributeType`) para determinar un formato legible.
-- **Descripción:**
-  Procesa el valor de un atributo para obtener una representación legible. Dependiendo del tipo de dato del atributo, realiza distintos tratamientos:
-  - Para textos (`string`, `memo`), devuelve el texto.
-  - Para valores booleanos (`boolean`), convierte el valor a "Sí" o "No".
-  - Para fechas (`datetime`), convierte el valor a una fecha legible.
-  - Para valores numéricos, convierte el valor a texto.
-  - Para opciones (`optionset`), devuelve la descripción textual de la opción seleccionada.
-  - Para valores de búsqueda (`lookup`), devuelve el nombre del objeto si está disponible.
-  - Para tipos desconocidos, retorna una cadena vacía.
-- **Valor de retorno:**
-  Devuelve una representación legible del valor del atributo.
+#### 3. `getVisibleFieldData(formContext)`
+- **Lenguaje**: JavaScript
+- **Parámetros**:
+  - `formContext`: Contexto del formulario utilizado para acceder a los atributos de los campos.
+- **Variables modificadas**: Una variable local:
+  - `fieldData`: Array de objetos que contiene información sobre los campos visibles del formulario (etiquetas y valores).
+- **Condiciones**:
+  - Ignora los atributos que no tienen controles o etiquetas visibles.
+  - Filtra los valores de los campos vacíos o nulos.
+- **Descripción**:
+  La función recorre los atributos del formulario y verifica para cada uno de ellos si tiene controles con etiquetas visibles (`getLabel`) y valores legibles. Los datos son formateados en una colección de objetos que incluye las etiquetas y valores visibles de los campos. Internamente, utiliza `getReadableValue` para formatear correctamente los valores según el tipo de atributo.
+- **Valor de retorno**: Devuelve un array de objetos con las propiedades:
+  - `label`: Texto de la etiqueta del campo.
+  - `value`: Valor del campo.
 
 ---
 
-### 5. `speakText(text, azureKey, azureRegion)`
-- **Lenguaje:** JavaScript
-- **Parámetros:**
-  - `text`: Texto que será sintetizado y leído en voz alta.
-  - `azureKey`: Clave de suscripción para el servicio de Azure Speech.
-  - `azureRegion`: Región donde está configurado el servicio.
-- **Variables modificadas:** Ninguna.
-- **Condiciones, validaciones o requisitos:**
-  - Depende de un objeto global `SpeechSDK` cargado previamente.
-  - Configura la síntesis de voz, idioma y salida predeterminada usando APIs de Azure Speech SDK.
-- **Descripción:**
-  Define la configuración de síntesis de voz (idioma, voz, salida) y utiliza el servicio de Azure Speech para sintetizar y leer el texto proporcionado. Maneja errores y muestra mensajes en caso de fallos durante la síntesis.
-- **Valor de retorno:** No tiene valor de retorno.
+#### 4. `getReadableValue(attr)`
+- **Lenguaje**: JavaScript
+- **Parámetros**:
+  - `attr`: Atributo del formulario para obtener su valor y tipo.
+- **Variables modificadas**: No modifica variables.
+- **Condiciones**:
+  - Valida si el valor del atributo (`raw`) es nulo o indefinido.
+- **Descripción**:
+  La función obtiene y retorna un valor legible para un atributo del formulario en función de su tipo (`getAttributeType`). Realiza conversiones dependiendo del tipo:
+  - `string`/`memo`: Retorna el valor directamente como cadena.
+  - `boolean`: Retorna `Sí` para valores verdaderos, o `No` para valores falsos.
+  - `datetime`: Convierte el valor a formato de fecha local.
+  - Numéricos (`decimal`, `double`, `integer`): Retorna el valor convertido a cadena.
+  - `optionset`: Busca la opción correspondiente al valor y retorna el texto asociado.
+  - `lookup`: Retorna el nombre del elemento de referencia si existe.
+  - Otros tipos no especificados retornan cadenas vacías.
+- **Valor de retorno**: Retorna una cadena legible que representa el valor del atributo.
 
 ---
 
-### 6. `ensureSpeechSDKLoaded(callback)`
-- **Lenguaje:** JavaScript
-- **Parámetros:**
-  - `callback`: Función que se ejecutará si el SDK se carga correctamente.
-- **Variables modificadas:** Ninguna.
-- **Condiciones, validaciones o requisitos:**
-  - Verifica si el SDK está disponible en el objeto global `window.SpeechSDK`.
-  - Si no está disponible, intenta cargarlo dinámicamente desde una URL específica.
-  - Maneja errores en caso de que la carga del SDK falle.
-- **Descripción:**
-  Comprueba si el Azure Speech SDK está cargado. Si no lo está, lo carga dinámicamente añadiendo un script al DOM. Una vez cargado, invoca el callback proporcionado. Maneja errores con mensajes de alerta si no hay una carga exitosa del SDK.
-- **Valor de retorno:** No tiene valor de retorno.
+#### 5. `speakText(text, azureKey, azureRegion)`
+- **Lenguaje**: JavaScript
+- **Parámetros**:
+  - `text`: Cadena que contiene el texto que será sintetizado.
+  - `azureKey`: Clave de suscripción de Azure Speech.
+  - `azureRegion`: Región usada para conectarse al servicio Azure Speech.
+- **Variables modificadas**: 
+  - Internamente crea y utiliza objetos de configuración relacionados con el SDK de Speech:
+    - `speechConfig`: Configuración del servicio de síntesis de voz.
+    - `audioConfig`: Configuración del dispositivo de salida de audio.
+    - `synthesizer`: Instancia de synthesis que lleva a cabo la conversión de texto a voz.
+- **Condiciones**:
+  - Comprueba si la síntesis de audio se realizó correctamente (`result.reason`).
+- **Descripción**:
+  Esta función utiliza el SDK de Azure Speech para sintetizar el texto proporcionado. Configura las opciones de síntesis de voz, incluida la configuración de idioma (`es-ES`) y la selección de una voz neural específica (`es-ES-AlvaroNeural`). Llama métodos de la API para realizar la conversión de texto a voz y manejar posibles errores durante el proceso.
+- **Valor de retorno**: Ninguno.
 
 ---
 
-**Fragmento 1 de 1.**
+#### 6. `ensureSpeechSDKLoaded(callback)`
+- **Lenguaje**: JavaScript
+- **Parámetros**:
+  - `callback`: Función que será ejecutada una vez el SDK se haya cargado.
+- **Variables modificadas**: 
+  - Modifica el DOM añadiendo un elemento `<script>` para cargar el SDK de Azure Speech si no está disponible.
+- **Condiciones**:
+  - Verifica si `window.SpeechSDK` ya está disponible antes de intentar cargar el SDK.
+- **Descripción**:
+  Comprueba si el SDK de Azure Speech está cargado en el ambiente actual. Si no lo está, inserta dinámicamente un script en el DOM para cargarlo. Una vez que el SDK esté disponible, ejecuta la función proporcionada en el callback. Maneja errores mediante alertas si no se puede cargar correctamente el SDK.
+- **Valor de retorno**: Ninguno.
+
+---
+
+#### Resumen de implementación:
+1. Carga dinámica del SDK de Azure Speech (`ensureSpeechSDKLoaded`).
+2. Extracción de datos visibles del formulario (`getVisibleFieldData` y `getReadableValue`).
+3. Conversión de texto a voz utilizando el SDK de Azure Speech (`speakText`).
+4. Proceso orquestado desde la función primaria `startVoiceInput`.
 
 
-SHA:2d77c82d3102333a0db71b34222239eeea38e15d
+SHA:72de617dce9be181ea8a2e98d9d05b5860910c0e
