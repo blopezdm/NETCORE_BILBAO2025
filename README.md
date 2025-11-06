@@ -1,57 +1,48 @@
-### Breve resumen técnico  
-El repositorio describe funcionalidad para integrar servicios avanzados de Azure relacionados con reconocimiento de voz (Speech SDK) y procesamiento de lenguaje natural (Azure OpenAI) dentro de un entorno de Dynamics CRM. Los scripts y el plugin central habilitan una interacción dinámica entre usuarios y formularios mediante voz y capacidades de inteligencia artificial, con diseño enfocado en modularidad y escalabilidad.
+### Análisis del Repositorio
+
+#### 1. Tipo de solución
+El repositorio tiene elementos que sugieren una solución híbrida compuesta por un **frontend basado en JavaScript**, que habilita interacción a través de voz y texto, y una **implementación backend basada en plugins para Dynamics CRM**, que extiende la funcionalidad de procesamiento con APIs externas (Azure Speech SDK y Azure OpenAI).
+
+#### 2. Tecnologías, Frameworks y Patrones usados
+- **Frontend**:
+  - Tecnología principal: **JavaScript**, en combinación con bibliotecas específicas como Azure Speech SDK.
+  - Patrones: Modularidad y servicios externos (Azure Speech SDK), siguiendo principios de integración de SaaS/API.
+  
+- **Backend**:
+  - Integración con **Dynamics CRM SDK**.
+  - Uso de **Azure OpenAI API**.
+  - Patrones:
+    - Basado en Eventos: El backend se ejecuta en función de disparadores del sistema CRM (evento de Plugin).
+    - Comunicación REST API para servicios externos.
+
+#### 3. Tipo de arquitectura
+La arquitectura sigue un esquema **modular** en el frontend y una combinación de **plugin/eventos** con microservicios en el backend, presentando características de integración de SaaS.
+
+#### 4. Dependencias o componentes externos
+- **Azure Speech SDK** para la síntesis y reconocimiento de voz (frontend).
+- **Dynamics CRM SDK** para el manejo de datos estructurados dentro del entorno CRM (backend).
+- **Azure OpenAI API** para procesamiento IA de texto (backend).
+- Dependencias específicas:
+  - `Newtonsoft.Json` para serialización/deserialización de JSON.
+  - `HttpClient` para realizar solicitudes REST en el Plugin .NET.
 
 ---
 
-### Descripción de arquitectura  
-La solución presenta una arquitectura de integración en capas con las siguientes características principales:  
-1. **Frontend (JavaScript):** Encargado de interactuar con el usuario mediante reconocimiento de voz y sintetización, transformando datos dinámicos del CRM con Azure Speech SDK y ajustando campos del formulario.  
-2. **Backend:** Plugin de Dynamics CRM implementado en C#. Este interactúa con Azure OpenAI para transformar texto ingresado con estándares definidos.  
-3. **Servicios externos:** Comunicación con APIs de Azure OpenAI y Speech SDK para procesar y enriquecer datos en tiempo real.  
-4. **Patrones de diseño:**  
-   - Modular: Separación de los módulos funcionales del frontend, cada uno con una única responsabilidad.  
-   - Adapter: Implementación para transformar datos visibles en formularios (e.g., `getReadableValue`).  
-   - API-driven: Integración basada en solicitudes HTTP para servicios externos.  
-   - Repository: Técnicas de manejo de datos en formularios CRM, e.g., correlación de etiquetas visibles (`getFieldMap`).
+### Diagrama Mermaid
 
----
-
-### Tecnologías usadas  
-1. **Frontend:**  
-   - Azure Speech SDK (gestión de voz/salida de texto).  
-   - JavaScript ES6 para modularidad y operaciones asincrónicas.  
-   - APIs de Dynamics CRM como `Xrm.WebApi.online` para formularios dinámicos.  
-   - DOM API para manejar dinámicamente la carga de SDKs externos.  
-
-2. **Backend:**  
-   - C#.NET (vía Dynamics CRM Plugins) para lógica de conexión del CRM con Azure AI.  
-   - Microsoft.Xrm.Sdk para operaciones internas de CRM (e.g., parámetros de contexto).  
-   - Newtonsoft.Json & System.Text.Json para manejo de datos JSON.  
-   - HTTPClient para solicitudes REST hacia Azure OpenAI.  
-
-3. **Servicios Externos:**  
-   - Azure Speech SDK (reconocimiento y sintetización de voz).  
-   - Azure OpenAI API (procesamiento de texto avanzado).  
-   - API personalizada integrada al entorno CRM: `trial_TransformTextWithAzureAI`.
-
----
-
-### Diagrama Mermaid   
 ```mermaid
 graph TD
-    A["Frontend - JS"] --> B["Azure Speech SDK"]
-    A --> C["Xrm.WebApi.online"]
-    C --> F["Forms Dynamics CRM"]
-    B --> D["Voice Recognition - Text Synthesis"]
-    A --> E["Custom API Integration"]
-    E --> G["Azure OpenAI Services"]
-    G --> H["GPT Model processing"]
-    F --> I["Backend Plugin - TransformTextWithAzureAI"]
-    I --> G
-    I --> J["Dynamics CRM API"]
+    A["Frontend - VoiceInputHandler.js"] --> C["Azure Speech SDK"]
+    A --> B["SpeechInputHandler.js"]
+    B --> D["Dynamics Web API"]
+    D --> F["Formulario CRM - User Interaction"]
+    F --> H["Backend Plugin - TransformTextWithAzureAI"]
+    G["Azure OpenAI API"] --> H
+    H --> J["JSON Response processed by Plugin"]
+    F --> J
 ```
 
 ---
 
-### Conclusión final  
-El repositorio se orienta hacia integrar herramientas inteligentes (voz y IA) en un ecosistema de Dynamics CRM, mejorando accesibilidad y productividad. La arquitectura es híbrida, combinando **capas frontend** ligeras y un **plugin backend conectado a servicios externos como Azure**. Los patrones de diseño aseguran flexibilidad y modularidad para adaptarse a futuras ampliaciones, como soporte adicional de idiomas o estándares personalizados. Aunque la arquitectura podría evolucionar hacia un diseño más descentralizado, como microservicios si se requiere escalabilidad distribuida (especialmente en las operaciones IA), el diseño actual es apto para el propósito que cumple.
+### Conclusión Final
+El repositorio está diseñado como una solución para mejorar la interacción en entornos CRM mediante tecnologías de **procesamiento de voz e inteligencia artificial**. La separación entre el frontend y el backend demuestra un enfoque modular, facilitando la interacción en tiempo real y el análisis de datos desde múltiples canales (voz, texto, IA). Aunque es funcional, existen riesgos relacionados con las claves de API incrustadas directamente en el código, que deberían sustituirse por un mecanismo seguro como variables de entorno o soluciones de gestión de secretos.
