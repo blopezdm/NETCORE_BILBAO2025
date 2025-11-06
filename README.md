@@ -1,69 +1,49 @@
-### Resumen Técnico
-Esta solución integra funcionalidades para accesibilidad y automatización en un entorno Dynamics CRM mediante reconocimiento de voz, síntesis de voz y procesamiento de texto estructurado. Utiliza el **Azure Speech SDK** y **Azure OpenAI** como servicios externos para implementar capacidades avanzadas de interacción.
+### Breve resumen técnico
+El repositorio analiza tres archivos (`VoiceInputHandler.js`, `speechForm.js` y `TransformTextWithAzureAI.cs`), responsables del manejo de entrada y procesamiento de voz con tecnologías como **Azure Speech SDK**, **Dynamics 365 WebAPI**, y **Azure OpenAI GPT**. El objetivo principal de la solución es integrar dinámica y automáticamente datos de voz en formularios y transformarlos según reglas específicas dentro del entorno Dynamics CRM.
 
 ---
 
-### Descripción de Arquitectura
-La arquitectura del sistema tiene las siguientes características:
-- **Multicapas**: La solución tiene separación por responsabilidad:
-  1. **Frontend (JS)**: Módulo de reconocimiento y síntesis de voz junto con interacción en formularios.
-  2. **Backend (Plugins)**: Procesamiento de texto y generación de estructuras JSON mediante un `plugin` en Dynamics CRM.
-- **Cloud-Aided**: Extenso uso de servicios cloud como Azure Speech SDK y Azure OpenAI.
-
-Patrones destacados:
-1. Separación de responsabilidades: Cada archivo realiza tareas específicas.
-2. Event-driven: Operaciones desencadenadas por eventos o callbacks.
-3. API Integration: Servicios de Azure utilizados para tareas especializadas.
-4. Lazy Loading: SDKs y librerías cargadas dinámicamente.
+### Descripción de arquitectura
+La solución utiliza una combinación de estructura en capas orientada a eventos e integración con servicios externos. Esto permite identificar los siguientes patrones arquitectónicos:
+- **N-capas**: Organización de la funcionalidad en niveles diferenciados compuestos por entrada (voz), procesamiento (Azure Speech SDK/Azure OpenAI), y servicios CRM (Dynamics 365).
+- **Service Layer**: Implementación modular en el manejo de integración con SDKs y APIs externas.
+- **Event-driven architecture**: Respuesta asincrónica a eventos como la carga de SDK o la activación de plugins desde Dynamics CRM.
+- **Microservicios ligeros**: Aunque no presenta una arquitectura completa basada en microservicios, el plugin `TransformTextWithAzureAI.cs` actúa como un servicio independiente especializado en procesamiento de texto con OpenAI.
 
 ---
 
-### Tecnologías Usadas
-#### Frontend:
-- **JavaScript**: Base para las funcionalidades del lado del cliente.
-- **Azure Speech SDK**: Reconocimiento y síntesis de voz.
-- **Dynamics API (Xrm.WebApi)**: Interacción con entidades CRM.
-- **DOM API**: Manipulación del formulario y carga dinámica del SDK.
+### Tecnologías usadas
+**Frontend (`VoiceInputHandler.js`, `speechForm.js`):**
+- **Lenguaje**: JavaScript (ES6+).
+- **Frameworks/SDK usados**:
+  - **Azure Speech SDK**: Manejo de texto a voz y voz a texto.
+  - **Dynamics 365 WebAPI**: Manipulación de datos dentro del CRM y llamada a APIs personalizadas.
+  - **Navegador**: Carga dinámica de scripts con `document`.
 
-#### Backend:
-- **C#**: Lenguaje base del plugin.
-- **Microsoft.Xrm.Sdk**: Manejo y extensión de Dynamics CRM.
-- **System.Net.Http**: Comunicación con Azure OpenAI.
-- **System.Text.Json**: Procesamiento JSON.
-- **Azure OpenAI**: Modelos GPT-4 para transformación de texto.
+**Backend (`TransformTextWithAzureAI.cs`):**
+- **Lenguaje**: C#.
+- **Frameworks/SDK usados**:
+  - **Azure OpenAI GPT**: Transformación avanzada de texto según reglas predefinidas.
+  - **Newtonsoft.Json** y **System.Text.Json**: Manejo y serialización de JSON.
+  - **Dynamics CRM SDK**: Acceso y manipulación de datos en CRM.
+  - **HTTPClients**: Consumo de APIs externas.
 
 ---
 
-### Diagramas Mermaid válidos para GitHub
-
+### Diagrama **Mermaid** válido para GitHub Markdown
 ```mermaid
 graph TD
-    A[Frontend VoiceInput.js] --> B[Azure Speech SDK]
-    A --> C[Extract Form Data]
-    A --> D[Visible Field Mapper]
-
-    E[Frontend VoiceInputHandler.js] --> B
-    E --> F[Azure Custom API]
-    E --> C
-    E --> G[Apply Value-To-Field and Mapper]
-
-    H[Backend Plugin C#] --> F
-    H --> I[Azure OpenAI API]
-    H --> J[Transform Text JSON]
-    J --> F
-
-    B --> K[Speech-Synthesis]
-    C --> L[Readable Text Generation]
-    F --> M[Optimize Form Mapping]
-
-    subgraph Interaction Flow
-        K --> SpeechFlow[Speech Recognition Optimizes Fields]
-        L --> UserFlow[User Accessible Form] 
-        M --> AutoFlow[AI-Automated Usage]
-    end
+  A["VoiceInputHandler.js - Maneja entrada de voz y síntesis"]
+    -->B["Azure Speech SDK - Servicio Voz a Texto"]
+  B --> C["speechForm.js - Vuelve texto datos estructurados para formularios"]
+  C --> D["API personalizada en Dynamics 365"]
+  D -->E["TransformTextWithAzureAI.cs - Transforma texto en JSON vía Azure OpenAI"]
+  E --> F["Dynamics CRM - CRUD con datos transformados"]
 ```
 
 ---
 
-### Conclusión Final
-Las funcionalidades expuestas en los archivos `readForm.js`, `VoiceInputHandler.js` y `TransformTextWithAzureAI.cs` están orientadas a extender herramientas de accesibilidad y automatización dentro de Dynamics CRM. La solución combina una multicapa basada en eventos que maximiza la interacción entre sistemas locales (frontend) y servicios externos en la nube (Azure Speech SDK y OpenAI). Estas tecnologías son implementadas siguiendo principios sólidos de modularidad, mantenibilidad y reutilización.
+### Conclusión final
+La solución presentada utiliza una estrategia modular y orientada a la integración con servicios externos, ideal para sistemas que necesitan funcionalidades avanzadas como la síntesis de voz o transformación de texto en tiempo real. La arquitectura es híbrida, combinando patrones de **n-capas** y **event-driven** para gestionar flujos específicos dentro de entornos complejos como Dynamics CRM.
+
+El enfoque sobre SDKs (Azure Speech y OpenAI GPT) refuerza las capacidades de procesamiento avanzado, mientras que el uso de plugins y APIs asegura extensibilidad y personalización. Este diseño es adecuado para aplicaciones empresariales donde coexistan la interacción con usuarios y operaciones CRM complejas.
