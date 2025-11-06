@@ -1,65 +1,63 @@
 ### Breve Resumen Técnico
-El repositorio contiene archivos relacionados con una solución que integra funcionalidades avanzadas en un sistema Dynamics 365 CRM mediante Azure Speech SDK y Azure OpenAI. Se compone de un frontend Javascript que gestiona interacciones en formularios y un backend de .NET registrado como plugin de Dynamics.
+El repositorio contiene componentes para procesamiento de voz y texto, interactuando con formularios visibles en Dynamics 365 y servicios externos como Azure Speech SDK y Azure OpenAI. Las funcionalidades incluyen extracción de datos de formularios, síntesis de voz, transcripción de audio a texto, mapeo de datos a campos de CRM, aplicación de valores interactivamente, y transformación de texto mediante procesamiento de lenguaje natural.
 
 ---
 
 ### Descripción de Arquitectura
-La solución representa una arquitectura **de integración modular** en el contexto de Dynamics 365. Se compone de:
-1. **Frontend con lógica directa**, que interactúa dinámicamente con formularios de CRM y usa servicios como el SDK de Azure Speech para entrada y síntesis de voz.
-2. **Backend basado en plugins**, que realiza transformaciones utilizando Azure OpenAI y API REST, encapsulado como objetos registrados en el pipeline de Dynamics CRM.
-3. **Patrones utilizados**:
-   - **Eventos Contextuales**: El frontend trabaja en un modelo event-driven usando el `executionContext`.
-   - **SDK Wrapper**: Ambos componentes encapsulan la interacción con Azure Speech SDK y Azure OpenAI.
-   - **Plugin Dynamics**: El backend sigue el patrón típico de un plugin de Dynamics 365.
-   - **API-First**: Se delega transformación de datos a servicios externos (Azure Speech y OpenAI).
+La arquitectura sigue un enfoque modular y distribuido:
+1. **Frontend Modular**: JavaScript para interacciones dinámicas con formularios en Dynamics 365, con acciones como síntesis de voz y transcripción de voz en texto.
+2. **Backend con Plugins de Dynamics CRM**: Código C# integrado como plugins en CRM, que extiende funcionalidades como transformación de texto.
+3. **Integración con Servicios Externos**: Uso de Azure Speech SDK para entrada y salida de voz, y Azure OpenAI para estructuración avanzada de datos (texto a JSON).
+
+**Patrones de arquitectura**:
+- Modularidad: Dividido por funciones específicas (lectura, síntesis, transcripción, transformación).
+- Integración de servicios: Aprovecha APIs externas (Azure).
+- Interacción con Dynamics CRM: Modifica formularios y datos a través de plugins y APIs.
+- Cliente-Servidor: El cliente (JavaScript) actúa como una capa UX interactiva mientras el servidor completa las acciones avanzadas con plugins y servicios externos.
+
+**Técnicas utilizadas**:
+- Modular programming.
+- Client-side execution for dynamic interactivity.
+- Server-side plugins for advanced computations.
 
 ---
 
-### Tecnologías y Frameworks Usados
+### Tecnologías Usadas
 1. **Frontend**:
-   - **Microsoft Dynamics 365 Context API** para interacción con formularios.
-   - **Azure Speech SDK** para entrada de voz y síntesis.
-   - **JavaScript (ES6)** como lenguaje, con modularidad y carga dinámica de dependencias.
-   - **Promesas y Asíncronía** para procesos de larga duración como reconocimiento o llamadas a API.
+   - JavaScript
+   - Azure Speech SDK
+   - Dynamics 365 WebAPI
 
-2. **Backend (Plugins)**:
-   - **C# (.NET Framework)** como núcleo para el plugin registrado con Dynamics CRM.
-   - **Azure OpenAI APIs** para transformaciones de texto complejas.
-   - **Newtonsoft.Json y System.Net.Http** para manejo de datos JSON y solicitudes HTTP.
-
----
-
-### Dependencias y Componentes Externos
-1. **Exteriores**:
-   - **Azure Speech SDK**: Importado dinámicamente para síntesis y análisis de voz.
-   - **Azure OpenAI Service**: Utilizado en el backend para transformaciones.
-   - **Microsoft Dynamics APIs**:
-     - `WebApi.online` para integración con entidades CRM.
-     - Plugins registrados mediante `IPluginExecutionContext`.
-
-2. **Internos**:
-   - Funciones auxiliares ECMAScript para procesamiento de transcripciones y datos de formulario.
-   - Lógica de registro y validación dinámica en Dynamics SDK.
+2. **Backend**:
+   - C#
+   - Microsoft Dynamics SDK (Microsoft.Xrm.Sdk)
+   - Azure OpenAI API
+   - Libraries: Newtonsoft.Json, System.Text.Json, System.Net.Http
 
 ---
 
-### Diagrama Mermaid
+### Diagrama Mermaid Válido para GitHub Markdown
 ```mermaid
 graph TD
-    A["Frontend: Dynamics Form Interactions"]
-    B["Azure Speech SDK"]
-    C["Backend Plugin: Azure OpenAI Integration"]
-    D["Dynamics CRM APIs"]
+    A["User Interaction on Dynamics Form"]
+    B["Azure Speech SDK - Text-to-Speech"]
+    C["Frontend JS - Input Processing"]
+    D["Azure Speech SDK - Speech-to-Text"]
+    E["Dynamics CRM Plugin"]
+    F["Form Context Manipulation"]
+    G["Azure OpenAI - Text Transformation"]
+    H["Dynamics Database"]
 
-    A --> B
-    B --> A
-    A --> D
     A --> C
+    C --> B
     C --> D
-    D --> A
+    D --> F
+    F --> H
+    F --> G
+    G --> H
 ```
 
 ---
 
 ### Conclusión Final
-La solución está desarrollada como un ecosistema basado en Dynamics 365, donde el **frontend** (JS) maneja la interacción en tiempo real con formularios utilizando tecnologías como Azure Speech SDK, mientras el **backend plugin** basado en C# utiliza Azure OpenAI para realizar transformaciones de texto avanzadas. Tiene una arquitectura **modular y efectiva para la integración con servicios de nube**, lo que la hace altamente extensible. Sin embargo, carece de mecanismos robustos para manejo de errores en contexto de APIs externas, algo que podría mejorarse para garantizar resiliencia.
+La solución combina un frontend dinámico basado en JavaScript para interactuar con formularios de Dynamics 365, con integración de servicios avanzados como síntesis y reconocimiento de voz a través de Azure Speech SDK. Además, integra un backend extensible con plugins en C# que emplean Azure OpenAI para transformar texto de forma estructurada. La arquitectura modular facilita la escalabilidad y personalización de funcionalidades, mientras que la interacción con APIs externas garantiza una solución robusta y avanzada.
