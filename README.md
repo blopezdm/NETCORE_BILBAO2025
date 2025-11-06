@@ -1,58 +1,66 @@
-# Breve resumen técnico
-El repositorio contiene un sistema que facilita la entrada y salida de voz integrado con formularios en Dynamics CRM, utilizando los servicios **Azure Speech SDK** y **Azure OpenAI Service**. Está compuesto por múltiples componentes, incluidas funciones JavaScript para el frontend y un plugin C# para el procesamiento de datos según normas específicas.
+## Breve resumen técnico
 
-# Descripción de arquitectura
-1. **Tipo de solución**: La solución implementa una **API ampliada** en formato plug-in para Dynamics CRM en el backend (`TransformTextWithAzureAI.cs`) y un **frontend modularizado** en JavaScript (`readForm.js` y `speechInputHandler.js`).
-2. **Arquitectura empleada**: 
-   - El sistema está basado en una **arquitectura N capas**:
-     - **Capa de presentación (Frontend)**: Archivos `readForm.js` y `speechInputHandler.js`, que interactúan directamente con los usuarios y con los servicios externos.
-     - **Capa de negocio (Dynamics CRM y plugin)**: Lógica personalizada implementada en `TransformTextWithAzureAI.cs`, que maneja las transformaciones de texto.
-     - **Capa de integración con servicios externos**: Interacción directa con Azure Speech SDK y Azure OpenAI.
-   - El plugin utiliza aspectos del **patrón plugin** para integrarse con Dynamics CRM.
-
-# Tecnologías usadas
-1. **Frontend**:
-   - **Azure Speech SDK**: Para síntesis de voz y reconocimiento de voz.
-   - **JavaScript**: Lógica de interacción con formularios y SDK externo.
-2. **Backend/Integración**:
-   - **Microsoft Dynamics CRM Plugin Framework**: Manejo de lógica empresarial.
-   - **Azure OpenAI Service**: Para procesamiento avanzado de texto mediante modelos GPT.
-   - **Newtonsoft.Json**: Procesamiento de JSON en .NET.
-   - **HTTPClient**: Integración con servicios REST de Azure.
-
-# Dependencias externas y componentes presentes
-1. **Azure Speech SDK**: Biblioteca para síntesis y reconocimiento de voz.
-2. **Azure OpenAI**: Servicio de IA para transformación avanzada de texto.
-3. **Dynamics CRM (Xrm.WebApi)**: Interacción con datos y formularios del sistema.
-4. **Newtonsoft.Json**: Librería para manejar estructuras JSON en .NET backend.
-5. **Servicios de red**: Integración con APIs REST (servicios externos de Azure).
+Este repositorio combina un frontend dinámico que interactúa con formularios de CRM, plugins basados en C# para procesamiento de texto mediante Azure OpenAI, y servicios integrados con Azure Speech SDK para reconocimiento y síntesis de voz. Está diseñado para mejorar la experiencia del usuario al trabajar con formularios en entornos CRM, introduciendo capacidades avanzadas de procesamiento de voz e inteligencia artificial.
 
 ---
 
-# Diagrama Mermaid válido para GitHub
+## Descripción de la arquitectura
+
+### Tipo de solución:
+- **API + Frontend**: Proporciona interacción entre un frontend basado en formularios dinámicos y servicios API.
+- **Plugins en CRM Dynamics**: Transformación de texto utilizando servicios de IA en C#.
+
+### Arquitectura general:
+- Principalmente sigue un modelo **n-capas**:
+  - **Front-end**: Funciones JavaScript para interactuar con Azure Speech SDK y dinámicas de formularios.
+  - **Backend**: Plugins en C# para integración con Azure OpenAI.
+  - **Servicios de terceros**: APIs de Azure Speech y OpenAI.
+- **Elementos de microservicios** en el diseño:
+  - Uso de servicios externos (Azure Speech y OpenAI) como microservicios.
+  - Modularidad y separación de responsabilidades por componentes/plugin.
+
+### Patrimonio arquitectónico:
+- **Modularidad** y especialización de funciones.
+- **Integración desacoplada**: Servicios externos con patrones de inyección de dependencias.
+- **Facade Pattern**: Simplificación del acceso a APIs externas.
+
+---
+
+## Tecnologías usadas
+
+### Frameworks y librerías:
+1. **Frontend (JavaScript)**:
+   - **Azure Speech SDK** para capacidad de reconocimiento y síntesis de voz.
+   - Funciones para interacción con formularios y generación de campos dinámicos.
+
+2. **Backend (C#)**:
+   - **Dynamics CRM SDK** para integración directa en sistemas CRM.
+   - **Azure OpenAI** para procesamiento avanzado de texto natural.
+   - **Microsoft.Xrm.Sdk** para desarrollos personalizados en plugins.
+   - **Newtonsoft.Json.Linq**, **System.Text.Json**: Manejo avanzado de JSON.
+
+### Dependencias externas:
+- Mediante el Azure Speech SDK y Azure OpenAI como servicios integrados:
+  - `SpeechSDK.AudioConfig`, `SpeechSDK.SpeechConfig`.
+  - API GPT-4 de OpenAI.
+
+---
+
+## Diagrama **Mermaid**
 
 ```mermaid
 graph TD
-    A["Frontend"]
-    B["Backend - Dynamics CRM Plugin"]
-    C["Azure Speech SDK"]
-    D["Azure OpenAI Service"]
-    E["Microsoft Dynamics Xrm.WebApi"]
-    F["Formulario Web"]
-    G["Usuario"]
-    H["Plugin TransformTextWithAzureAI"]
-    
-    G --> F
-    F --> A
-    A --> C
-    A --> E
-    B --> A
-    B --> D
-    C --> A
-    D --> B
+    A["Frontend: JS leerFormulario"] --> B["Azure Speech SDK sintetiza voz"]
+    A --> C["speechForm.js procesa transcripción"]
+    C --> D["API personalizada CRM"]
+    D --> E["Plugins: TransformTextWithAzureAI.cs"]
+    E --> F["Azure OpenAI GPT-4 API"]
+    F --> G["Retorno JSON: Datos estructurados"]
+    C --> H["Actualiza campos en el CRM"]
 ```
 
 ---
 
-# Conclusión final
-La solución presentada es una integración avanzada de **Azure Speech SDK** y **Azure OpenAI Service** en un contexto Dynamics CRM, diseñada para facilitar la entrada de voz procesada, síntesis de voz, y mapeo dinámico en formularios. Su arquitectura modular, combinada con patrones de diseño como plugins y separaciones en capas, muestra una implementación robusta y flexible. Sin embargo, se podría mejorar la gestión de errores en los servicios externos y optimizar la compatibilidad futura con nuevas versiones de los SDK utilizados.
+## Conclusión final
+
+El repositorio representa una integración efectiva entre tecnologías AI basadas en la nube y un sistema CRM para transformar datos y mejorar la experiencia del usuario. La arquitectura modular y la separación de responsabilidades permiten que cada componente se enfoque en un aspecto del flujo de trabajo. El uso de patrones como Facade y n-capas asegura la escalabilidad y mantenibilidad del sistema.
