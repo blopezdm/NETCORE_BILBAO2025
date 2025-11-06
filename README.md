@@ -1,60 +1,46 @@
-# **Análisis de Arquitectura y Diagrama**
----
+### Resumen técnico
+El repositorio aborda tres grandes componentes:
+1. **Frontend** en JavaScript que integra voz a texto y texto a voz, mediante el SDK de Azure Speech.
+2. Procesamiento por **Plugins** para Dynamics CRM en C#, que utilizan Azure OpenAI para transformar texto en JSON estructurado.
+3. Uso extensivo de APIs externas para reconocimiento de voz, síntesis y transformación semántica avanzada.
 
-## **Resumen Técnico**
-El repositorio consta de tres módulos/interacciones clave:
-- **Frontend (JS):** Maneja la lógica de síntesis y reconocimiento de voz con Azure Speech SDK para datos de formularios en aplicaciones CRM.
-- **Backend (C# Plugin):** Implementa un plugin personalizado de Dynamics CRM que utiliza Azure OpenAI para transformar texto con reglas definidas.
-- **Dependencias Externas:** Azure Speech SDK, Azure OpenAI, Dynamics CRM SDK. Estas facilitan la síntesis de voz, transcripción de comandos hablados y transformación de texto.
+### Descripción de la arquitectura
+Este sistema tiene una **arquitectura de n capas**:
+- **Capa de presentación**: Los archivos `readForm.js` y `speechForm.js` actúan como una interfaz entre el usuario y el sistema (eventos de voz, entrada de texto).
+- **Capa de lógica de negocio**: El procesamiento en el archivo .NET realiza transformaciones avanzadas en texto con reglas específicas.
+- **Capa de servicios**: Las integraciones como Azure Speech SDK y OpenAI utilizan APIs externas configuradas.
 
----
+Se observa un **patrón de integración** significativo, dado que las capas interactúan directamente con servicios externos y de terceros, como Azure SDK y APIs de OpenAI.
 
-## **Descripción de Arquitectura**
-La solución combina varias capas y tecnologías:
-1. **Desarrollo multinivel:** Se observa una arquitectura orientada a n-capas. El frontend gestiona la interacción del usuario (UI y lógica cliente), mientras que el backend y los plugins actúan como capas de procesamiento lógico y servicio.
-2. **Modularidad:** Cada archivo mantiene una única responsabilidad ("single responsibility principle") mediante funciones específicas. Las interdependencias están bien delimitadas: el frontend interactúa con sistemas web y SDK; el backend usa Dynamics CRM SDK y Azure OpenAI.
-3. **Servicios externos:** La arquitectura se apoya en servicios externos SaaS (Serverless Speech SDK y Azure OpenAI), promoviendo bajo acoplamiento y escalabilidad.
-4. **Integración API:** Existe un modelo de arquitectura **API-driven**, donde cada capa libera dependencias internas mediante interfaces o llamadas HTTP para interacciones con Dynamics CRM y Azure OpenAI.
+### Tecnologías usadas
+1. **Frontend**:
+   - **JavaScript**, con soporte para Azure Speech SDK.
+   - Integración de SDK para reconocimiento y síntesis de voz.
+   - Procesamiento dinámico de Formularios CRM (Microsoft Dynamics).
+  
+2. **Backend/Plugins**:
+   - **C#** para los plugins de Dynamics CRM.
+   - Servicios **Azure OpenAI** para transformación semántica avanzada.
+   - Uso de `Newtonsoft.Json` para gestión JSON en las integraciones.
 
----
+3. **Dependencias y servicios externos**:
+   - Azure Speech SDK y Azure OpenAI como servicios centrales.
+   - CRM Dynamics (`Xrm.WebApi`) para manipulación de datos empresariales.
 
-## **Tecnologías Usadas**
-1. **Transcripción/Síntesis de Voz:** Azure Speech SDK para convertir texto visible/transcripción en voz.
-2. **IA y Procesamiento de Texto:** Azure OpenAI (GPT-4) para realizar transformaciones específicas del texto según reglas predefinidas.
-3. **Frameworks Backend:** Dynamics CRM SDK y Microsoft .NET Framework.
-4. **Frontend:** Javascript para integraciones dinámicas, manipulación de DOM y carga/distribución de datos interactivos en formularios HTML.
-5. **Serialización de Datos:** `Newtonsoft.Json` y `System.Text.Json` para el manejo de JSON estructurado.
-
----
-
-## **Diagrama Mermaid**
+### Diagrama Mermaid válido para GitHub Markdown
 ```mermaid
 graph TD
-    A["Frontend JS"]
-    B["voiceInputHandler.js"]
-    C["speechForm.js"]
-    D["Backend Plugin"]
-    E["TransformTextWithAzureAI.cs"]
-    F["Dynamics CRM"]
-    G["Azure Speech SDK"]
-    H["Azure OpenAI"]
-
-    A --> B
-    B -. Transcripción y Síntesis .-> G
-    A --> C
-    C -. Transcripción y Actualización .-> F
-    C -. Procesamiento IA .-> F
-    F --> G
-    F --> D
-    D -. Plugin Dynamics .-> F
-    D -. Procesa con GPT4 .-> H
+    A["User Interface"] --> B["VoiceInput.js - Speech SDK"]
+    A --> C["SpeechRecognition.js - API integration"]
+    B --> D["Azure Speech SDK - Text-to-Speech"]
+    C --> E["Azure Speech SDK - Voice recognition"]
+    C --> F["Custom API Transformation"]
+    F --> G["Azure OpenAI API - GPT Model"]
+    G --> H["TransformTextWithAzureAI.cs - Plugin Input/Output"]
+    D --> I["Processed Voice Output"]
+    E --> J["Form Input via Voice"]
+    H --> K["Structured JSON Output"]
 ```
 
----
-
-## **Conclusión**
-La solución está orientada a mejorar la experiencia de usuario y automatizar la administración de información en sistemas CRM:
-1. **Frontend:** Modulariza la interacción del usuario mediante síntesis/transcripción de voz y manipulación de formularios con APIs externas (Azure Speech SDK).
-2. **Backend:** Extiende Dynamics CRM a través de un plugin diseñado para transformar texto/mensajes contextuales con IA basada en Azure OpenAI.
-3. **Patrón de Integración:** El diseño sigue una arquitectura n-capas con comunicaciones API y carga dinámica (_lazy-loading_), ideal para aplicaciones híbridas escalables y modulables.
-
+### Conclusión final
+El sistema combina tecnologías frontales con una lógica robusta empresarial respaldada por servicios cloud (Azure Speech SDK y OpenAI). La arquitectura es **n capas**, orientada a servir al usuario en tiempo real mediante voz y procesamiento de texto con integraciones externas seguras. Este diseño es flexible para ampliar funcionalidades, como soporte multi-lenguaje o patrones cognitivos. La modularidad observada respeta principios fundamentales de separación de responsabilidades y escalabilidad.
