@@ -1,41 +1,71 @@
-### Breve resumen técnico
-El repositorio presentado está compuesto por un conjunto de archivos diseñados para integrar funcionalidades de voz y procesamiento de texto en formularios dinámicos de Dynamics 365. Esto incluye componentes frontend para interactuar con usuarios y sistemas de plugins que emplean inteligencia artificial y servicios en la nube (Azure) para realizar tareas específicas como el reconocimiento de voz y transformación de textos. 
+### Breve resumen técnico:
 
-### Descripción de arquitectura
-La solución utiliza una arquitectura modular orientada a eventos y servicios integrados. Los archivos de frontend (`readForm.js` y `speechForm.js`) manejan la lógica de reconocimiento de voz y síntesis, mientras que el plugin `TransformTextWithAzureAI.cs` opera como un backend que procesa datos usando Azure OpenAI. La solución sigue el patrón **n-capas**, con separación entre presentación (frontend), lógica empresarial (procesamiento de voz y texto) y servicios externos.
+El repositorio describe una solución que combina tecnologías frontend (JavaScript) y backend (.NET) para integrar funcionalidades avanzadas de reconocimiento y síntesis de voz, procesamiento de texto con inteligencia artificial y manipulación de datos en formularios de sistemas CRM (como Dynamics 365). Utiliza el **Azure Speech SDK** y **Azure OpenAI** para las capacidades de voz e IA.
 
-### Tecnologías usadas
-1. **Frontend (JavaScript)**
-   - **Azure Speech SDK:** Para reconocimiento y síntesis de voz.
-   - **ES6+ JavaScript:** Promesas, `async/await`, funciones de alto nivel.
-   - **DOM Manipulation:** Uso básico para cargar scripts y procesar datos.
+---
 
-2. **Backend (C# Dynamics Plugin)**
-   - **Microsoft Dynamics CRM SDK:** Para extender funcionalidades CRM.
-   - **Azure OpenAI (GPT):** Procesamiento de texto mediante servicios en la nube.
-   - **JSON Manipulation:** `System.Text.Json`, `Newtonsoft.Json`.
+### Descripción de arquitectura:
 
-### Diagrama Mermaid válido para GitHub
+La arquitectura general presentada es **orientada a servicios** con un enfoque **n-capas** (frontend para interacción de usuario, backend para lógica del servidor, y API externa para IA). Aunque no se detalla explícitamente cómo interactúan los componentes del sistema, los siguientes módulos conforman la solución:
 
+1. **Frontend:** Archivos de JavaScript (`readForm.js`, `speechForm.js`) destinados a manipular y extender la usabilidad de formularios de sistemas CRM en el navegador, integrando reconocimiento y síntesis de voz.  
+2. **Backend:** El archivo del Plugin (`TransformTextWithAzureAI.cs`) extiende la funcionalidad del sistema Dynamics mediante integración con **Azure OpenAI API** para realizar transformaciones de entrada basada en IA.  
+3. **Servicios externos:** La solución incluye dependencias críticas en Azure, tanto para reconocimiento/síntesis de voz como para el procesamiento avanzado de texto con OpenAI.  
+
+---
+
+### Tecnologías usadas:
+
+#### Frontend:
+- **Tecnología principal:**  
+  - **JavaScript:** Modularizado y orientado a eventos para la interacción del usuario.  
+- **Dependencias externas:**  
+  - `Azure Speech SDK` (importado dinámicamente).  
+  - **Microsoft Dynamics CRM ExecutionContext API.**
+
+#### Backend:
+- **Tecnología principal:**  
+  - **C#:** Desarrollo de plugins para Dynamics 365 utilizando la API del SDK de Microsoft.  
+- **Dependencias externas:**  
+  - **Azure OpenAI Service:** Integración con modelos GPT mediante HTTP requests.  
+  - **Newtonsoft.Json y System.Text.Json:** Manipulación JSON.  
+
+#### Patrones de diseño:
+- **Modularización:** Organización del código en funciones y clases dedicadas a tareas únicas.  
+- **Event-driven programming:** Uso de eventos y callbacks (por ejemplo, en reconocimiento de voz y ejecución de plugins).  
+- **Integración con servicios externos:** Dependencia y conexión con APIs de Azure y Dynamics 365.
+
+---
+
+### Diagrama Mermaid:
 ```mermaid
 graph TD
-  A["Frontend VOZ - readForm.js"]
-  B["Frontend VOZ - speechForm.js"]
-  C["Plugin AI - TransformTextWithAzureAI.cs"]
-  D["Azure Speech SDK"]
-  E["Azure OpenAI (GPT)"]
-  F["Dynamics 365 Context API"]
-  G["Formulario dinámico CRM"]
-
-  A --> D
-  B --> D
-  B --> E
-  C --> E
-  C --> F
-  A --> F
-  B --> G
-  C --> G
+    A["Frontend - JS/readForm.js"]
+    B["Frontend - JS/speechForm.js"]
+    C["Backend - Plugins/TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Microsoft Dynamics CRM API"]
+    F["Azure OpenAI Service"]
+    
+    A --> D
+    B --> D
+    A --> E
+    B --> E
+    C --> F
+    C --> E
 ```
 
-### Conclusión final
-La solución implementa una integración avanzada entre capacidades de voz y inteligencia artificial con los formularios de Microsoft Dynamics 365. Utiliza una arquitectura basada en capas que separa la presentación (frontend), integración lógica (voice SDK y OpenAI), y reglas empresariales (CRM). Sin embargo, es importante reforzar aspectos de seguridad como ocultar claves API y mejorar la gestión de errores para una mayor robustez.
+---
+
+### Conclusión final:
+
+La solución se basa en el desarrollo Fullstack integrado con tecnologías de Microsoft (Dynamics CRM, Azure Speech SDK, Azure OpenAI). El diseño modular y las dependencias externas permiten integraciones de IA para mejorar la usabilidad de formularios mediante voz y transformación de texto legible.
+
+La arquitectura, aunque orientada a servicios y con n-capas, tiene un alto grado de dependencia de Azure. Esta elección optimiza la solución en cuanto a escalabilidad y eficiencia para empresas que operan en entornos Dynamics.
+
+Si se tuviera que mejorar este proyecto, sería bueno:
+1. **Documentar las APIs externas:** Para facilitar su personalización y prueba, junto con ejemplos claros.
+2. **Centralizar configuraciones externas:** (por ejemplo, claves de API y URLs) en un archivo de configuración para reducir problemas de mantenimiento futuro.
+3. **Mensajería asincrónica:** Implementar patrones de recuperación alternativos para las dependencias remotas (por ejemplo: mecanismos de reintento ante fallos con Azure OpenAI).
+
+Existen claras sinergias entre los módulos y las dependencias, lo que convierte esta solución en una buena elección para escenarios empresariales.
