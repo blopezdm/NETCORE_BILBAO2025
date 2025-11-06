@@ -1,51 +1,68 @@
 ### Breve resumen técnico
-Este repositorio forma parte de una solución híbrida que abarca **frontend**, **backend** y **plugins para CRM**. Su propósito central es integrar funcionalidades de voz y procesamiento de texto a sistemas basados en Microsoft Dynamics CRM. Utiliza servicios de Azure, como el **Speech SDK** para síntesis y reconocimiento de voz, y **Azure OpenAI** para transformación avanzada de textos.
+El repositorio describe el diseño y funcionalidad de un sistema extensible que conecta un frontend dinámico con un backend basado en Microsoft Dynamics CRM y tecnologías de inteligencia artificial alojadas en Azure. Las piezas de este sistema están orientadas a captura, procesamiento y síntesis de datos de formularios mediante reconocimiento de voz e integración con servicios de OpenAI en Azure.
 
 ---
 
 ### Descripción de arquitectura
-La solución parece utilizar una arquitectura **n-capas**, aunque con elementos que sugieren una integración parcial de microservicios:
-1. **Frontend**: Implementa funcionalidades dinámicas en JavaScript para lectura y captura de datos de formularios y manipulación del SDK de Azure Speech.
-2. **Backend/Plugins**: Usa el modelo de Plugins de Dynamics CRM mediante la implementación de `IPlugin`, para activar funcionalidades como procesamiento de texto mediante Azure OpenAI.
-3. **Servicios de Azure**: La interacción con APIs de Azure indica un enfoque de **arquitectura orientada a servicios**.
+
+1. **Arquitectura general**:
+   - La solución sigue una arquitectura de **cliente-servidor** que integra frontend, backend plugins, y servicios externos (Azure Speech SDK y OpenAI). 
+   - Se observa un enfoque **n capas** donde se separa la lógica de entrada de datos (frontend), core de procesamiento (plugin CRM) y servicios externos (API de Azure).
+
+2. **Componentes observados**:
+   - **Frontend**:
+     - Codificación en JavaScript para interacción en tiempo real con formularios de CRM utilizando el Azure Speech SDK.
+   - **Backend/plugin**:
+     - Componente en C# para procesamiento avanzado de texto mediante Azure OpenAI. Encapsula lógica como plugin dinamizado bajo el modelo de Dynamics CRM.
+   - **Interacción con servicios externos**:
+     - API de Azure Speech SDK y Azure OpenAI como puntos clave para características avanzadas (reconocimiento y generación de voz; procesamiento y transformación de texto).
 
 ---
 
 ### Tecnologías usadas
+
 1. **Frontend**:
-   - **JavaScript**: Implementación modular con funciones específicas para manipular formularios y sintetizar voz.
-   - **Azure Speech SDK**: Para reconocimiento de voz desde el navegador y síntesis de texto a voz.
-2. **Backend/Plugins**:
-   - **C#/.NET Framework**: Implementación de plugins siguiendo el estándar de extensibilidad de Dynamics CRM.
-   - **Azure OpenAI**: Para procesamiento de textos con modelos GPT.
-   - **Newtonsoft.Json**: Para manejo de estructuras JSON en C#.
-3. **CRM APIs**:
-   - **Microsoft Dynamics CRM SDK**: Para operar sobre estructuras y entidades del CRM.
-4. **Servicios externos y patrones**:
-   - Gestor dinámico de SDK de Azure (carga de dependencias según necesidad).
-   - Procesamiento en el cliente y en el servidor, combinado con interacciones asincrónicas con Azure.
+   - JavaScript en navegadores.
+   - SDK de Azure Speech cargado desde: `"https://aka.ms/csspeech/jsbrowserpackageraw"`.
+   - Integración con DOM y Dynamics CRM (estructura Xrm).
+   
+2. **Backend/plugin**:
+   - Lenguaje: C#.
+   - Framework: Microsoft Dynamics CRM SDK.
+   - Librerías:
+     - Newtonsoft.Json para manejo dinámico de JSON.
+     - System.Text.Json para serialización/deserialización.
+   
+3. **Servicios externos e integración**:
+   - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
+   - **Azure OpenAI**: Procesamiento de texto avanzado (GPT).
 
 ---
 
-### Diagrama Mermaid
+### Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-    A["Usuario"]
-    B["Frontend - readForm.js"]
-    C["Frontend - speechForm.js"]
-    D["Plugin: TransformTextWithAzureAI.cs"]
-    E["Azure Speech SDK"]
-    F["Azure OpenAI"]
-    G["Microsoft Dynamics CRM"]
-
-    A --> B --> C --> E
-    A --> B --> G
-    C --> F --> G
-    D --> F --> G
+    A["Frontend"] --> B["speechForm.js"]
+    A --> C["readForm.js"]
+    C --> D["SpeechInputHandler.js"]
+    B --> E["Reconocimiento-de-voz"]
+    E --> F["API personalizada para IA"]
+    
+    D["SpeechInputHandler.js"]--> G["Sintesis de voz - Azure Speech API"]
+    F --> H["Plugin TransformTextWithAzureAI.cs"]
+    H --> I["Procesamiento de texto con Azure OpenAI"]
+    
+    I --> J["Datos retornados como JSON estructurado"]
+    J --> K["Aplicado en campos de CRM"]
 ```
 
 ---
 
 ### Conclusión final
-Este repositorio combina funcionalidades sofisticadas en un entorno CRM, con especial atención a la interacción usuario-herramienta mediante voz y procesamiento avanzado de datos dialogados. Utiliza múltiples servicios de Azure como Speech y OpenAI, asegurando una integración fluida entre el frontend (navegador) y el backend (plugins de Dynamics CRM). Aunque sigue patrones de **n-capas**, sus dependencias con servicios externos le inyectan cierta flexibilidad propia de arquitecturas más orientadas hacia servicios. Es una solución altamente extensible, diseñada para entornos corporativos con automatización basada en inteligencia artificial.
+
+Esta solución muestra un diseño modular con múltiples componentes:
+- Un frontend interactivo que utiliza el reconocimiento y síntesis de voz mediante Azure Speech SDK para extraer y procesar datos directamente desde formularios dinámicos en un entorno CRM.
+- Un backend que extiende capacidades del CRM mediante plugins personalizados conectados a servicios de IA hospedados en Azure para enriquecer la experiencia del usuario y procesar datos textuales avanzados.
+
+La arquitectura está bien estructurada siguiendo el paradigma **cliente -> API Gateway -> servicios externos**, lo que garantiza escalabilidad y alta integración con servicios en la nube. Su implementación modular tanto en frontend como en backend permite fácil extensión y pruebas unitarias para cada componente por separado.
