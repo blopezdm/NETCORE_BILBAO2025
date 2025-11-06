@@ -1,38 +1,42 @@
 ### Breve resumen técnico
 
-El repositorio contiene dos componentes principales: un frontend basado en JavaScript que gestiona funcionalidades de entrada y salida de voz mediante Azure Speech SDK (readForm.js y speechForm.js), y un backend en C# implementado como un plugin para Dynamics CRM (TransformTextWithAzureAI.cs). El objetivo principal es habilitar un sistema que interprete texto, lo transforme con Azure AI y utilice reconocimiento de voz para interacciones con formularios dinámicos en un entorno CRM (presumiblemente Dynamics 365).
+El repositorio combina varios componentes para integrar tecnologías de reconocimiento y síntesis de voz (Azure Speech SDK) con formularios dinámicos en aplicaciones web y con APIs y plugins en Dynamics CRM. Cada archivo implementa funcionalidades específicas descritas en el análisis detallado.
 
 ---
 
 ### Descripción de arquitectura
 
-La solución refleja una arquitectura **mixta**:
-1. El **frontend** utiliza módulos con funciones claras, configuradas de forma modular.
-2. El **backend** es un plugin especializado en Dynamics CRM con lógica encapsulada que interactúa con la API de Azure OpenAI.
+**Tipo de solución:**  
+Principalmente un sistema híbrido enfocado en la integración del frontend (mediante JavaScript y Azure Speech SDK), APIs RESTful (para consumir servicios de OpenAI), y plugins (.NET) en Dynamics CRM. Se trata de una arquitectura de **n capas** con una clara separación entre componentes:  
+1. **Frontend (readForm.js y speechForm.js)**: Genera interacción con los usuarios y sirve como puente entre los datos del formulario y el reconocimiento/síntesis de voz.
+2. **API externa integrada (.cs)**: Conecta Dynamics 365 con Azure OpenAI para externalizar el procesamiento avanzado de texto.  
 
-La solución no sigue una arquitectura completamente desacoplada o moderna como microservicios, pero puede considerarse **n-capas** con componentes que interactúan mediante comunicación asincrónica (REST APIs y SDK cloud).
+**Patrones empleados:**  
+- **Event-driven Architecture**: Uso de eventos para iniciar procesos como reconocimiento/síntesis de voz mediante SDKs o transcripción interactiva.
+- **Integración basada en APIs**: Usa la arquitectura cliente-servidor para interactuar con Azure Speech API y OpenAI API.
+- **Single Responsibility Principle (SRP):** Cada archivo o clase maneja tareas específicas y desacopladas.
 
 ---
 
 ### Tecnologías usadas
 
-#### Frontend
-- **JavaScript ES6**: Base del código para manejar eventos formales y procesamiento de datos.
-- **Azure Speech SDK**: Para síntesis y reconocimiento de voz en tiempo real.
-- **Dynamics 365 SDK**: Llamadas directas a objetos dentro del CRM.
+1. **Frontend (readForm.js y speechForm.js)**:
+   - **Lenguaje**: JavaScript (ES6+).
+   - **Frameworks/librerías externas**: Azure Speech SDK.
+   - **Tecnologías adicionales**: Dynamics 365 Web API.
 
-#### Backend
-- **Microsoft y .NET Core Framework**:
-  - `IPlugin`: Interfaz de extensibilidad nativa en Dynamics.
-  - `System.Text.Json` y `Newtonsoft.Json.Linq`: Para procesamiento JSON.
-- **Azure OpenAI Service**:
-  - Servicios REST para transcripción y transformación usando GPT.
+2. **Backend plugin (TransformTextWithAzureAI.cs)**:
+   - **Lenguaje**: C# (.NET Framework).
+   - **Frameworks/librerías externas**:
+     - Microsoft Dynamics SDK (CRM).
+     - Azure OpenAI API.
+     - System.Text.Json (serialización/deserialización).
+     - System.Net.Http (manejo de solicitudes HTTP).
 
-#### Patrones observados
-- **Modularidad**: Se implementa separación de responsabilidades con funciones específicas según principios SOLID, especialmente en los archivos JavaScript. 
-- **Callback y Promesas**: Uso en frontend para manejar asincronismo con SDK y APIs.
-- **Plugin architecture**: Backend basado en la extensión de Dynamics CRM utilizando eventos predefinidos.
-- **Integración de APIs externas**: Uso destacado de Azure Speech SDK y OpenAI Service.
+**Servicios externos usados**:
+- **Azure Speech SDK**: Implementa reconocimiento de voz y síntesis.
+- **Azure OpenAI API**: Transformación de texto en formato JSON mediante IA.
+- **Dynamics 365 Web API**: CRUD dinámico basado en el contexto de un formulario.
 
 ---
 
@@ -40,21 +44,22 @@ La solución no sigue una arquitectura completamente desacoplada o moderna como 
 
 ```mermaid
 graph TD
-  A["Frontend"]
-  B["Backend"]
-  C["Azure Speech SDK"]
-  D["Dynamics 365"]
-  E["Azure OpenAI"]
+    A["Frontend (readForm.js)"] --> B["Azure Speech SDK"]
+    A --> C["Formulario dinámico (executionContext)"]
+    B --> D["Sintetiza texto en audio hablado"]
+    C --> E["Extrae campos visibles del formulario"]
 
-  A --> C
-  A --> D
-  B --> D
-  B --> E
-  D --> E
+    F["Frontend (speechForm.js)"] --> B
+    F --> G["API personalizada en Dynamics 365"]
+    G --> H["Transforma texto con ayuda de IA (Azure OpenAI)"]
+
+    I["Plugin (TransformTextWithAzureAI.cs)"] --> J["Dynamics CRM Plugin"]
+    I --> K["Azure OpenAI API"]
+    J --> L["Formato JSON generado"]
 ```
 
 ---
 
 ### Conclusión final
 
-La solución es una integración avanzada entre frontend y backend centrada en la gestión de datos dinámicos en formularios CRM. El **frontend** facilita interacción mediante voz, mientras que el **backend** ejecuta transformaciones de texto usando inteligencia articulada en Azure. La arquitectura puede considerarse como **n-capas** con una dependencia crítica en los servicios de Microsoft Azure (Speech SDK y OpenAI). Si bien el diseño es funcional, se identifica un cierto acoplamiento entre las herramientas y una falta de configuraciones dinámicas, lo cual podría refinarse.
+El repositorio implementa una solución extensible y modular orientada a la integración de tecnología de voz y procesamiento avanzado de texto mediante inteligencia artificial. La arquitectura es híbrida, basada en **n capas** y diseñada para escalar mediante APIs externas (Azure Speech SDK, Dynamics CRM Web API, y Azure OpenAI). Destaca por su clara separación de responsabilidades y una combinación eficiente entre frontend, backend, y servicios externos, permitiendo que cada componente se pueda mantener y actualizar de manera independiente.
