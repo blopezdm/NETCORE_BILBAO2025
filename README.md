@@ -1,58 +1,47 @@
-### Resumen técnico
-El repositorio contiene tres archivos clave que forman una solución enfocada en automatizar y enriquecer la interacción con formularios dentro de Dynamics 365. Se basa en la integración con servicios de Azure, como Speech SDK y OpenAI, para procesos de entrada y salida de voz, así como transformación avanzada de texto. Es principalmente una solución híbrida para el manejo de datos con funciones de frontend y backend.
+### Breve resumen técnico
+El repositorio contiene una solución que integra procesamiento de lenguaje natural y síntesis de voz mediante el **Azure Speech SDK** y **Azure OpenAI** para aplicaciones orientadas a formularios en Dynamics CRM. Los tres archivos mencionados (dos frontend y uno backend) manejan la interacción entre reconocimiento de voz, síntesis y procesamiento de texto para gestionar datos dinámicamente en formularios CRM.
 
 ---
 
 ### Descripción de arquitectura
-La arquitectura general combina patrones de **n capas** y **microservicios**. Mientras que los archivos JavaScript desempeñan funciones en el cliente para enriquecer la experiencia del usuario en el navegador (similar a frontend), el archivo C# despliega un **plugin basado en eventos** directamente en Dynamics CRM, que ejecuta peticiones desde el backend hacia servicios externos de Azure.
+La solución mezcla una arquitectura de **n capas**:
+1. **Frontend (VoiceInput.js y VoiceProcessing.js)**: Maneja la captura de voz, síntesis y el procesamiento inicial de datos del formulario. Aunque utiliza servicios externos (Azure Speech SDK), está diseñado como parte del cliente de CRM, en una estructura monolítica.
+2. **Backend (TransformTextWithAzureAI.cs)**: Se presenta como un **plugin bajo demanda**, que se integra mediante el modelo de extensibilidad de Dynamics CRM. Aquí encontramos una dependencia directa con Azure OpenAI y Dynamics API.
 
-Los archivos de JavaScript utilizan estructuras orientadas a módulos y servicio (integración con Azure SDK), mientras que el archivo C# implementa un plugin como parte de una arquitectura extensible. El uso de recursos dinámicos de Azure, y la interacción con APIs personalizadas y servicios externos, muestra una estructura distribuida con componentes desacoplados.
+Pese a ser una solución monolítica en cuanto a desarrollo, utiliza patrones **event-driven** y **dependency-driven**, con microservicios externos para procesamiento especializado.
 
 ---
 
 ### Tecnologías usadas
-1. **Lenguajes y Frameworks**:
-   - `JavaScript`: Para lógica de interacción con formularios dentro del frontend.
-   - `C#`: Implementación de extensiones basadas en eventos usando Plugins para Dynamics CRM.
-
-2. **Servicios externos y dependencias**:
-   - **Azure Speech SDK**: Usado en los archivos de frontend para síntesis y reconocimiento de voz.
-   - **Azure OpenAI**: Usado en el Plugin para realizar transformación de texto.
-   - **Dynamics CRM API**: 
-     - Contexto de Formulario (field mapping y actualización de campos). 
-     - API personalizada para transcripción y transformación de datos.
-
-3. **Bibliotecas externas**:
-   - `Newtonsoft.Json.Linq` y `System.Text.Json`: Manipulación de datos JSON en el Plugin.
-
-4. **Patrones de diseño**:
-   - Modular: Cada función tiene un propósito específico y se desacopla de otras.
-   - Código asincrónico en JavaScript (callbacks y promesas).
-   - Plugins: Estilo tradicional de extensibilidad basado en eventos de Dynamics CRM.
-   - Integración con microservicios: Delegación lógica hacia los servicios Azure Speech y OpenAI.
+- **Frontend**:
+  - **JavaScript** para manejar lógica cliente.
+  - **Azure Speech SDK** para reconocimiento y síntesis de voz.
+  - **Dynamics CRM Web API** para actualizaciones en formularios.
+- **Backend**:
+  - **C#** para la lógica del plugin.
+  - **Azure OpenAI API (GPT-4)** para transformación de datos.
+  - **Dynamics CRM SDK** para integración.
+  - **Newtonsoft.Json** para manipulación JSON.
+  - **HTTP Client Libraries (.NET)** para comunicación REST.
 
 ---
 
 ### Diagrama Mermaid
+El siguiente diagrama muestra la interacción de los componentes principales:
+
 ```mermaid
-graph TD
-    A[Frontend] --> B[startVoiceInput.js]
-    A --> C[speechForm.js]
-    B --> D[ejecutarGrabacion]
-    B --> E[speakText - Azure Speech SDK]
-    C --> F[callCustomApi]
-    C --> G[processTranscript]
-    F --> H["Dynamics CRM API - Custom API"]
-    CRM1["Dynamics 365 - Forms"] --> D
-    G --> CRM2["Dynamics 365 - Form Fields"]
-    I[Backend] --> J[TransformTextWithAzureAI.cs]
-    J --> L[Execute]
-    L --> M[GetOpenAIResponse]
-    M --> N["Azure OpenAI"]
-    CRM3["Dynamics 365 - Plugins"] --> J
+graph LR
+A["Frontend: VoiceInput.js"] --> B["Azure Speech SDK"]
+A --> C["Dynamics Web API"]
+C --> D["Dynamics CRM"]
+B --> A
+E["Frontend: VoiceProcessing.js"] --> B
+E --> C
+F["Backend Plugin: TransformTextWithAzureAI.cs"] --> G["Azure OpenAI API"]
+F --> D
 ```
 
 ---
 
 ### Conclusión final
-Este repositorio implementa una solución tecnológica híbrida que combina un diseño basado en **n capas** con **microservicios externos**. En el frontend, utiliza JavaScript para integrar Azure Speech SDK y Dynamics CRM, ofreciendo una interfaz interactiva con entrada de voz. En el backend, emplea un Plugin en C# que extiende Dynamics CRM con procesamiento avanzado de texto utilizando Azure OpenAI. La modularidad y el desacoplamiento del código aseguran una arquitectura escalable y compatible con escenarios empresariales de automatización y enriquecimiento de formularios CRM.
+La solución integra tecnologías modernas (Azure SDKs y Dynamics CRM APIs) para democratizar el acceso a datos y procesamiento asistido por voz en formularios CRM. Gracias a su separación modular entre frontend y backend, permite flexibilidad y adaptabilidad, con un notable enfoque en **archivos monolíticos** desempeñando funcionalidades claras y en colaboración con microservicios externos (Azure Speech API y OpenAI API). Sin embargo, su modelo carece de escalabilidad que podría beneficiarse de una arquitectura más distribuida, como **microservicios independientes** en el frontend y backend.
