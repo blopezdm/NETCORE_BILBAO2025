@@ -1,54 +1,84 @@
-### Breve resumen técnico
-Este repositorio integra funcionalidades avanzadas de síntesis de voz, reconocimiento de voz y transformación de datos en un entorno CRM Dynamics, empleando Azure Speech SDK y Azure OpenAI para potenciar la interacción entre usuario y sistema. Los archivos abarcan desde un frontend con JavaScript hasta un backend en C#.
+### Resumen Técnico
+
+El repositorio está compuesto por archivos vinculados al desarrollo de funcionalidades que integran **Azure Speech SDK**, **Azure OpenAI**, y **Microsoft Dynamics 365**. Su enfoque principal está en crear herramientas que faciliten el procesamiento de datos mediante voz y transformar dichos datos en estructuras manipulables.
 
 ---
 
-### Descripción de arquitectura
-La solución implementa una arquitectura **multicapa** con énfasis en integración y servicio. Los componentes JavaScript del frontend interactúan con los usuarios, capturan y procesan datos de formularios, mientras que la capa backend (plugin en C#) se comunica con servicios cognitivos avanzados como Azure OpenAI a través de API externas. 
+### Descripción de Arquitectura
 
-El diseño general puede clasificarse como una **orientación a servicios** (SOA), con puntos de integración bien definidos.
-
----
-
-### Tecnologías usadas
-1. **Frontend**:
-   - **JavaScript**: Lenguaje de programación principal para funcionalidades de voz y formularios.
-   - **Azure Speech SDK**: Para el soporte de texto a voz y reconocimiento de voz.
-   - **Dynamics CRM SDK**: Para acceder a la API del CRM y actualizar formularios.
-
-2. **Backend**:
-   - **C# .NET**: Lenguaje de programación utilizado para desarrollar el plugin.
-   - **Dynamics CRM Plugins**: Interfaz `IPlugin` utilizada dentro del ecosistema CRM.
-   - **Azure OpenAI**: Servicio de procesamiento de texto mediante IA.
-
-3. **Dependencias adicionales**:
-   - `Newtonsoft.Json.Linq`: Librería para manejar estructuras JSON en C#.
-   - `HttpClient`: Para realizar solicitudes HTTP al servicio de IA de Azure.
+La arquitectura del proyecto parece seguir un enfoque híbrido basado en:
+1. **Modularidad**: Cada archivo concentra responsabilidades específicas, como el procesamiento de datos del formulario, la conversión de voz a texto y la interacción con APIs externas.
+2. **Integración API**: Utiliza servicios de Azure para procesar datos de forma asincrónica y dinámica.
+3. **n-Capas**:
+   - **Presentación**: Procesamiento de datos en formularios (archivos `readForm.js` y `voiceInputHandler.js`).
+   - **Lógica**: Modificaciones y transformaciones dinámicas mediante plugins en `TransformTextWithAzureAI`.
+   - **Acceso a Datos**: APIs externas (Speech SDK, OpenAI) y Dynamics Web API.
+4. **Microservicios** (parcial): Aunque no es estrictamente una arquitectura de microservicios, el enfoque de integrar varios servicios externos brinda cierta autonomía funcional.
 
 ---
 
-### Diagrama **Mermaid**
+### Tecnologías Usadas
+
+1. **Azure Speech SDK**  
+   - Para reconocimiento de voz y síntesis de texto a voz.  
+
+2. **Microsoft Dynamics 365**  
+   - Para interacción nativa con formularios, datos y atributos.  
+
+3. **Azure OpenAI**  
+   - Para transformar texto de forma dinámica usando IA avanzada.  
+
+4. **JavaScript y ES6**  
+   - Para la lógica de frontend que orquesta la interacción usuario-formulario-servicio.  
+
+5. **Dynamics CRM SDK**  
+   - Para desarrollar plugins que se ejecutan en el backend de Dynamics CRM.  
+
+6. **HTTP Request**  
+   - Integración de APIs externas mediante solicitudes HTTP en el backend.  
+
+7. **JSON Manipulation**  
+   - Manejo de datos estructurados (serialización y deserialización) entre servicios.  
+
+---
+
+### Diagrama Mermaid
+
 ```mermaid
 graph TD
-    A["Frontend - readForm.js"] --> B["Utiliza Azure Speech SDK"]
-    A --> C["Obtiene datos visibles del formulario"]
-    C --> D["Extrae etiquetas y valores"]
-    D --> E["Convierte texto en voz"]
-
-    F["Frontend - speechForm.js"] --> G["Utiliza Azure Speech SDK"]
-    F --> H["Reconoce comandos de voz"]
-    G --> I["Procesa transcripción y actualiza formulario"]
-    H --> I
-    I --> J["Llama API personalizada en Dynamics"]
-
-    K["Plugin C# - TransformTextWithAzureAI"] --> L["Recibe textos desde Dynamics CRM"]
-    L --> M["Configura prompt para Azure OpenAI"]
-    M --> N["Transforma texto en JSON vía Azure OpenAI"]
-    N --> O["Devuelve respuesta al plugin"]
-    O --> P["Actualiza campos en CRM"]
+    A["Frontend Module"]
+    B["readForm.js"]
+    C["voiceInput.js"]
+    D["Speech SDK"]
+    E["Dynamics Form"]
+    F["speechForm.js"]
+    G["VoiceInputHandler.js"]
+    H["API Integration"]
+    I["Azure Speech Recognition"]
+    J["Azure OpenAI"]
+    K["Plugin Module"]
+    L["TransformTextWithAzureAI.cs"]
+    
+    A --> B
+    A --> C
+    A --> F
+    B --> E
+    C --> D
+    F --> G
+    G --> I
+    G --> J
+    H --> J
+    E --> L
+    L --> J
 ```
 
 ---
 
-### Conclusión final
-Esta solución destaca por su capacidad de integrar **servicios cognitivos** avanzados (Azure Speech y OpenAI) en un entorno CRM Dynamics, mejorando la usabilidad y accesibilidad mediante la interfaz de voz y procesamiento inteligente de datos. La arquitectura sigue principios de modularidad, desacoplamiento mediante servicios externos y patrones orientados a eventos, haciendo que sea extensible y adecuada para soluciones empresariales de interacción avanzada.
+### Conclusión Final
+
+El repositorio aborda una solución modular que potencia las capacidades de **Microsoft Dynamics 365** conectándolo con herramientas avanzadas de **Azure**. A través de una infraestructura basada en dependencias, desarrolla funcionalidades para entrada de voz y procesamiento de texto mediante APIs. Aunque no opera bajo una estricta arquitectura de microservicios, sí implementa un diseño **n-capas** con separación clara de responsabilidades entre frontend y backend.
+
+Recomendaciones:
+1. **Externalización de claves sensibles**: Usar soluciones como **Azure Key Vault** para gestionar claves y configuraciones de forma segura.
+2. **Mejorar manejo de errores**: Especialmente en solicitudes HTTP hacia Azure Speech y OpenAI.
+3. **Documentación**: Consolidar mejores prácticas en una guía técnica que facilite el despliegue y escalabilidad.
