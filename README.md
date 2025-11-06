@@ -1,62 +1,56 @@
-### Breve resumen técnico:
-
-El repositorio parece estar diseñado para una solución que integra **reconocimiento de voz** y **procesamiento de texto hablado** en un contexto de gestión de datos asociado a **formularios de Dynamics 365 CRM**. Usa como principales componentes el **Azure Speech SDK**, para el reconocimiento y síntesis de voz, y la **API Azure OpenAI**, para transformar y estructurar el texto con el modelo GPT-4. Esta solución facilita la interacción natural humana mediante voz, ayudando a mapear información al contexto de formularios y entidades asociadas.
-
----
-
-### Descripción de arquitectura:
-
-La solución sigue un enfoque **modular** con tres capas funcionales evidentes:
-
-1. **Frontend/JS**: Scripts que permiten la manipulación del formulario en Dynamics 365 CRM y la interacción directa con Azure Speech SDK.
-   - Responsabilidad: Procesar la entrada de datos hablados, convertirlos en texto (transcripción) y vincularlos con los campos en el formulario.
-   - Uso de patrones como "Facade" para simplificar la interacción del usuario con operaciones complejas.
-
-2. **API personalizada**: Plugin en C# (`TransformTextWithAzureAI.cs`), que interactúa con Dynamics 365 CRM para recibir una entrada de texto y procesarla usando **Azure OpenAI GPT-4**. Devuelve un JSON estructurado con datos procesados.
-   - Uso de patrones como "Plugin" y "API Gateway" (integración con OpenAI API).
-
-3. **Arquitectura externa basada en APIs**: Uso de servicios externos como **Azure Speech SDK** y **Azure OpenAI API (GPT-4)** como componentes para responder a solicitudes específicas de reconocimiento de voz y procesamiento de texto, respectivamente.
-
-En términos de arquitectura general, esta solución se asemeja a una **Arquitectura en capas** debido a la claridad en la separación de responsabilidades en el frontend, backend (plugin/API), y el SDK externo. Sin embargo, su fuerte dependencia de servicios y APIs externas también presenta características propias de una arquitectura **orientada a servicios**.
+### Breve resumen técnico
+El repositorio se describe como una solución integrada que emplea tanto frontend como backend para ofrecer funcionalidades de accesibilidad y procesamiento de interacciones de usuarios mediante voz, texto y APIs externas. Combina una interfaz de usuario para capturar datos en formularios y procesamiento mediante métodos asociados a un entorno CRM (Dynamics 365). Además, incorpora el uso de inteligencia artificial a través de Azure OpenAI para transformar texto bajo normas específicas y generar respuestas estructuradas en JSON. Las dependencias principales incluyen Azure Speech SDK y Azure OpenAI API.
 
 ---
 
-### Tecnologías usadas:
+### Descripción de arquitectura
+La arquitectura empleada combina elementos de **modelado modular** y una estructura próxima al **modelo de n capas** y **event-driven architecture**. Funcionales como la captura de voz, el procesamiento de formularios CRM y las integraciones con APIs, están desacoplados en diferentes módulos frontales y plugins en el backend (en .NET), utilizando técnicas modernas de patrones, como las fábricas, callbacks y la integración con servicios externos. 
 
-1. **Azure Speech SDK**: Para reconocimiento y síntesis de voz.
-2. **Azure OpenAI API (GPT-4)**: Para transformar texto hablado en estructuras JSON procesables.
-3. **Microsoft Dynamics 365 Xrm SDK**: Framework de CRM para manipular formularios, entidades y datos.
-4. **JavaScript (Frontend)**: Para manipulación de formularios y cliente de Azure Speech.
-5. **C# (.NET Framework)**: Para desarrollo de plugins personalizados en el backend para Dynamics 365.
-6. **APIs REST**: Para integración con Azure OpenAI API y el SDK de Azure Speech.
-7. **Newtonsoft.Json** y **System.Text.Json**: Librerías de manipulación y serialización de objetos JSON.
+- **Frontend**: Provee una interfaz web que integra funcionalidad de entrada y salida por voz, diseñada para mejorar la experiencia del usuario y optimizar la interacción.
+- **Backend**: Implementa lógica empresarial avanzada en plugins para Dynamics CRM, delegando la responsabilidad del procesamiento de texto estructurado a Azure OpenAI.
+
+Los archivos actúan como miembros especializados dentro de una **arquitectura orientada a servicios (SOA)** que podría extenderse hacia un conjunto de **microservicios** si se distribuyen entre varias instancias independientes de ejecución. Por ahora, las funcionalidades de procesamiento están centralizadas en el contexto del CRM. Découpage en microservicios podría optimizar aún más su diseño, pero por el momento es un híbrido entre SOA y arquitectura de capas.
 
 ---
 
-### Diagrama Mermaid válido para GitHub:
+### Tecnologías usadas
+#### Frontend:
+- **Lenguaje:** JavaScript.
+- **Frameworks:** Ninguno explícito en el alcance del análisis, aunque se asume que podría usarse algún framework si está trabajando en un entorno CRM como Dynamics 365.
+- **SDK:** Azure Speech SDK para texto-a-voz y reconocimiento de voz.
+- **Patrones:** Callback-based Execution, Modularidad.
+
+#### Backend:
+- **Lenguaje:** C#.
+- **Framework:** Dynamics CRM plugin framework basado en .NET.
+- **SDK:** Azure OpenAI GPT-4 vía REST API.
+- **Dependencias:** `System.Net.Http`, `Newtonsoft.Json`, `System.Text.Json`.
+- **Patrones:** Plugin Pattern, Factory Method, Microservicio e integración vía API.
+
+---
+
+### Diagrama Mermaid
 
 ```mermaid
 graph TD
-    A["Usuario - Entrada de Voz"]
-    B["Azure Speech SDK - Reconocimiento de Voz"]
-    C["Texto hablado"]
-
-    A --> B
-    B --> C
-
-    C --> D["Procesamiento en frontend"]
-    D --> E["Dynamics 365 - Contexto Formulario"]
-    E --> F["Datos del formulario"]
-
-    C --> G["API personalizada - Procesamiento"]
-    G --> H["Azure OpenAI GPT-4"]
-    H --> I["Texto procesado - JSON"]
-    I --> J["Dynamics 365 - Campos"]
-    F --> J
+    A["Frontend/JS/readForm.js"] --> B["VoiceInputHandler.js"]
+    A["Frontend/JS/readForm.js"] --> C["speechForm.js"]
+    B["VoiceInputHandler.js"] --> D["Azure Speech SDK GET"]
+    C["speechForm.js"] --> D["Azure Speech SDK"]
+    C["speechForm.js"] --> F["Xrm.WebApi CRM REST API"]
+    F["Xrm.WebApi CRM REST API"] --> G["Dynamics CRM"]
+    F["Xrm.WebApi CRM REST API"] --> M["CRM Database"]
+    G["Dynamics CRM"] --> M["CRM Database"]
+    F["Xrm.WebApi CRM REST API"] --> J["Search Entity through Lookup"]
+    C["speechForm.js"] --> N["callCustomApi"]
+    N["callCustomApi"] --> O["Azure OpenAI GPT-4 API"]
+    P["Plugin/TransformTextWithAzureAI.cs"] --> G["Dynamics CRM"]
+    P["Plugin/TransformTextWithAzureAI.cs"] --> O["Azure OpenAI GPT-4 API"]
 ```
 
 ---
 
-### Conclusión final:
+### Conclusión final
+El repositorio representa una solución altamente adaptable y colaborativa que une accesibilidad y procesamiento automático en aplicaciones de CRM mediante la integración con servicios de AI avanzados (Azure Speech SDK y OpenAI). Está estructurado bajo principios de modularidad, reutilización de código y diseño escalable. Su arquitectura, actualmente centralizada entre frontend y backend, puede evolucionar hacia microservicios con APIs propias que faciliten la independencia de cada funcionalidad principal. Esto podría permitir una integración más flexible y distribución de carga entre recursos. 
 
-La solución está orientada a mejorar la experiencia de usuario en **Microsoft Dynamics 365 CRM**, adoptando un enfoque **semiautomático** que permite transformar la información hablada en datos estructurados y utilizables en formularios. El diseño refleja una arquitectura **modular en capas** que se apoya en servicios externos avanzados como Azure Speech y Azure OpenAI GPT-4. El código está bien estructurado con funciones específicas para cada tarea, haciendo uso de estándares dominantes (REST API, SDKs). Sin embargo, el éxito del sistema depende de la estabilidad y escalabilidad de los servicios externos de Azure. Si se produjera un fallo o limitación en dichas dependencias, el sistema podría encontrarse con problemas de funcionalidad.
+El diagrama Mermaid proporciona una vista clara de los componentes y dependencias clave, incluyendo cómo interactúan los módulos del frontend y backend del repositorio.
