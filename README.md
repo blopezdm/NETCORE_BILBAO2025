@@ -1,62 +1,63 @@
-#### Breve resumen técnico:
-- La solución incluye tres componentes principales: un frontend en JavaScript, un plugin backend construido en C#, y el uso de servicios de Azure (Azure Speech SDK y Azure OpenAI API). Su propósito principal es facilitar la interacción entre usuarios y sistemas CRM como Dynamics 365, usando reconocimiento y síntesis de voz, procesamiento de transcripciones, y transformación de texto mediante inteligencia artificial.
+### Breve resumen técnico
+
+El repositorio describe una solución híbrida que conecta interfaces de usuario (formularios basados en Dynamics CRM en el frontend) con servicios de voz e inteligencia artificial proporcionados por Microsoft Azure. Hay tres componentes principales:
+1. **Frontend:** Manejo de interacción con formularios (entrada/salida de voz).
+2. **Backend/plugin:** Transformación del texto mediante Azure OpenAI (lógica de negocios avanzada).
 
 ---
 
-#### Descripción de arquitectura:
-- **Tipo de solución**: Sistema basado en APIs y extensiones para formularios dinámicos y un CRM (Dynamics 365).
-- **Arquitectura**: Multi-capas con integración de servicios externos.
-  - **Frontend**:
-    - Modular JavaScript design.
-    - Procesamiento de formularios dinámicos.
-    - Comunicación directa con SDKs de voz (Azure Speech SDK).
-  - **Backend (Dynamics Plugin)**:
-    - Implementa el patrón Plugin para Dynamics CRM.
-    - Interactúa con los servicios REST de Azure OpenAI.
-  - **Servicios externos**:
-    - Azure Speech SDK: Reconocimiento y síntesis de voz.
-    - Azure OpenAI API: Generación de texto usando inteligencia artificial.
+### Descripción de arquitectura
+
+La solución sigue una arquitectura **n-capas orientada a servicios**, con separación de responsabilidades entre:
+- **Capa de presentación:** Formularios integrados en Dynamics CRM para manejo de voz y mapeo de datos.
+- **Capa de procesamiento/intermediaria:** SDK de Azure Speech para reconocimiento y síntesis.
+- **Capa de negocio/servicio:** Plugin en Dynamics CRM para transformar texto usando la API de Azure OpenAI.
+
+El diseño se apoya fuertemente en la comunicación entre capas mediante APIs públicas, especialmente desde Azure. Además, las funcionalidades están claramente orientadas al contexto de Dynamics CRM (`executionContext`).
 
 ---
 
-#### Tecnologías usadas:
-1. **Frontend**:
-   - JavaScript ES6+.
-   - Azure Speech SDK.
-   - Asynchronous programming (Promises, Callbacks).
+### Tecnologías usadas
 
-2. **Backend Plugin**:
-   - C# (.NET Framework).
-   - Dynamics CRM SDK (`IPlugin` interface).
-   - JSON object manipulation (`System.Text.Json`, `Newtonsoft.Json`).
-   - Azure OpenAI REST API.
+#### Frontend
+- **JavaScript DOM**: Manipulación de formularios (campos visibles, mapeo de valores, eventos).
+- **Azure Speech SDK**: Reconocimiento y síntesis de voz utilizando servicios en la nube.
+- **CRM Dynamics Framework (Xrm.WebApi)**: Interacción directa con entidades del CRM y API personalizada.
 
-3. **Dependencias externas**:
-   - Azure Speech SDK loaded dynamically via CDN.
-   - Azure OpenAI API requires API keys and endpoints.
-   - Microsoft-related frameworks (.NET).
+#### Backend/plugin
+- **C# y Dynamics SDK**: Estructuración y ejecución de plugins (`IPlugin`) como extensiones a Dynamics.
+- **Azure OpenAI API**: Procesamiento avanzado del texto, con el modelo GPT-4 y soporte para generación de JSON.
+- **JSON Handling Libraries**: Integración con `Newtonsoft.Json` y `System.Text.Json`.
+
+#### Patrón de diseño
+- **Modularidad:** Uso de funciones y métodos especializados. Ej: `speakText` y `GetOpenAIResponse` enfocan procesamiento en tareas individuales.
+- **Gestión dinámica de dependencias:** Integración de servicios como el Azure Speech SDK de manera condicional al contexto.
+- **Plugin-based Architecture:** Implementación del patrón estándar de plugins dentro de Dynamics CRM.
+- **Interoperabilidad con servicios externos:** API de Azure OpenAI y SDK de Azure Speech implementados como capa transversal.
 
 ---
 
-#### Diagrama Mermaid:
+### Diagrama Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-  A["Frontend JS: startVoiceInput.js"]
-  B["Frontend JS: speechRecognitionHandler.js"]
-  C["Backend C#: TransformTextWithAzureAI.cs"]
-  D["Azure Speech SDK"]
-  E["Azure OpenAI API"]
-  F["Dynamics CRM Plugin"]
-
-  A --> D
-  A --> F
-  B --> D
-  B --> F
-  C --> F
-  C --> E
+  A["Frontend - readForm.js"] --> B["Función: getVisibleFieldData"]
+  A --> C["Función: speakText - Azure Speech SDK"]
+  D["Frontend - speechForm.js"] --> E["Función: ejecutarGrabacion - SDK de voz"]
+  D --> F["Función: applyValueToField"]
+  D --> G["Función: callCustomApi - Comunicación API personalizada"]
+  H["Plugin - TransformTextWithAzureAI.cs"] --> I["Método: Execute - Procesa InputParameters"]
+  H --> J["Método: GetOpenAIResponse - Azure OpenAI API"]
+  G --> J
+  F --> K["Dynamics CRM - Update campo"]
+  E --> K
+  J --> K
 ```
 
 ---
 
-#### Conclusión final:
-La solución presentada es una arquitectura basada en capas especializadas para mejorar los flujos de trabajo en sistemas CRM como Dynamics 365. A través de integraciones con Azure Speech SDK y Azure OpenAI API, implementa funcionalidades avanzadas de voz y procesamiento de texto. La estructura modular del frontend garantiza adaptabilidad y mantenibilidad, mientras que el backend implementa un Plugin Pattern eficiente para extensibilidad en Dynamics CRM.
+### Conclusión final
+
+La solución presentada es una **arquitectura n-capas orientada a servicios**, diseñada para realizar la integración eficiente entre formularios en Dynamics CRM y servicios avanzados de inteligencia artificial y voz desde Azure. Utiliza principios de modularidad y delegación para garantizar un flujo de procesamiento claro, escalable y adaptable. 
+
+No obstante, las dependencias codificadas directamente, como las claves API, podrían generar vulnerabilidades de seguridad y dificultad en el manejo de cambios. Se recomienda implementar un sistema para manejar configuraciones de manera más segura, como Azure Key Vault para almacenar las claves de acceso.
