@@ -1,30 +1,37 @@
 ### Breve resumen técnico:
 
-El repositorio parece contener una solución en tres partes: un **frontend (JavaScript)** que interactúa con un formulario y facilita la entrada y síntesis de voz usando **Azure Speech SDK**, y un **plugin backend (C#)** para **Dynamics CRM** que utiliza **Azure OpenAI API** para transformar texto en estructuras JSON. La arquitectura muestra una integración entre servicios externos (Azure), soluciones en el frontend y plugins en el backend.
+Este repositorio consta de varios archivos relacionados con funcionalidades como manejo de formularios en el frontend, reconocimiento y captura de entrada de voz, integración con servicios de inteligencia artificial (como Azure OpenAI y Speech SDK) y un plugin para Microsoft Dynamics CRM que realiza transformaciones de texto utilizando Azure AI.
+
+El repositorio se enfoca en realizar operaciones de síntesis y reconocimiento de voz, así como transformar datos con servicios de IA para sus funcionalidades de soporte al sistema CRM.
 
 ---
 
 ### Descripción de arquitectura:
 
-La arquitectura es **n-capas** con varios componentes:
-1. **Frontend**: Una capa en JavaScript que actúa como interfaz interactiva para el usuario. Procesa datos del formulario, utiliza **Azure Speech SDK** para entrada y salida de voz, y realiza llamadas a APIs de Dynamics CRM.
-2. **Dynamics CRM Plugin**: Una capa de procesamiento backend en C# que gestiona transformaciones complejas de texto utilizando la integración con **Azure OpenAI API**.
-3. **Servicios externos**: Uso extendido de servicios de Microsoft Azure para sintetizar y reconocer voz, y para procesar texto (OpenAI).
+La arquitectura parece consistir en las siguientes secciones:
+
+1. **Frontend**: Maneja la interfaz de usuario para capturar datos desde formularios (Frontend/JS/readForm.js y speechForm.js), además de implementar el reconocimiento y síntesis de voz con servicios de Azure.  
+2. **Backend Plugin**: Desarrollado para integrarse con Microsoft Dynamics CRM como un composable plugin basado en la interfaz `IPlugin`. Se integra con Azure OpenAI (Modelo GPT) para brindar interfaces inteligentes y procesar datos del cliente. Este plugin puede ser invocado directamente desde CRM como parte de sus procesos de ejecución.
+3. **Servicios externos**:
+   - **Azure Speech SDK**: Para el reconocimiento y síntesis de voz.
+   - **Azure OpenAI API**: Para transformar texto en JSON procesado según normas específicas.
+
+La solución no utiliza microservicios y parece implementarse como un sistema modular con integración directa a servicios de Azure. No sigue estrictamente una arquitectura hexagonal, aunque sí incorpora principios de desacoplamiento en la arquitectura de plugin y funciones modulares en la capa frontend. En conjunto, se reconoce esta arquitectura como **n capas**, con enfoque en integración de API externas.
 
 ---
 
 ### Tecnologías usadas:
 
-- **Frontend (JS)**:
-  - **Azure Speech SDK**: Para integrar capacidades de síntesis y reconocimiento de voz en tiempo real.
-  - **Dynamics CRM (formContext, executionContext)**: Propiedades específicas del sistema CRM para interactuar con formularios.
-  - **JavaScript (ES6)**: Para la lógica del frontend y la interactividad.
+1. **Frontend**:
+   - **JavaScript**: Es el lenguaje principal para la lógica de frontend.
+   - **Azure Speech SDK**: Para el procesamiento de entrada/salida de voz.
+   - Sistema CRM (probablemente Dynamics CRM): Extensión programática mediante Xrm Web API.
 
-- **Backend Plugin (C#)**:
-  - **Microsoft.Xrm.Sdk**: Para la interacción con Dynamics CRM.
-  - **Newtonsoft.Json**: Para manipulación avanzada de objetos JSON.
-  - **Azure OpenAI API**: Modelo GPT-4 para transformación de texto en datos estructurados.
-  - **System.Net.Http**: Envío de solicitudes HTTP.
+2. **Backend**:
+   - **C#**: Lenguaje principal del plugin `TransformTextWithAzureAI.cs`.
+   - **Microsoft Dynamics SDK**: Para el desarrollo de funcionalidades específicas en Dynamics CRM como parte del ciclo de plugins.
+   - **Azure OpenAI API**: Consumida vía HTTP con `HttpClient`.
+   - **Newtonsoft.Json** y **System.Text.Json**: Para manejo avanzado de datos en formato JSON.
 
 ---
 
@@ -32,22 +39,28 @@ La arquitectura es **n-capas** con varios componentes:
 
 ```mermaid
 graph TD
-  A["Frontend - JS"]
-  B["Dynamics CRM Plugin - C#"]
-  C["Azure Speech SDK"]
-  D["Azure OpenAI API"]
-  E["Custom API - Dynamics"]
-  F["Formulario Dynamics 365"]
-
-  A --->|Usa| C
-  A --->|Conecta| E
-  B --->|Procesa| D
-  F --->|Interactúa con| A
-  E --->|Procesa datos| F
+    A["Frontend"]
+    B["SpeechInputHandler.js -> Azure Speech SDK"]
+    C["speechForm.js -> Azure Speech SDK -> Xrm Web API"]
+    D["Backend (Plugin)"]
+    E["TransformTextWithAzureAI.cs"]
+    F["Microsoft Dynamics CRM"]
+    G["Azure OpenAI API"]
+    
+    A --> B
+    A --> C
+    B --> G
+    C --> G
+    C --> F
+    D --> F
+    D --> G
+    F --> A
 ```
 
 ---
 
 ### Conclusión final:
 
-El repositorio representa una solución híbrida que integra un frontend basado en **JavaScript con Azure Speech SDK** para interacción vocal y un plugin backend en **C#** para procesamiento avanzado de texto mediante **Azure OpenAI API**. La arquitectura es **n-capas**, distribuida entre el cliente, servidor y servicios externos de Microsoft Azure. Es adecuada para aplicaciones empresariales que requieran procesamiento de voz y transformación inteligente de datos. Sin embargo, debe manejar cuidadosamente las claves de API y garantizar la seguridad de los datos.
+Este repositorio implementa una **n capas** solución integrada con Microsoft Dynamics CRM, servicios de **Azure Speech SDK** y **Azure OpenAI API**. Su finalidad principal es mejorar la experiencia de usuario al interactuar con formularios de CRM, al proporcionar capacidades de entrada de voz y transformación inteligente de texto vía IA.
+
+El diseño es modular y cohesivo, con un uso eficiente de patrones como el plugin para CRM, el patrón fachada para la organización de funcionalidades específicas, y una integración adecuada con APIs externas. La arquitectura puede evolucionar hacia un enfoque más distribuido como microservicios si se requiere mayor escalabilidad, aunque actualmente parece adecuada para su propósito.
