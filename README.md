@@ -1,56 +1,57 @@
-### Breve resumen técnico
-El repositorio contiene una solución orientada a integrar capacidades de accesibilidad y reconocimiento de voz mediante Azure Speech SDK, combinando procesamiento de texto y voz con Inteligencia Artificial (Azure OpenAI) dentro del contexto de formularios y sistemas como Microsoft Dynamics CRM. La arquitectura está basada en componentes modulares que interactúan con servicios externos y actualizan formularios alojados en un entorno CRM.
+### Breve Resumen Técnico
+El conjunto de archivos analizados pertenece a una **solución híbrida que incluye un frontend web y un backend plugin para reconocimiento y síntesis de voz**, integrándose con servicios externos como **Azure Speech SDK** y **Azure OpenAI API**, y funcionan dentro de un ecosistema de **Dynamics CRM**. La solución está orientada a mejorar la accesibilidad mediante análisis y transformación de datos a partir de formularios.
 
 ---
 
-### Descripción de arquitectura
-El sistema aplica una arquitectura distribuida basada en integración de componentes. En el Frontend, los archivos JavaScript actúan como módulos de procesamiento de formularios, utilizando el Speech SDK y conectándose con APIs externas. En el Backend, el archivo `TransformTextWithAzureAI.cs` implementa un patrón orientado a servicios (SOA) para procesar texto en formato JSON mediante Azure OpenAI. El diseño sigue principios de modularización y desacoplamiento.
+### Descripción de Arquitectura
+La solución puede clasificarse como **n-capas**, con los siguientes niveles:
+1. **Frontend**: Maneja la interacción con el usuario, incluida la entrada de voz y visualización del formulario. Utiliza el **Azure Speech SDK** y llama a APIs personalizadas para procesamiento.
+2. **Backend (Plugins)**: Se emplea como una capa lógica en Dynamics CRM que extiende funcionalidades cuando se requieren transformaciones de texto mediante **Azure OpenAI**.
 
-#### Componentes principales:
-1. **Frontend (JavaScript):**
-   - Manejo de entrada de voz (reconocimiento de voz).
-   - Lectura de datos visuales en formularios.
-   - Carga dinámica del SDK de Azure Speech.
-   - Transformación de datos locales y delegación a APIs externas.
-
-2. **Backend (Dynamics Plugin):**
-   - Proceso de texto mediante Azure OpenAI.
-   - Implementación del patrón Plugin Design Pattern en Dynamics CRM.
-   - Estructuración de datos en JSON según normas específicas.
+Además, se utilizan patrones como:
+- **Integración de servicios**: Integración estrecha entre el frontend y APIs externas (Speech SDK y OpenAI).
+- **Factory-like pattern**: Dinamismo en la creación de mappings y procesamiento adaptativo según la configuración del formulario y contexto.
 
 ---
 
-### Tecnologías usadas
-1. **Frontend:**
-   - **JavaScript** para manejar interacciones de usuario y formularios.
-   - **Azure Speech SDK** para texto a voz y reconocimiento de voz.
-   - **REST API** para integración con el Backend.
+### Tecnologías Usadas
+1. **Frontend (JavaScript)**:
+   - **Azure Speech SDK** para síntesis y reconocimiento de voz.
+   - Promesas y asincronía en el manejo de operaciones de red.
+   - Manipulación de DOM y contexto de formularios basado en una API de CRM (`Xrm.WebApi`).
 
-2. **Backend:**
-   - **C#** para escribir un plugin en Dynamics CRM.
-   - **Azure OpenAI** API para procesamiento de texto usando modelos GPT.
-   - **Newtonsoft.Json** y **System.Text.Json** para manipular datos JSON.
+2. **Backend (C#)**:
+   - **Microsoft.Xrm.Sdk**: Framework para Plugins en Dynamics CRM.
+   - **Azure OpenAI API**: Servicio para transformación avanzada de texto.
+   - **HTTP Client**, **JSON libraries** (`System.Text.Json`, `Newtonsoft.Json`) para integración directa con servicios externos.
 
-3. **Infraestructura y Servicios Externos:**
-   - **Dynamics 365** como CRM central.
-   - CDN de Microsoft para cargar el SDK.
-   - API personalizada para integración con servicios Azure.
+3. **Patrones de integración observados**:
+   - Plugin architecture para eventos específicos en Microsoft CRM.
+   - Service-oriented architecture con integración de servicios externos mediante HTTP REST.
 
 ---
 
-### Diagrama **Mermaid**
+### Diagrama **Mermaid** (Compatible con GitHub Markdown)
 ```mermaid
 graph TD
-    AzureSpeechSDK["Azure Speech SDK"] --> VoiceInputHandler["VoiceInputHandler.js"]
-    VoiceInputHandler --> CustomAPI["Custom API trial_TransformTextWithAzureAI"]
-    VoiceInputHandler --> DynamicsCRM["Dynamics CRM Form Integration"]
-    AzureSpeechSDK --> ReadFormJS["readForm.js"]
-    ReadFormJS --> DynamicsCRM
-    DynamicsCRM --> TransformTextPlugin["TransformTextWithAzureAI.cs"]
-    TransformTextPlugin --> AzureOpenAI["Azure OpenAI"]
+    A["Frontend: VoiceInputHandler.js"]
+    B["Frontend: speechForm.js"]
+    C["Backend: TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["API Personalizada para procesamiento IA"]
+    F["Dynamics CRM Form Context"]
+    G["Azure OpenAI API"]
+    H["Xrm Web API"]
+
+    A --> D
+    B --> D
+    B --> E
+    B --> H
+    C --> G
+    C --> F
 ```
 
 ---
 
-### Conclusión final
-La solución es una implementación de una **multi-capa con componentes distribuidos**. El Frontend gestiona la interacción del usuario (lectura y entrada por voz) y delega el procesamiento avanzado al Backend a través de una **API-first approach**. El Backend utiliza un **SOA** que centraliza servicios externos como Azure OpenAI para elevar las capacidades de procesamiento de datos. Esto facilita **accesibilidad** y **automatización**, integrando la solución profundamente con un CRM como Dynamics 365.
+### Conclusión Final
+La solución analizada presenta componentes frontend para la síntesis de voz y entrada por voz, y un backend basado en plugins para la transformación de texto utilizando IA. Se emplea una arquitectura de **n-capas** junto a integración de APIs externas (Azure Speech SDK, Azure OpenAI), con un fuerte enfoque en accesibilidad y procesamiento de datos desde formularios interactivos en Microsoft Dynamics CRM. Aunque modular, la solución depende en gran medida de servicios Microsoft, lo que implica potenciales costos y restricciones tecnológicas.
