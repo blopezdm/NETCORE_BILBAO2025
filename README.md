@@ -1,53 +1,72 @@
-### Breve Resumen Técnico
-Este repositorio contiene varios archivos distribuidos en diferentes directorios y tecnologías, con el objetivo de interactuar con formularios de Microsoft Dynamics CRM mediante funciones dinámicas, Azure Speech SDK y Azure OpenAI. Abarca funciones de síntesis y reconocimiento de voz y transformación de texto utilizando modelos IA avanzados como GPT-4.
+## Resumen técnico
 
-### Descripción de Arquitectura
-La solución tiene una arquitectura **híbrida**:
-1. **Frontend dinámico**: JavaScript funciona como una extensión de los formularios de Dynamics CRM, integrando la síntesis de voz mediante Azure Speech SDK y realizando transcripciones habilitadas por IA.
-2. **Backend basado en plugins**: En el lado del servidor, se emplea un plugin (TransformTextWithAzureAI) utilizando el SDK de Dynamics CRM para ejecutar lógica de procesamiento avanzada mediante llamadas a Azure OpenAI.
+Este repositorio contiene múltiples archivos de tres áreas principales: un frontend de entrada/salida de voz utilizando el SDK de **Azure Speech**, un módulo de procesamiento por voz para formularios en Dynamics CRM, y un plugin en C# para transformar texto con la API de **Azure OpenAI** en el entorno de Dynamics CRM. La solución se orienta a extender la funcionalidad de formularios en Dynamics CRM mediante interacción por voz y transformación de texto con inteligencia artificial.
 
-Arquitecturalmente, esto se basa en:
-- **Integración de n-capas**: Comunicación entre Frontend y Backend a través del CRM.
-- **Servicio externo especializado**: Uso de Azure servicios (Speech SDK y OpenAI) para funcionalidad avanzada.
-- **Desacoplamiento bajo plugins**: El plugin divide responsabilidades y conecta dinámicamente las solicitudes CRM con un servicio externo de IA.
+---
 
-### Tecnologías Usadas
+## Descripción de arquitectura
+
+La solución presenta características de una arquitectura **híbrida**:
+1. **Frontend modular**: Manejo de JavaScript separado por responsabilidades. Utiliza una arquitectura basada en capas con integración de servicios externos (Azure Speech SDK) para lectura y entrada por voz en formularios HTML dentro de Dynamics CRM.
+2. **Plugin en Dynamics CRM**: Implementa una arquitectura de **Componentes Funcionales** específicas para transformar texto vía IA, utilizando el patrón de plugin propio de Dynamics CRM.
+3. **Patrón distribuido**: El sistema combina frontend, servicios externos (Azure Speech SDK y Azure OpenAI), y lógica empresarial dentro del entorno CRM (Dynamics).
+
+---
+
+## Tecnologías usadas
+
 1. **Frontend**:
-   - JavaScript (Azure Speech SDK).
-   - APIs de Dynamics CRM (`executionContext`, `Xrm.WebApi`).
-   - Desarrollo modular y dinámico cargando dependencias según necesidad.
+   - **JavaScript**: Base para la implementación de lógica de entrada/salida de voz.
+   - **Azure Speech SDK**: Transformación de voz a texto y síntesis de audio.
+   
+2. **CRM Lógica Empresarial**:
+   - **Microsoft Dynamics/Sdk**: Para implementar plugins dentro del CRM.
+   - **C#**: Diseño de plugins que se integran al API interna de Dynamics.
+   - **Azure OpenAI API**: Transformación de texto bajo reglas personalizadas usando IA.
 
-2. **Backend**:
-   - C# (Microsoft Dynamics CRM SDK).
-   - API REST para Azure OpenAI (interacción con GPT-4).
-   - Newtonsoft.Json para manejo avanzado de JSON.
+3. **Dependencias generales**:
+   - **HttpClient**: Interacción con APIs externas (Azure Speech y OpenAI).
+   - **Newtonsoft.Json**: Deserialización de datos JSON dentro del plugin C#.
 
-3. **Servicios Externos**:
-   - **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
-   - **Azure OpenAI**: Para transformación de texto y lógica IA en plugins.
+---
 
-### Dependencias Externas y Componentes
-- **Azure Speech SDK**: Para interacción vocal.
-- **Azure OpenAI**: Para procesamiento de texto.
-- **Microsoft Dynamics CRM SDK**: Gestión de datos y contexto de formularios.
-- **REST API**: Para conectarse con servicios de Microsoft y Azure.
-- **Newtonsoft.Json**: Manejo JSON en backend.
+## Diagrama Mermaid compatible con GitHub Markdown
 
-### Diagrama Mermaid
 ```mermaid
 graph TD
-    A["Frontend - JavaScript (CRM Formularios)"]
-    B["Azure Speech SDK"]
-    C["CRM API (Xrm.WebApi)"]
-    D["Backend - Plugin TransformTextWithAzureAI"]
-    E["Azure OpenAI GPT-4"]
+    A["Frontend-voiceInputHandler.js"] --> B["Azure-Speech-SDK"]
+    A --> C["Dynamics-forms"]
+    C --> D["Data Retrieved"]
+    D --> G["Speech-SDK synthesis"]
 
-    A --> B
-    A --> C
-    C --> D
-    D --> E
-    E --> D
+    E["Frontend-speechForm.js"] --> C
+    E --> B
+    E --> H["Dynamics Web API"]
+    H --> I["Field Mapping"]
+
+    J["Plugin-TransformTextWithAzureAI.cs"] --> K["Dynamics execution context"]
+    J --> L["Azure OpenAI Service"]
+    L --> M["Text-to-structured JSON"]
+    I --> M
+
+    N["Forms User"] --> A
+    O["Voice Input"] --> A
+    O --> E
 ```
 
-### Conclusión Final
-Esta solución parece ser una integración avanzada entre un sistema CRM (Microsoft Dynamics) y servicios en la nube de Azure (Speech SDK y OpenAI), proporcionando capacidades como síntesis de voz, reconocimiento de comandos y procesamiento dinámico mediante IA. La arquitectura está bien segmentada entre un **Frontend dinámico** basado en tecnologías web y un **Backend extensible basado en plugins**, con una clara separación de responsabilidades y un enfoque modular, lo que facilita la escalabilidad y mantenimiento.
+---
+
+## Conclusión final
+
+La solución está diseñada con un enfoque modular y distribuido, integrando:
+- **Frontend**: Para entrada/salida de datos por voz interactuando con un SDK de Azure.
+- **Backend en Dynamics CRM**: Plugins para transformación de datos y ejecución lógica avanzada con servicios AI.
+- **Servicios externos**: Azure Speech SDK para manejo de voz y Azure OpenAI para interpretación avanzada de texto.
+
+### Ventajas:
+- **Escalabilidad**: Uso de Azure Speech/OpenAI permite aumentar capacidades fácilmente.
+- **Modularidad**: Código bien segmentado en funciones, clases y plugins.
+
+### Áreas de mejora:
+- **Gestión de errores**: Mejorar robustez del manejo de excepciones en comunicación con servicios externos.
+- **Optimización de rendimiento**: Minimizar dependencias o mejorar la caché, sobre todo en la carga del SDK de Azure.
