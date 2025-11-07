@@ -1,58 +1,55 @@
-### Breve Resumen Técnico
-El repositorio describe una solución híbrida que integra funcionalidades de frontend (`JS` files) en un entorno web interactivo, interactuando con Microsoft Dynamics 365 CRM y servicios de inteligencia artificial basados en Azure. También incluye un plugin de backend en C# que utiliza Azure OpenAI para ejecutar transformaciones de texto.
+### Breve resumen técnico
+El repositorio combina funciones en JavaScript y C# destinadas a la interacción dinámica de formularios dentro de un entorno Microsoft Dynamics 365, con integración avanzada de APIs externas como Azure Speech SDK y Azure OpenAI. Las funcionalidades incluyen síntesis de voz, reconocimiento de voz, procesamiento de datos de formularios, y transformación de texto mediante inteligencia artificial. La arquitectura muestra una integración modular y asincrónica con servicios distribuidos.
 
 ---
 
-### Descripción de la Arquitectura
-La arquitectura implementada corresponde a una combinación de:
-1. **Microfrontend**:
-   - Los módulos JavaScript (`readForm.js`, `speechForm.js`) implementan una interfaz configurable. Capturan datos de formularios, sintetizan voz y manejan transcripciones con reconocimiento y generación de voz mediante Azure Speech SDK.
-   - Modularidad orientada al manejo de formularios dinámicamente.
-   
-2. **Plugin en Backend (Dynamics CRM)**:
-   - El plugin (`TransformTextWithAzureAI.cs`) sigue la arquitectura estándar de los plugins de Dynamics CRM.
-   - Consumidor directo de Azure OpenAI API para enriquecer datos con inteligencia artificial adaptándose al contexto del CRM.
+### Descripción de arquitectura
+La solución utiliza una **arquitectura de capas distribuida** donde distintas partes cumplen roles específicos:
+1. **Frontend basado en JavaScript**: Maneja lógica del cliente para síntesis de voz y reconocimiento mediante el SDK de Azure.
+2. **Backend (Dynamics 365 Plugins)**: Ejecuta plugins específicos que integran AI y APIs externas para procesamiento de datos enviados por el frontend.
+3. **Servicios externos**: Integra componentes distribuidos como Azure Speech SDK y Azure OpenAI.
+
+Aunque presenta separación de capas, la arquitectura sigue el enfoque tradicional de capas con integración directa a servicios externos. Algunos patrones asociados son:
+- **Modularización funcional**: Separación de responsabilidades por función/clase.
+- **Cargador dinámico de dependencias**: La carga del SDK de Azure usa el patrón de lazy-loading.
+- **Integración API-first**: Llamadas extensivas a APIs como Dynamics 365 y Azure OpenAI.
 
 ---
 
-### Tecnologías Usadas
-1. **Frontend**:
-   - **JavaScript ES6+**: Código modular para la ejecución de captura de datos, procesamiento de formularios y síntesis/reconocimiento de voz.
-   - **Azure Speech SDK**: Integración dinámica para servicios de síntesis y reconocimiento de voz.
-   - **Microsoft Dynamics API**: `Xrm.Page` y `formContext` para interacción con formularios de CRM.
-
-2. **Backend**:
-   - **C# (.NET Framework)**: Implementación del plugin server-side para Dynamics CRM.
-   - **Microsoft.Xrm.Sdk**: Framework para desarrollos técnicos en Dynamics CRM.
-   - **Azure OpenAI (REST API)**: Llamadas HTTP para procesamiento y transformación de texto basado en reglas.
-
-3. **Servicios/Infraestructura**:
-   - **Microservicios Azure**: Azure Speech y OpenAI como módulos de servicios externos.
-   - **HTTP Client/JSON**: Manipulación y transformación de datos enviados y consumidos desde APIs externas.
+### Tecnologías usadas
+1. **JavaScript**:
+   - Azure Speech SDK.
+   - Módulos para interacción con formularios Dynamics.
+2. **C#**:
+   - Construcción de plugins Dynamics 365.
+   - Manejo de reglas IA con Azure OpenAI utilizando `HttpClient` y JSON libraries (`System.Text.Json`, `Newtonsoft.Json.Linq`).
+3. **APIs externas**:
+   - **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
+   - **Azure OpenAI**: Para transformación avanzada de texto utilizando AI.
+   - **Dynamics 365 Web API**: Para acceso y manipulación de formularios y entidades.
 
 ---
 
-### Diagrama Mermaid
+### Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-    A["Frontend - readForm.js"] --> B["Azure Speech SDK - Captura de texto y síntesis de voz"]
-    A --> C["Frontend - speechForm.js"]
-    C --> D["API personalizada - Procesa transcripción con IA"]
-    C --> E["CRM Web API - Mapea datos al formulario"]
-    E --> F["Microsoft Dynamics CRM - Actualización dinámica de atributos"]
-    D --> G["Azure OpenAI API - Transformación enriquecida de texto"]
+  A["Frontend - VoiceInputHandler.js"]
+  B["Frontend - SpeechForm.js"]
+  C["Plugin - TransformTextWithAzureAI.cs"]
+  D["Azure Speech SDK"]
+  E["Dynamics 365 Web API"]
+  F["Azure OpenAI API"]
 
-    F --> H["Backend Plugin - TransformTextWithAzureAI.cs"]
-    H --> G
+  A --> D
+  B --> D
+  A --> E
+  B --> E
+  E --> C
+  C --> F
 ```
 
 ---
 
-### Conclusión Final
-La solución combina frontend web dinámico, servicios basados en inteligencia artificial de Azure y un backend integrado a Dynamics CRM. Este diseño modular permite:
-- **Escalabilidad**: Fácil integración de nuevos servicios o API relacionadas.
-- **Despliegue centralizado**: Basado en Azure y Dynamics 365.
-- **Interactividad avanzada**: Procesamiento de voz, enriquecimiento de datos y generación dinámica de atributos.
-
-Es especialmente adecuado para escenarios empresariales que requieren interfaces interactivas sensibles al usuario con integración directa en sistemas CRM corporativos.
+### Conclusión final
+El repositorio implementa una solución distribuida con un enfoque híbrido entre una **arquitectura multicapa** y la interacción con servicios externos en la nube. Utiliza patrones de diseño centrados en modularidad y procesamiento asincrónico, lo que facilita la escalabilidad y reutilización. A nivel tecnológico, la elección de Azure Speech SDK y Azure OpenAI permite ofrecer funcionalidades avanzadas en el entorno Dynamics 365, como entrada/síntesis de voz y transformación de texto con inteligencia artificial. La integración directa con Dynamics 365 plantea la necesidad de trabajar dentro de un ecosistema altamente especializado.
