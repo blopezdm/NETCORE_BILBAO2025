@@ -1,54 +1,57 @@
-# Breve resumen técnico
-El repositorio contiene tres archivos orientados principalmente a la interacción con formularios, lectura de datos y entrada por voz, además de un plugin para transformar texto mediante IA. La solución parece estar diseñada para integrarse con aplicaciones empresariales basadas en Microsoft Dynamics 365 usando Azure Cognitive Services y Azure OpenAI API.
+### **Breve resumen técnico**
+El repositorio contiene tres archivos principales estructurados para implementar funcionalidades de interacción con formularios de Dynamics 365, además de reconocimiento y síntesis de voz con Azure Speech SDK y procesamiento avanzado de texto mediante Azure OpenAI. Incluye una combinación de frontend en JavaScript y un plugin en C# para Dynamics CRM.
 
-# Descripción de arquitectura
-Este repositorio utiliza una arquitectura híbrida:
-1. **Frontend (JavaScript)**: Implementación basada en una arquitectura MVC para manejar interacción entre usuario y servicios.
-2. **Dynamics CRM Plugin (.NET)**: Aplicación basada en el paradigma de **plugin** que se ejecuta como extensibilidad en Dynamics CRM aprovechando la potencia de Azure OpenAI y otros servicios relacionados.
-3. **Integración con servicios externos**: Uso de API externas (Azure Speech SDK y Azure OpenAI).
+---
 
-# Tecnologías usadas
-1. **Frontend**
-   - **JavaScript**: Funciones específicas para transcripción de voz y síntesis de contenido.
-   - **Azure Cognitive Services - Speech SDK**: API para síntesis y reconocimiento de voz.
-   - **Dynamics 365 APIs**: Interfaces para consulta y actualización de datos en formularios.
-   - **JSON**: Manejo de datos estructurados entre componentes.
+### **Descripción de arquitectura**
+#### Tipo de solución
+La solución forma parte de un sistema híbrido donde se combinan:
+1. **Frontend para interacción en Dynamics 365:**
+   - Lectura de formularios, comandos por voz y síntesis de texto a voz usando el Azure Speech SDK.
+2. **Plugin de Dynamics CRM:**
+   - Transformación de texto con Azure OpenAI para devolver respuestas estructuradas al sistema.
 
-2. **Backend (.NET Plugin)**:
-   - **C#**: Lenguaje central para la lógica del plugin.
-   - **Azure OpenAI Service**: Para procesamiento de datos basados en modelos IA.
-   - **ASP.NET**: Framework para integrar las herramientas CRM con el servicio externo.
-   - **Microsoft Dynamics SDK**: Interacción directa con CRM y gestión de datos.
+#### Arquitectura aplicada
+La solución está basada en una arquitectura heterogénea que utiliza:
+- **N-capas:** Utiliza capas dedicadas a frontend, lógica de negocio en Dynamics 365 y un plugin conectado a servicios Azure externos como Speech SDK y OpenAI.
+- **Integración de APIs externas:** Dependencia directa de APIs de Azure para procesamiento de voz y transformación de texto.
+- **Eventos y asíncronía:** El diseño asíncrono y orientado a eventos permite interactuar dinamicamente con SDKs y APIs externas.
 
-# Dependencias o componentes externos
-1. **Azure Speech SDK y OpenAI API**: Para síntesis de voz y transformación de texto con modelos IA.
-2. **Microsoft Dynamics SDK**: Estándar para interacciones restringidas con CRM.
-3. **HTTP Request Libraries**: Para consumir servicios externos mediante REST API.
-4. **JSON Parsers**: Manejo y manipulación de datos JSON (Newtonsoft y System.Text.Json).
+---
 
-# Diagrama Mermaid válido para GitHub Markdown
+### **Tecnologías usadas**
+1. **Frontend (JavaScript):**
+   - **Azure Speech SDK:** Utilizado para reconocimiento y síntesis de voz.
+   - **JavaScript:** Modular y orientado a eventos, para interacción directa con los formularios en Dynamics 365.
+   - **Dynamics 365 Web API:** Para actualización directa de atributos y campos visibles.
+
+2. **Backend Plugin (C#):**
+   - **Azure OpenAI API:** Usada para transformar texto generado por el usuario en un formato estructurado.
+   - **Microsoft Dynamics SDK:** Para interactuar con entidades y formularios en CRM.
+
+3. **Dependencias externas principales:**
+   - **System.Net.Http:** Establecer conexiones y enviar datos a Azure OpenAI.
+   - **Newtonsoft.Json:** Manejo avanzado de JSON, crucial para el backend.
+
+---
+
+### **Diagrama Mermaid**
+El siguiente diagrama ilustra la interacción entre los principales componentes y dependencias.
+
 ```mermaid
 graph TD
-    A[Usuario]
-    B[Formulario en Dynamics]
-    C[FRONTEND/JS/readForm.js]
-    D[FRONTEND/JS/speechForm.js]
-    E[Azure Speech SDK]
-    F[Plugins/TransformTextWithAzureAI.cs]
-    G[Azure OpenAI API]
-
-    A -->|Interactúa| B
-    B -->|envía contexto| C
-    C -->|Lee campos visibles| D
-    D -->|Procesa texto hablado| E
-    E -->|Transforma datos de voz| D
-    D -->|Actualiza formulario| B
-  
-    D --> |Realiza llamado API| F
-    F --> |Transforma texto a JSON| G
-    G -->|Devuelve JSON estructurado| F  
-    F -->|Actualiza datos| B
+    A["Frontend: SpeechForm.js y readForm.js"]
+    A1["Azure Speech SDK"]
+    A2["Dynamics 365 Web API"]
+    B["Plugin: TransformTextWithAzureAI.cs"]
+    B1["Azure OpenAI API"]
+    A --> A1
+    A --> A2
+    A2 --> B
+    B --> B1
 ```
 
-# Conclusión final
-Este repositorio es implementado como una solución híbrida para formularios dinámicos basados en Microsoft Dynamics 365 que combina accesibilidad (sintetización y transcripción de voz) y procesamiento avanzado de datos con IA. La arquitectura modular facilita que diferentes componentes (frontend, CRM plugin, y APIs externas) trabajen en conjunto. Pese a ser funcional, sería ideal reforzar aspectos de seguridad, como la gestión de claves fuera del código o implementar cifrado de datos sensibles antes de transmitirlos.
+---
+
+### **Conclusión final**
+La solución presentada combina tecnologías modernas y patrones de arquitectura eficaces para habilitar el reconocimiento y síntesis de voz, procesamiento de formularios y transformación avanzada de texto en Dynamics 365. Es una implementación adecuada para sistemas que requieren accesibilidad, soporte de voz e integración con servicios externos como Azure Speech y OpenAI. Sin embargo, se recomienda encarecidamente mejorar la gestión de claves sensibles y externalizar configuraciones críticas en el plugin para fomentar seguridad, flexibilidad y mantenibilidad del sistema.
