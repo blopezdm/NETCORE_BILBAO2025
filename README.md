@@ -1,56 +1,47 @@
 ### Breve resumen técnico:
-El repositorio contiene tres archivos diferenciados que implementan funcionalidades para sistemas frontend y backend que interactúan con Microsoft Dynamics CRM y los servicios Azure (Speech SDK y OpenAI). Específicamente, los scripts manejan síntesis y reconocimiento de voz, procesamiento de formularios en un entorno CRM, y transformación de texto mediante un plugin que utiliza Azure OpenAI.
+Este repositorio es un proyecto combinado que integra múltiples tecnologías para habilitar la interacción entre voz, texto y formularios en **Microsoft Dynamics 365**, utilizando **Azure Speech SDK** y **Azure OpenAI**. Sus componentes incluyen un frontend basado en JavaScript para la recogida y procesamiento de voz y un backend en C# que actúa como un plugin para transformar texto con inteligencia artificial.
 
 ---
 
 ### Descripción de arquitectura:
-La arquitectura general parece ser una **n capas (2-Tier)** con interacción entre frontend y backend sobre APIs de Dynamics CRM y servicios de Azure. La lógica se distribuye en diferentes módulos:
-1. **Frontend**:
-   - Maneja la interacción del usuario mediante formularios y procesos de voz y texto en el navegador (JavaScript).
-   - Carga dinámica de SDKs y eventos asincrónicos permiten manejar dependencias en tiempo de ejecución.
-2. **Backend (Plugin/CRM)**:
-   - Implementa procesamiento de texto avanzado usando Azure OpenAI en el contexto de un plugin definido bajo la estructura de Dynamics CRM.
-   - Su responsabilidad recae en transformar texto de usuario según normas específicas.
-
-El enfoque de arquitectura está basado en la **integración de servicios externos**, utilizando una separación clara entre capas de presentación (frontend) y procesamiento lógico (plugin en el backend).
+El sistema tiene una arquitectura modular con las siguientes características principales:
+1. **Frontend**: Manejo de voz y texto a nivel del cliente, con integración de SDKs externos como **Azure Speech SDK**.
+2. **Backend/plugin**: Extensión para Dynamics 365 que transforma texto usando **Azure OpenAI** mediante solicitudes HTTP.
+3. **Patrones usados**:
+   - Modularización: Separación de responsabilidades mediante funciones específicas en el frontend.
+   - Integración de servicios externos: Uso del SDK de Azure Speech para voz y el servicio GPT-4 desde OpenAI para inteligencia artificial en el backend.
+   - Plugin Architecture: Cumple con el patrón de extensibilidad de Dynamics 365, lo que permite la ejecución en eventos de la plataforma.
 
 ---
 
 ### Tecnologías usadas:
 1. **Frontend**:
-   - **JavaScript**: Manejo del DOM, procesamiento de datos de formularios y carga de dependencias.
-   - **Azure Speech SDK**: Para síntesis y reconocimiento del habla.
-   - **Dynamics CRM context execution APIs**: Proveen acceso a datos del formulario en el frontend.
-
-2. **Backend (plugin)**:
-   - **C#/.NET Framework**: Desarrollo del plugin para Dynamics CRM.
-   - **Microsoft Dynamics CRM SDK**: Acceso y manipulación de datos de CRM.
-   - **Azure OpenAI**: Lógica avanzada para procesar texto mediante servicios de Inteligencia Artificial.
-   - **Newtonsoft.Json**: Serialización/deserialización de JSON.
-   - **HttpClient** (en C#): Para realizar solicitudes a APIs externas.
+   - **JavaScript** como lenguaje principal.
+   - **Azure Speech SDK** para la conversión de texto a voz y viceversa.
+   - Dependencia directa de APIs de Dynamics 365 para la interacción con formularios y datos.
+   
+2. **Backend/plugin**:
+   - **C#** como lenguaje principal.
+   - **Microsoft Dynamics 365 SDK** para la integración con CRM.
+   - **Azure OpenAI (GPT-4)** para procesamiento de texto avanzado.
+   - **System.Net.Http** para solicitudes HTTP.
+   - **Newtonsoft.Json** y **System.Text.Json** para manejo de datos JSON.
 
 ---
 
-### Diagrama **Mermaid**:
-Representa el flujo general de interacción entre frontend y backend, así como las dependencias externas:
-
+### Diagrama Mermaid válido para GitHub:
 ```mermaid
 graph TD
-    A["Usuario (Formulario Web)"] --> B["Frontend (JavaScript)"]
-    B --> C["Azure Speech SDK"]
-    B --> D["Microsoft Dynamics CRM APIs"]
-    B --> E["Recognizer (Speech Input)"]
-    B --> F["Synthesizer (Speech Output)"]
-    F --> C
-    D --> G["Listener (Field Mapping)"]
-    D --> H["REST API Custom"]
-    H --> I["Plugin (C# Backend)"]
-    I --> J["Azure OpenAI API"]
-    J --> K["Transformación de Texto"]
-    K --> L["Resultado Estructurado (JSON)"]
+    A["Usuario"] -->|Interacción de voz y texto| B["Frontend - JavaScript (speechForm.js, VozInputService.js)"]
+    B -->|Procesa voz - Azure Speech SDK| C["API personalizada Dynamics 365"]
+    B -->|Envia datos del formulario| C
+    C -->|Envía texto procesado| D["Backend - Plugin TransformTextWithAzureAI.cs"]
+    D -->|Procesa texto - Azure OpenAI| E["Servicio GPT-4 en Azure"]
+    E -->|Devuelve respuesta JSON estructurada| D
+    D -->|Devuelve texto transformado| C
 ```
 
 ---
 
 ### Conclusión final:
-La solución integra tecnologías modernas para mejorar la experiencia del usuario en un entorno Dynamics CRM mediante la implementación de módulos de voz (Azure Speech SDK) y procesamiento textual avanzado (Azure OpenAI). La arquitectura n capas asegura una separación de responsabilidades entre frontend y backend, siguiendo principios de modularidad y responsabilidad única. Además, el uso de patrones como **carga dinámica de SDKs**, el mecanismo de plugins en el backend y la interacción asincrónica con APIs externas como Azure destaca la capacidad extensible del sistema.
+Este repositorio combina una solución **multicapa** que integra directamente **frontend** basado en JavaScript y un **backend/plugin** extendiendo la API de Dynamics 365. Su enfoque modular y desacoplado facilita la integración de funcionalidades, como el manejo de voz y texto mediante el **Azure Speech SDK** y el procesamiento avanzado con **Azure OpenAI**. La arquitectura es ideal para entornos empresariales que requieren interacción avanzada con el usuario (voz y texto) y aprovechamiento de la inteligencia artificial.
