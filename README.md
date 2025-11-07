@@ -1,72 +1,56 @@
 ### Breve resumen técnico
-El repositorio contiene varios archivos con funcionalidades complementarias:
-1. **Frontend (JavaScript):** 
-   - Gestión de voz (sistema de síntesis y reconocimiento de voz mediante **Azure Speech SDK**).
-   - Interacción con formularios y secciones de Dynamics 365, con transformación de datos para representar texto hablado en formato estructurado.
-   
-2. **Backend / Plugins (C#):**
-   - Plugin programado para Dynamics CRM que utiliza **Azure OpenAI** para transformar texto siguiendo reglas específicas (Procesos de transformación y respuesta en formato JSON).
+El repositorio presenta una solución que integra reconocimiento de voz, síntesis de audio, transformación de texto mediante IA y CRM para Microsoft Dynamics. Los archivos evidencian una combinación de desarrollo frontend (JavaScript), plugins para Dynamics (C#) y conexiones externas (Azure).
 
 ---
 
 ### Descripción de arquitectura
-El sistema utiliza un enfoque **cliente-servidor** basado en un esquema híbrido, donde:
-1. **Frontend**:
-   - Consume APIs externas (Azure Speech SDK) y procesa datos en un cliente (JavaScript).
-   - Maneja localmente las transcripciones y transformación de su estructura antes de enviar datos hacia el backend o consumir APIs personalizadas.
-   
-2. **Backend**:
-   - Funciona sobre **Dynamics CRM** mediante plugins que delegan funciones de transformación de texto a servicios externos (Azure OpenAI).
-   - Incluye procesamientos en tiempo real y API personalizada para interactuar con datos del formulario o campos del CRM.
+La arquitectura puede clasificarse como **n-capas**: 
+1. **Capa de presentación:** Implementada mediante archivos JavaScript que interactúan con formularios y el SDK de Azure Speech.
+2. **Capa de lógica:** Extensiones dinámicas del CRM gracias a los plugins de Dynamics CRM en C#.
+3. **Capa de servicios externos:** Incluye servicios de Azure Speech y Azure OpenAI.
 
-El diseño muestra características de una arquitectura orientada a servicios (SOA), donde cada elemento está modularizado y se delegan responsabilidades específicas a componentes externos (Azure Speech SDK, Azure OpenAI).
+El sistema busca modularizar la interacción con formularios (frontend), reconocimiento de voz, síntesis de texto y procesamiento IA. Se utiliza un enfoque basado en servicios con comunicación mediante APIs externas.
 
 ---
 
-### Tecnologías usadas
-1. **Frontend:**
-   - **Lenguaje principal:** JavaScript.
-   - **Framework/SDK principales:** 
-     - Azure Speech SDK: reconocimiento y síntesis de voz.
-     - Navegadores Web estándar (DOM, alertas).
-   - APIs específicas: Consumo del API de Dynamics 365.
+### Tecnologías utilizadas
+#### Lenguajes y frameworks:
+- **JavaScript:** Para la lógica de frontend.
+- **C#:** Para la creación de plugins en Dynamics CRM.
+- **Microsoft Dynamics CRM SDK:** Framework para extensiones del CRM.
+- **Azure Speech SDK:** Reconocimiento y síntesis de voz.
+- **Azure OpenAI API:** Procesamiento avanzado de texto mediante IA.
 
-2. **Backend:**
-   - **Lenguaje principal:** C#.
-   - Framework: .NET Framework para desarrollo de plugins de Dynamics CRM.
-   - **Servicios externos:**
-     - **Azure OpenAI:** Para transformación de texto.
-     - HTTP client y JSON processing libraries (`System.Net.Http`, `System.Text.Json`).
+#### Patrones observados:
+- **Facade Pattern:** Abstrae la complejidad del reconocimiento de voz en funciones específicas.
+- **Handler Pattern:** Procesamiento lógico de texto y datos mapeados.
+- **Plugin Design Pattern:** Extensión modular del sistema CRM mediante interfaces estándar (`IPlugin`).
+- **APIs asíncronas:** Uso de operaciones asíncronas para asegurar la carga del SDK y comunicación con servicios externos.
 
-3. **Patrones:**
-   - **Encapsulación modular:** Cada función se encarga de una tarea específica.
-   - **Integración de servicios externos:** Uso de SDKs y APIs como Azure Speech y OpenAI.
-   - **Cliente/Servidor:** Interacción directa entre frontend y backend, con delegación en APIs SaaS.
+---
+
+### Dependencias externas presentes
+1. **Azure Speech SDK:** Para procesamiento Text-to-Speech y Speech-to-Text.
+2. **Azure OpenAI API:** Manejo del procesamiento texto/IA.
+3. **Microsoft Dynamics CRM SDK:** Para extensiones CRM.
+4. **HttpClient:** En plugins, para consumo API externa.
 
 ---
 
 ### Diagrama **Mermaid**
 ```mermaid
 graph TD
-    A[Usuario]
-    B[Frontend-Formulario JS]
-    C["Azure-Speech-SDK"]
-    D["API Personalizada (Dynamics-365)"]
-    E[Backend-Plugin CRM]
-    F["Azure-OpenAI"]
-
-    A --> B
-    B --> C
-    B --> D
-    D --> E
-    E --> F
-    C --> B
-    F --> E
+    A["Usuario se comunica vía Voz o Formulario"]
+    B["Frontend - SpeechUtils.js"] -->|Azure Speech| C["Text-to-Speech"]
+    B -->|Azure Speech| D["Speech-to-Text"]
+    D --> E["Mapping y Procesamiento de Texto - SpeechRecognitionHandler.js"]
+    E --> |Datos IA| F["Procesamiento IA - API Azure"]
+    F --> G["Mapeo a CRM Form"]
+    G --> H["Capa CRM Plugin - TransformTextWithAzureAI.cs"]
+    H --> I["Azure OpenAI API"]
 ```
 
 ---
 
 ### Conclusión final
-Este repositorio implementa una solución híbrida centrada en la interacción de usuarios vía voz y texto con formularios en Dynamics 365. Utiliza tecnología avanzada como **Azure Speech SDK** y **Azure OpenAI**, permitiendo que los datos sean dictados, transformados y procesados eficientemente. 
-
-La arquitectura cliente-servidor y modular facilita la escalabilidad y extensibilidad, aunque depende fuertemente de servicios externos, lo cual puede impactar en la fiabilidad del sistema en entornos de alta demanda o baja disponibilidad del SaaS.
+La solución implementada integra eficientemente capacidades de reconocimiento de voz, síntesis de texto y procesamiento IA con un sistema CRM. Combina tecnologías de frontend (JavaScript), plugins para extensibilidad del backend (C#), y herramientas en la nube de Azure para interacciones avanzadas. La arquitectura **n-capas** es adecuada para su propósito, aunque podría mejorarse hacia una **arquitectura hexagonal** para desacoplar aún más las interacciones entre capas y servicios externos. Esto facilitaría mantenimiento y escalabilidad, especialmente si se desea agregar nuevas fuentes de datos o servicios.
