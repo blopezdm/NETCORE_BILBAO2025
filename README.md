@@ -1,45 +1,72 @@
-### Breve resumen técnico
-Este repositorio contiene componentes que forman parte de una solución híbrida para manipulación de formularios en un entorno CRM (probablemente Microsoft Dynamics/365). La solución integra funcionalidades frontend mediante JavaScript y un backend .NET que utiliza el servicio de Azure OpenAI. En el frontend, los módulos interactúan con los SDKs de Azure Speech para reconocimiento y síntesis de voz. En el backend, se extiende la funcionalidad de transformación de texto mediante un plugin que utiliza modelos de GPT alojados en Azure.
+# Breve resumen técnico
+
+El repositorio contiene una solución orientada a la integración de funcionalidades de voz e inteligencia artificial en el contexto de Dynamics 365 y CRM. Involucra tres componentes principales:
+1. **Frontend (JavaScript):** Manejo de entrada y salida de voz mediante Azure Speech SDK con funciones de lectura de formularios y síntesis de voz.
+2. **Backend Plugin (C#):** Plugin de Dynamics CRM para transformar texto mediante la API de Azure OpenAI (GPT-4).
+3. **Custom API:** Interacción con una API definida en Dynamics para procesamiento y asignación de datos.
 
 ---
 
-### Descripción de arquitectura
-La solución se clasifica como **híbrida de integración de servicios**, con lógica distribuida entre frontend y backend, apoyada en servicios externos de Microsoft Azure (Azure Speech SDK y Azure OpenAI). Se utiliza un esquema de arquitectura en capas:
-1. **Frontend** (JS): Administración de formularios y operaciones de síntesis/reconocimiento de voz que interactúan directamente con los usuarios.
-2. **Backend** (.NET): Flujo de transformación y procesamiento con OpenAI, desplegado como plugin dentro de Dynamics CRM.
-3. **Servicios externos**: Azure Speech y Azure OpenAI actúan como mecanismos adicionales para procesar voz y texto.
+# Descripción de arquitectura
 
-### Tecnologías usadas
-1. **Frontend**:
-   - **JavaScript**: La lógica principal de manipulación del formulario.
-   - Azure Speech SDK para reconocimiento y síntesis de voz.
-   
-2. **Backend**:
-   - **Plugin .NET** con C# (Microsoft Dynamics CRM).
-   - Frameworks: `System.Net.Http`, `Newtonsoft.Json.Linq`, `System.Text.Json`.
+La solución tiene una **arquitectura híbrida**, combinando elementos de **arquitectura basada en eventos**, interacción con microservicios externos (APIs de Azure), y un **modelo cliente-servidor**. Dynamics actúa como un elo central para la lógica de negocio, mientras que los servicios en la nube amplían su funcionalidad.
 
-3. **Servicios externos**:
-   - **Azure Speech SDK**: Configuración, Audio y síntesis de voz.
-   - **Azure OpenAI (GPT)**: Transformación avanzada de texto operando como un microservicio REST.
+1. **Frontend Modular (JavaScript):** Arquitectura basada en funciones bien segmentadas para interacción dinámica con formularios y servicios de voz, integrando SDK y APIs.
+2. **Backend Plugin (C#):** Encapsula lógica específica de procesamiento en Dynamics CRM, delegando actividades complejas (transformaciones) a servicios como Azure OpenAI.
+3. La integración combina patrones de carga dinámica, modularidad y extensibilidad para utilizar dependencias externas solo cuando sean necesarias.
 
-### Diagrama Mermaid válido para GitHub
+---
+
+# Tecnologías usadas
+
+1. **Frontend:**
+   - **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
+   - **JavaScript**: Base para manejar eventos y lógica del SDK.
+   - **Dynamics 365 API**: Llamados para interacción con formularios.
+
+2. **Backend Plugin (C#):**
+   - **Azure OpenAI API**: Procesamiento de texto con GPT-4.
+   - **Dynamics CRM SDK (`Microsoft.Xrm.Sdk`)**: Interacción y manipulación de datos CRM.
+   - **.NET Libraries (HttpClient, Json):** Comunicación con servicios externos.
+
+3. **Comunicación API:**
+   - **HTTP Requests**: Llamados a APIs externas como Azure OpenAI y Dynamics Custom API.
+
+4. **Patrones:**
+   - Modularidad.
+   - Encapsulación de lógica en funciones y métodos.
+   - Dependencia dinámica (ejemplo: SDK de Azure Speech).
+
+---
+
+# Diagrama Mermaid compatible con GitHub Markdown
+
 ```mermaid
 graph TD
-    F["Frontend JS"]
-    B["Backend .NET Plugin"]
-    CRM["Microsoft Dynamics CRM"]
-    AzureSpeech["Azure Speech SDK"]
-    AzureOpenAI["Azure OpenAI GPT"]
-    User["Solicitante/Usuario"]
-    
-    User --> F["Frontend JS"]
-    F --> CRM
-    F --> AzureSpeech
-    CRM --> B["Backend .NET Plugin"]
-    B --> AzureOpenAI
+    A["Frontend: voiceInputHandler.js"]
+    B["Frontend: speechForm.js"]
+    C["Backend Plugin: TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Dynamics CRM"]
+    F["Azure OpenAI API"]
+    G["Custom API in Dynamics"]
+
+    A --> D
+    B --> D
+    A --> E
+    B --> E
+    C --> E
+    C --> F
+    B --> G
+    G --> E
 ```
 
 ---
 
-### Conclusión final
-El repositorio implementa una solución avanzada para la integración de voz y texto en un entorno CRM. Aprovecha servicios de Microsoft Azure y sigue una arquitectura modular para garantizar la separación de preocupaciones entre frontend, backend y servicios externos. La elección de Azure para la carga dinámica del SDK y la API OpenAI asegura flexibilidad y escalabilidad. Este esquema es robusto y puede extenderse fácilmente para nuevos requerimientos, como agregar soporte para otros idiomas o reglas de negocio más complejas.
+# Conclusión final
+
+La solución presentada es un ejemplo bien estructurado de integración de tecnologías en un ecosistema corporativo orientado a Dynamics CRM. La combinación de módulos frontend, funciones de voz y plugins backend demuestra una arquitectura híbrida que escala además de ser flexible. Esta solución ilustra cómo integrar servicios de AI (Azure OpenAI y Speech) con un sistema CRM, aprovechando APIs y plugins en un flujo de gestión de datos eficaz.
+
+- **Escalabilidad:** La arquitectura modular permite añadir nuevos microservicios o ampliar funcionalidades.
+- **Optimización:** Integrando SDK de manera específica (carga dinámica), garantiza uso eficiente de recursos.
+- **Simplicidad:** Aunque existen dependencias externas, la lógica está segmentada en componentes de fácil mantenimiento.
