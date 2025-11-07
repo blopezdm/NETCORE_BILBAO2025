@@ -1,53 +1,67 @@
-### Breve resumen técnico
-El repositorio presenta funcionalidades que apoyan la interacción entre un frontend basado en JavaScript y un backend en Dynamics CRM. En el frontend, se manejan tareas de síntesis y reconocimiento de voz mediante Azure Speech SDK, mientras que el backend está extendido con un plugin de Dynamics CRM que interactúa con Azure OpenAI para transformar texto. La arquitectura combina patrones asíncronos, modularidad y extensibilidad.
+### **Breve Resumen Técnico**
+
+El repositorio examinado contiene archivos organizados en diferentes carpetas que integran una solución híbrida de **Frontend** y **Backend**. A partir de los archivos proporcionados se observa que la solución implementa principalmente capacidades de entrada por voz, síntesis de texto, y transformación de datos estructurados mediante APIs de Azure.
 
 ---
 
-### Descripción de la arquitectura
-La solución tiene una arquitectura de **n capas**, donde:
-1. **Frontend:** Contiene lógica de presentación, interacción con el usuario (formulario dinámico) y consumo del Speech SDK.
-2. **Middleware:** Representado por la integración con APIs externas y el plugin personalizado de Dynamics CRM.
-3. **Backend:** Dynamics CRM gestiona datos y lógica empresarial, extendido por el plugin que transforma texto con Azure OpenAI.
+### **Descripción de Arquitectura**
 
-Los archivos están organizados en módulos funcionales con alta cohesión: cada archivo tiene un propósito concreto y código reutilizable.
+La arquitectura proporciona una integración **n capas**, combinando módulos de frontend y plugins para Dynamics CRM con servicios de terceros. Los módulos actúan como:
 
----
+1. **Frontend JS (readForm.js/speechForm.js):**
+   - Se encarga de capturar información visual y procesarla junto con entradas por voz.
+   - Usa componentes reutilizables (funciones de síntesis, procesamiento de voz y llamadas a APIs externas).
+   - Se integra con APIs como Azure Speech SDK y eventualmente con MS CRM.
 
-### Tecnologías usadas
-1. **Frontend:**
-   - **JavaScript ES6+:** Lenguaje para implementar la lógica en archivos como `readForm.js` y `speechForm.js`.
-   - **Azure Speech SDK:** Realiza reconocimiento de voz y síntesis de texto a voz.
-   - **Dynamics CRM APIs (`Xrm.WebApi`):** Interacción con la capa backend de CRM.
-   - **DOM API:** Manipulación dinámica del formulario.
-   
-2. **Backend:**
-   - **Dynamics CRM SDK:** Plugin de `TransformTextWithAzureAI.cs` usando `IPlugin`.
-   - **Azure OpenAI API:** API para transformar texto con inteligencia artificial (GPT-4).
-   - **HTTP Client:** Para consumir APIs de servicios externos.
-   - **Newtonsoft.Json:** Manejo de Json en formato estructurado.
-
-3. **General:**
-   - **Microsoft Azure Services:** Speech and OpenAI.
-   - **Pattern:** Modular, Event-driven architecture.
+2. **Backend Plugin (TransformTextWithAzureAI.cs):**
+   - Un plugin para **Dynamics CRM**, donde el evento principal (como entrada de datos) dispara un procesamiento API desde **Azure OpenAI** que transforma texto en JSON estructurado.
+   - Sigue el patrón de **Plugin** para extender funcionalidades en el CRM mediante servicios externos.
 
 ---
 
-### Diagrama Mermaid válido para GitHub Markdown
-Este diagrama representa la interacción entre módulos y servicios.
+### **Tecnologías Usadas**
+
+1. **Frontend JS**:
+   - **Vanilla JavaScript**: Se priorizan funciones simples y modulares.
+   - **Azure Speech SDK**: Tecnología para reconocimiento y síntesis de voz.
+   - **Promises y asincronismo**: Uso de `async/await` y callbacks para manejar dependencias externas como SDKs.
+   - **Dynamic CRM**: Puede pasar parámetros de formulario (con objetos `executionContext`).
+
+2. **Backend .NET Plugin**:
+   - **C#**: Desarrollo basado en .NET Framework, compatible con **Microsoft Dynamics CRM**.
+   - **Microsoft.Xrm.Sdk**: Librería específica para trabajar con el modelo CRM.
+   - **Azure OpenAI API**: Envíos HTTP para procesamiento avanzado de texto (GPT compatible).
+   - **Newtonsoft.Json.LINQ**: Para manipular respuestas JSON complejas.
+   - **HttpClient**: Para comunicación API basada en POST.
+
+---
+
+### **Diagrama Mermaid Válido**:
 
 ```mermaid
 graph TD
-    A["Frontend - carga formulario"] --> B["JavaScript - interacción DOM"]
-    B --> C["Azure Speech SDK - síntesis y reconocimiento de voz"]
-    C --> D["API Dynamics CRM - actualización de datos"]
-    D --> E["Plugin - TransformTextWithAzureAI.cs"]
-    E --> F["Azure OpenAI - transformación textual"]
-    F --> G["JSON estructurado - respuesta API"]
-    G --> H["Dynamics CRM - actualización backend"]
-    H --> D
+    A["Frontend: readForm.js"]
+    B["Frontend: speechForm.js"]
+    C["Backend: TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Azure OpenAI API"]
+    F["Microsoft Dynamics CRM"]
+
+    A --> D
+    B --> D
+    D --> B
+    D --> A
+    A --> F
+    B --> F
+    F --> C
+    C --> E
+    E --> C
 ```
 
 ---
 
-### Conclusión final
-La solución combina el poder del frontend moderno con la robustez de Dynamics CRM y servicios de Microsoft Azure. Con una arquitectura de **n capas**, modulares y orientadas a servicios, ofrece una integración eficiente entre interfaces de usuario, voz y procesamiento textual avanzado. Aunque es funcional y extensible, se recomienda garantizar que las claves de API están gestionadas de forma segura y que las dependencias externas están bajo control para evitar brechas de seguridad.
+### **Conclusión Final**
+
+Esta solución integra módulos de frontend con funcionalidades de síntesis y procesamiento de datos de formularios, y un backend plugin con acceso programático al sistema de Microsoft Dynamics CRM. Está diseñada para ofrecer servicios automatizados en entornos empresariales de gestión de datos, optimizados mediante APIs de inteligencia artificial de Azure OpenAI y procesamiento de voz con Azure Speech SDK.
+
+Sin embargo, se observan **puntos críticos** como el uso de claves y configuraciones **hardcoded** en el código fuente del frontend, lo cual presenta vulnerabilidades de seguridad, además de ser una práctica poco mantenible. Es recomendable que estas configuraciones sean externalizadas hacia un servicio de configuración seguro adaptado al entorno de despliegue.
