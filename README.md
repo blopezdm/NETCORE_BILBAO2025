@@ -1,46 +1,60 @@
-### Breve resumen técnico
-El repositorio contiene código dividido en tres áreas principales: un frontend basado en Javascript para interactuar con Dynamics 365, integración con servicios de inteligencia artificial de Azure, y un plugin en C# que utiliza Azure OpenAI para procesamiento de texto estructurado. La solución emplea Azure Speech SDK, Dynamics APIs y patrones relacionados con eventos y modularidad, soportando características tanto de entrada como síntesis de voz y transformación de datos textuales.
+### Breve Resumen Técnico
+La solución presentada es una integración entre un sistema frontend basado en JavaScript y un conjunto de plugins en Dynamics CRM, que trabajan conjuntamente con servicios externos como Azure Speech SDK y Azure OpenAI para ofrecer funcionalidades de reconocimiento de voz, síntesis de voz y transformación avanzada de texto.
 
----
+### Descripción de Arquitectura
+La arquitectura es **n capas**, ya que está organizada en varias capas claramente diferenciadas:
+1. **Frontend**: JavaScript maneja la interacción con los usuarios, y las funciones en los archivos como `readForm.js` y `speechForm.js` se encargan de procesar datos en los formularios, integrar soluciones como el SDK de Azure, realizar transformaciones locales y conectarse a APIs externas para mayor procesamiento.
+2. **Backend/Plugins de Dynamics CRM**: Plugins como `TransformTextWithAzureAI.cs` procesan datos enviados desde el frontend. Su lógica es completamente abstraída y se conecta a Azure OpenAI a través de un microservicio REST.
+3. **Microservicio en Azure**: La API de Azure OpenAI actúa como un componente externo para realizar análisis y transformaciones avanzadas de texto.
+4. **Servicios adicionales**: Uso del Azure Speech SDK para reconocimiento y síntesis de voz.
 
-### Descripción de arquitectura
-La arquitectura combina aspectos de capas tradicionales y componentes de servicios distribuidos. En el frontend, hay una interacción directa con formularios en Dynamics 365 mediante APIs y eventos que controlan elementos específicos como síntesis y reconocimiento de voz. Por otro lado, los plugins funcionan como puntos de extensión dentro de Dynamics, integrándose con APIs externas de Azure para procesamiento de texto. Esto genera una arquitectura orientada hacia una solución híbrida basada en capas y eventos, con integración externa de microservicios de AI.
+Esta arquitectura puede evolucionar hacia un modelo de **microservicios**, donde cada parte (procesamiento frontend, plugins de Dynamics, y otros servicios como Azure Speech y OpenAI) pueda ser desacoplada e implementada como un módulo independiente.
 
----
+### Tecnologías Usadas
+1. **Frontend**:
+   - JavaScript (vanilla).
+   - Azure Speech SDK.
+   - Dynamics CRM API.
 
-### Tecnologías usadas
-1. **Frontend:**  
-   - **Javascript:** Para la lógica de interacción.
-   - **Dynamics 365 Web API (`Xrm.WebApi.online`).**
-   - **Azure Speech SDK:** Para síntesis y reconocimiento de voz.
-   - **Callback/Promise:** Manejo asíncrono de SDK y APIs.
-   - Eventos asociados a la interacción de formularios.
+2. **Backend**:
+   - Plugins para Dynamics CRM (C#).
+   - Microsoft.Xrm.Sdk.
+   - Newtonsoft.Json para manejo de JSON.
+   - System.Net.Http para peticiones REST al servicio Azure OpenAI.
 
-2. **Backend/Plugins:**  
-   - **C# (.NET Framework/Dynamics SDK):** Desarrollo de plugins para Dynamics 365.
-   - **Azure OpenAI APIs:** Transformación avanzada de datos en JSON.
-   - **HTTP Client (`System.Net.Http`).**
+3. **Servicios Externos**:
+   - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
+   - **Azure OpenAI GPT-4**: Transformación avanzada de texto en formato JSON estructurado.
 
-3. **Interacciones:**  
-   - Solicitudes REST a servicios externos como Azure OpenAI y Dynamics Custom APIs.
-   - Conversión de datos transcritos en español a formato JSON estructurado.
-   - Mapa de campos para mejorar asignación dinámica en formularios.
+4. **Patrones**:
+   - **Callback Pattern**: Uso de funciones asíncronas y componentes como el cargador dinámico de SDK.
+   - **Factory Pattern**: Creación de configuraciones y nodos dinámicos del SDK.
+   - **Command Pattern**: Manejo de comandos específicos como reglas de procesamiento, transformación y asignación de datos.
 
----
+### Dependencias o Componentes Externos
+1. **Azure Speech SDK**:
+   - Reconocimiento de voz.
+   - Síntesis de texto a voz.
+   - Configuración dinámica desde un endpoint.
 
-### Diagrama **Mermaid** válido para GitHub
+2. **Azure OpenAI GPT-4 API**:
+   - Transformación avanzada de texto.
+   - Reglas predefinidas aplicadas a las necesidades de la solución.
+
+3. **Dynamics CRM Plugins**:
+   - API personalizada para transformar texto (`trial_TransformTextWithAzureAI`).
+   - Plugins integrados con servicios del frontend.
+
+### Diagrama Mermaid
 ```mermaid
 graph TD
-    A["VoiceInputHandler JS"] --> B["Azure Speech SDK"]
-    A --> C["Dynamics API Xrm.WebApi"]
-    A --> D["Custom API Dynamics"]
-    B --> E["Azure Speech Service"]
-    D --> F["Plugin TransformTextWithAzureAI"]
-    F --> G["Azure OpenAI API"]
-    C --> H["Dynamics FormContext"]
-```
+  A1["Frontend JavaScript"] --> B1["Azure Speech SDK"]
+  A1 --> B2["Dynamics API 'formContext'"]
+  B2 --> C1["Plugins Dynamics CRM"]
+  C1 --> C2["callCustomApi"]
+  C1 --> D1 --> D2 --> D3
+  subgraph Backend -- Plugin Level-->
+	Action --> Handle(run_custom_interface_)
+````
 
----
-
-### Conclusión final
-La solución combina tecnologías modernas de asistentes por voz y procesamiento de texto, con una integración avanzada hacia servicios cloud como Azure Speech y OpenAI. Mientras la estructura del código en el frontend emplea patrones de modularidad y elementos de diseño basado en eventos, el backend se alinea al modelo típico de plugins para Dynamics CRM. Es una solución robusta, ideal para automatizar tareas dentro de entornos empresariales usando inteligencia artificial, pero puede ser optimizada en aspectos de seguridad y abstracción de dependencias críticas como claves API.
+### Aclaro: El resumen se refinara la visual inicial. Key
