@@ -1,61 +1,43 @@
-### Breve resumen técnico
-
-El repositorio es una integración ligera entre tecnologías de reconocimiento de voz y síntesis de voz con sistemas CRM/Dynamics, además de un plugin que utiliza un servicio de Azure OpenAI para realizar transformaciones avanzadas en los datos de entrada. Combina múltiples capas de la tecnología de Microsoft, como Azure Speech SDK y Dynamics CRM APIs, para extender funcionalidad relacionada con formularios y textos procesados con IA. 
-
-### Descripción de arquitectura
-
-La solución adopta una **arquitectura de capas** con responsabilidades distribuidas en tres principales capas:
-1. **Capa de presentación (Frontend/JavaScript)**: Gestiona la interacción con el usuario, el reconocimiento de voz y la síntesis de voz (integración con el Azure Speech SDK). Las funciones están orientadas hacia la captura, procesamiento y asignación de datos en formularios CRM visibles en el cliente.
-2. **Capa lógica de negocio (Plugins en C#)**: Encargada de la integración con Azure OpenAI GPT-4O para el procesamiento avanzado de textos y generación dinámica de objetos JSON.
-3. **Capa de acceso a datos (Microsoft Dynamics APIs)**: Realiza consultas y actualizaciones en las entidades de Microsoft Dynamics CRM utilizando APIs nativas.
-
-### Tecnologías usadas
-1. **Mediante Frontend (JavaScript)**
-   - **Azure Speech SDK**: Para reconocimiento y síntesis de voz (URL: https://aka.ms/csspeech/jsbrowserpackageraw).
-   - Datos procesados con APIs de Dynamics CRM para leer/escribir campos en el formulario.
-   - Promesas y asíncronía: función fundamental para integrar SDKs y APIs como los de Azure Speech y Dynamics.
-
-2. **Mediante Backend (C# Plugin)**
-   - **Microsoft Dynamics SDK**: Para desarrollar plugins con integración nativa en Dynamics.
-   - **Azure OpenAI GPT-4O API**:
-     - Endpoint: https://openai-netcore.openai.azure.com/
-     - Permite procesamiento avanzado de texto con reglas predefinidas en formato JSON y normas específicas.
-   - Frameworks auxiliares:
-     - `System.Text.Json` y `Newtonsoft.Json.Linq` para operaciones estructuradas con JSON.
-     - `HttpClient` para enviar y recibir solicitudes HTTP.
-   
-3. **Patrones de diseño**
-   - **Adapter**: Integración de servicios como Azure Speech SDK dentro de la lógica de negocios y presentación en el frontend.
-   - **Carga dinámica de dependencias**: Uso de mecanismos para cargar recursos externos solo cuando son necesarios (p.ej., Azure Speech SDK).
-   - **N Capas**: Separación clara de responsabilidades entre frontend, lógica de negocio (C# plugins), y consumo de datos en las APIs de Dynamics CRM.
-
-### Dependencias o componentes externos
-Al utilizar tecnologías de Microsoft, estas dependencias externas son fundamentales:
-1. **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
-2. **Azure OpenAI (GPT-4O)**: Para transformación de texto inteligente y generación de JSON estructurado.
-3. **Microsoft Dynamics SDK**: Facilita la interacción con entidades del modelo de datos de CRM a través de plugins y APIs.
-4. **JavaScript y librerías auxiliares**:
-   - Promesas de JavaScript para controlar la ejecución de procesos asíncronos.
-5. **C# Frameworks para Dynamics y HTTP**:
-   - `Newtonsoft.Json.Linq` y `System.Text.Json` para procesar datos JSON.
-   - `System.Net.Http` para realizar solicitudes hacia servicios remotos.
+### Breve resumen técnico:
+El repositorio parece estar diseñado para integrar capacidades avanzadas de reconocimiento, síntesis de voz y transformación de datos mediante el uso de servicios Azure AI y Dynamics CRM. Los archivos representan componentes que trabajan en conjunto para ofrecer una funcionalidad específica dentro de un ecosistema más grande. Es posible que esta solución sea parte de una interfaz CRM que permite la interacción con datos mediante voz, la lectura de información desde un formulario, e integración con servicios externos para manipulación de datos.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Descripción de arquitectura:
+1. **Tipo de solución:**  
+   Esta implementación corresponde a una solución orientada tanto a APIs (Azure AI, Dynamics CRM) como a interacciones frontend con formularios y datos. Es una integración para aplicaciones CRM/Dynamics 365 que agrega capacidades de voz y procesamiento de datos utilizando servicios de terceros (Azure Speech SDK y Azure OpenAI).
+
+2. **Arquitectura:**  
+   La arquitectura se alinea con el diseño de **microservicios** y **plugin-driven architecture**, con componentes específicos dedicados a funcionalidades de síntesis/reconocimiento de voz y transformación de texto mediante la conexión a servicios externos. Internamente, las funcionalidades están organizadas modularmente, siguiendo patrones de diseño como DTO para transferencia de datos y event-driven paradigms para iniciar acciones basadas en eventos específicos.
+
+3. **Tecnologías usadas:**  
+   - **Frontend:** JavaScript con módulos que incluyen el **Azure Speech SDK** para síntesis y reconocimiento de voz, integración directa con Dynamics CRM API (`Xrm.WebApi` y `formContext`).  
+   - **Backend:** C#, con la implementación de **Dynamics 365 Plugins** mediante `Microsoft.Xrm.Sdk` y uso del **Azure OpenAI Service (GPT-4)** para procesamiento avanzado de texto.  
+   - **External Service APIs:** Azure Cognitive Services, Azure Speech SDK, and Azure OpenAI.  
+   - **Serialization & HTTP Requests:** `System.Text.Json`, `HttpClient`, and related .NET technologies.  
+
+4. **Dependencias y componentes externos:**  
+   - **Azure Speech SDK:** Para brindar soporte de síntesis y reconocimiento de voz.  
+   - **Azure OpenAI API:** Transformación y manipulación avanzada de texto mediante modelos GPT.  
+   - **Dynamics CRM API (Xrm.WebApi):** Interacción con formularios y entidades CRM.  
+   - **System libraries:** Serialización JSON (`System.Text.Json`), manejo de solicitudes HTTP (`System.Net.Http`), y patrones típicos de plugins de Dynamics en C#.  
+
+5. **Diagrama Mermaid:**  
+A continuación, se presenta un diagrama simplificado que muestra las interacciones entre los diferentes componentes mencionados:
 
 ```mermaid
-graph LR
-    UI-Frontend --> JavaScript-Logic
-    JavaScript-Logic --> Azure-Speech-SDK
-    JavaScript-Logic --> Dynamics-SDK-APIs
-    JavaScript-Logic --> XRM-API
-    CSharp-Plugin --> Azure-OpenAI-GPT4O
-    CSharp-Plugin --> Dynamics-CRM-DataAccess
-    Azure-OpenAI-GPT4O --> Azure-Endpoint
-    Dynamics-CRM-DataAccess --> CRM-Entities
-``` 
+graph TD
+    A["Frontend Application"] --Azure Speech SDK--> B["Text to Speech"]
+    A --Azure Speech SDK--> C["Speech Recognition"]
+    A --Dynamics CRM--> F["FormContext"]
+    B --calls--> G["Azure Cognitive Services"]
+    C --calls--> G["Azure Cognitive Services"]
+    F --integrates with--> H["Dynamics CRM APIs"]
+    H --triggers--> D["Plugin TransformTextWithAzureAI"]
+    D --uses--> E["Azure OpenAI API"]
+```
 
-### Conclusión final
+---
 
-La solución descrita combina tecnologías modernas de Microsoft junto con servicios avanzados de Azure para la síntesis, reconocimiento de voz, y procesamiento de datos con IA. La arquitectura de **N Capas** hace que las responsabilidades estén bien separadas, maximizando la modularidad y escalabilidad. El diseño es basado en integraciones horizontales que unen componentes externos (Azure Speech SDK y Azure OpenAI) con sistemas internos como Dynamics CRM. Esto permite extender las capacidades de CRM relacionadas con la experiencia del usuario (voz) y el procesamiento inteligente de datos, manteniendo una estructura robusta y ampliamente adaptable a otras necesidades.
+### Conclusión final:
+La solución presentada utiliza una integración sólida de servicios cloud de Microsoft (Azure Speech SDK y Azure OpenAI) y herramientas diseñadas para personalizar plataformas Dynamics CRM. Su arquitectura modular, orientada a eventos y dirigida por servicios proporciona un marco escalable, flexible y eficiente para aprovechar capacidades de inteligencia artificial como reconocimiento y síntesis de voz. Aunque el manejo de configuraciones sensibles como claves API podría mejorarse, la solución tiene un diseño bien formado y alineado con patrones modernos de desarrollo.
