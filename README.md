@@ -1,55 +1,61 @@
-### Breve Resumen Técnico
-Con base en los archivos proporcionados, se puede determinar que este repositorio corresponde a una solución híbrida que implementa procesamiento de entrada de voz en formularios basados en Dynamics 365. Utiliza el SDK de Azure Speech para síntesis y reconocimiento de voz, y emplea la API de Azure OpenAI para realizar transformaciones de texto con reglas específicas. 
+### Breve resumen técnico
+El repositorio contiene tres archivos principales con funcionalidades relativas a la integración de formularios, inteligencia artificial y servicios externos como Azure Speech SDK y Azure OpenAI. Está diseñado para manejar tanto el procesamiento de voz como datos estructurados desde formularios en sistemas CRM, probablemente Dynamics 365.
 
 ---
 
-### Descripción de Arquitectura
-La solución implementa una arquitectura **modular de n capas** dentro de un entorno CRM (Dynamics 365). La estructura combina: 
-1. **Frontend (JavaScript):** Encargado de la interacción del usuario a través de formularios, conexión con servicios de reconocimiento y síntesis de voz.
-2. **Plugin Backend (.NET):** Ejecuta operaciones en el servidor de Dynamics CRM y realiza las transformaciones de texto con un enfoque basado en plugins.
-3. **Servicios Externos:** Integración con servicios de Microsoft Azure (Speech SDK y OpenAI).
+### Descripción de arquitectura
+La solución sigue una **arquitectura modular n-capas** distribuida entre:
+1. **Frontend:** Manejo de datos del formulario e integración con el servicio Azure Speech SDK.
+2. **Backend personalizado:** Plugins implementados en Dynamics CRM con Azure OpenAI API para la transformación de texto.
+3. **Servicios externos:** Uso de Azure Cognitive Services (Speech SDK) y Azure OpenAI para síntesis y procesamiento de voz e inteligencia artificial.
 
-El diseño emplea patrones como **delegación**, **procesamiento basado en flujo asíncrono** y **plugin design pattern** en el backend.
+Se destaca un patrón **event-driven** en el frontend, con funciones orientadas a la interacción con el usuario y asincronismo. En el backend, sigue **Single Responsibility Principle (SRP)**, distribuyendo responsabilidades entre el manejo del evento de ejecución del plugin y la comunicación con un servicio externo (Azure OpenAI).
 
 ---
 
-### Tecnologías Usadas
-1. **Frontend:**
-   - JavaScript como lenguaje base.
-   - Integración con Microsoft Dynamics 365.
-   - Integración con Azure Speech SDK para reconocimiento y síntesis de voz.
+### Tecnologías usadas
+1. **Backend:**
+   - Lenguaje: C# (Microsoft Dynamics Plugin Framework).
+   - Librerías: `Newtonsoft.Json`, `System.Text.Json`, `Microsoft.Xrm.Sdk`.
+   - Dependencias externas: Azure OpenAI API.
 
-2. **Backend:**
-   - .NET Framework y C# para el desarrollo del plugin.
-   - API de Azure OpenAI para procesamiento avanzado con inteligencia artificial.
-   - Uso de estándares de Dynamics CRM:
-     - `IPlugin` para implementar lógica de negocio.
-     - `IOrganizationService` para interacción directa con datos de CRM.
+2. **Frontend:**
+   - Lenguaje: JavaScript.
+   - SDK: Azure Speech SDK.
+   - Dependencias: Dynamics Web API (Xrm.WebApi).
 
-3. **Dependencias Comunes:**
-   - **Servicios Azure**: Speech SDK y OpenAI.
-   - **Microsoft Dynamics CRM API**: Para gestionar el formulario y sus atributos.
-   - JSON Manipulation Libraries: Newtonsoft.Json y System.Text.Json.
+3. **Patrones:**
+   - **Event-driven:** Reconocimiento de voz y respuestas asincrónicas en el frontend.
+   - **Integración modular:** Plugins y servicios externos se gestionan dinámicamente.
+   - **Separation of Concerns:** Codificación en módulos especializados (SDK, formularios, complementos).
 
 ---
 
 ### Diagrama Mermaid
+
 ```mermaid
 graph TD
-  A["Usuario"] --> B["Frontend-JS"]
-  B --> C["Dynamics FormContext"]
-  B --> D["Azure Speech SDK"]
-  C --> G["API Dynamics"]
-  D --> E["Reconocimiento-y-Síntesis"]
-  F["Plugin Backend-.NET"] --> G
-  G --> F
-  F --> H["Azure-OpenAI API"]
+    A["Frontend - SpeechInputHandler.js"] --> B["Leer-datos-del-formulario"]
+    B --> C["Azure Speech SDK - sintetizar voz"]
+    A --> D["SpeechForm.js - Captura de voz"]
+    D --> E["Azure Speech SDK - transcripción"]
+    D --> F["Custom Dynamics API"]
+    F --> G["AI - callCustomAPI"]
+    G --> I["Azure OpenAI Procesamiento de Texto"]
+    G --> J["Campos-en-Formulario"]
+    J --> H["Actualiza Formulario"]
+    F --> H["Actualizaciones-Locales"]
+    K["Backend Plugin TransformTextWithAzureAI"] --> L["Procesamiento en Dynamics CRM"]
+    L --> M["Azure OpenAI API"]
+    M --> N["Respuesta JSON devuelta al CRM"]
 ```
 
 ---
 
-### Conclusión Final
-El repositorio implementa una solución robusta que integra funciones avanzadas como reconocimiento de voz y síntesis de texto, destinadas a trabajar en conjunto con formularios de Dynamics 365. La arquitectura de **n capas** facilita la separación de responsabilidades:
-- El **frontend (JS)** realiza la captura y síntesis de voz mediante Azure Speech SDK.
-- El **plugin backend (.NET)** se encarga de procesar y transformar el texto utilizando servicios de Azure OpenAI.
-Ambas capas interactúan con servicios de Dynamics 365 para proporcionar una experiencia fluida y extensible. El uso de Azure como proveedor externo garantiza escalabilidad y soporte para IA.
+### Conclusión final
+La solución está diseñada principalmente para integrarse con **Microsoft Dynamics CRM** y enriquecer la experiencia del usuario a través del **reconocimiento de voz** y la **inteligencia artificial**. Consta de dos capas principales:
+
+1. **Frontend:** Responsable de la interacción directa con el usuario y manejo del reconocimiento de voz. Usa **Azure Speech SDK** para sintetizar o transcribir información desde formularios.
+2. **Backend (Dynamics Plugin):** Procesamiento de texto avanzado mediante **Azure OpenAI**, transformando los datos en JSON para aplicar reglas definidas.
+
+La arquitectura modular y uso de APIs externas como Azure Speech y OpenAI posicionan este sistema como una solución moderna y extensible. Sin embargo, la seguridad de las claves de API y el manejo de errores merecen atención en una implementación completa.
