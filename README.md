@@ -1,75 +1,55 @@
-### Breve resumen técnico
-
-El repositorio contiene una solución que integra servicios de Microsoft Dynamics CRM y Azure para un procesamiento avanzado de datos de formularios y capacidades de voz e inteligencia artificial. Este sistema realiza dos tareas principales: síntesis de voz (usando **Azure Speech SDK**) y procesamiento inteligente de datos (usando **Azure OpenAI GPT-4**) para formularios dinámicos.
-
----
-
-### Descripción de arquitectura
-
-La solución tiene una arquitectura basada en **event-driven programming** con componentes que interactúan de manera modular. 
-
-- Para el frontend (Javascript), se utiliza una estructura semi-MVC donde las funciones están diseñadas como controladores para la lógica de negocio y presentación.
-- La solución global sigue una **arquitectura n-capas** donde el frontend comunica mediante una API personalizada con los sistemas backend (Azure y Dynamics). 
-- El backend implementa **Plugin Pattern**, que es específico para Dynamics CRM.
+### Breve resumen técnico:
+El repositorio presenta componentes para una solución de software orientada a la integración de voz, procesamiento de datos, interacción con formularios dinámicos y transformación de texto mediante inteligencia artificial. Predominantemente utiliza el Azure Speech SDK y OpenAI para ejecutar síntesis, reconocimiento de voz y procesamiento semántico del texto. Los archivos son parte de un sistema colaborativo que incluye frontend en JavaScript y backend en C# para Dynamics CRM.
 
 ---
 
-### Tecnologías usadas
+### Descripción de arquitectura:
+La solución tiene una arquitectura basada en **microservicios y capas (n-capas)**. Los componentes destacan por dividir tareas específicas:
+1. **Frontend/JS**:
+   - Modularización de código en archivos responsables de funcionalidades distintas (entrada de voz, síntesis de texto, actualización de formulario).
+   - Uso de servicios de Azure para interactuar con la entrada y salida de voz.
+2. **Backend/Plugins**:
+   - Lógica dentro de Dynamics CRM mediante plugins (`TransformTextWithAzureAI`).
+   - Dependencia directa de servicios de Azure para procesamiento avanzado, con interacción mediante APIs REST.
 
-#### Frontend:
-1. **Azure Speech SDK**: Integrado para la síntesis de voz y reconocimiento.
-2. **JavaScript** (ES6): Utilización de funciones básicas y avanzadas para la manipulación DOM y servicios.
-3. **Microsoft Dynamics 365 Client APIs**: Utilizadas para contextualizar los datos en formularios.
-
-#### Backend:
-1. **Microsoft Dynamics SDK**:
-   - **Plugins (IPlugin)** para extender las capacidades de negocio.
-   - API **Xrm.Sdk.online**.
-2. **Azure OpenAI GPT-4**:
-   - Manejada para transformar textos al formato deseado utilizando inteligencia artificial.
-3. **.NET Framework**:
-   - Desarrollo del plugin usando entidades CRM y comunicación HTTP.
+La solución tiene características de **Service-Oriented Architecture (SOA)**, donde los servicios de Azure (Speech SDK y OpenAI) son puntos focales de integración.
 
 ---
 
-### Inferencia de dependencias y componentes externos
+### Tecnologías usadas:
+1. **Frontend**:
+   - **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto a voz.
+   - **JavaScript**: Lenguaje base para manejar interacciones y lógica en el navegador.
+   - **Microsoft Dynamics 365 SDK (Xrm.WebApi)**: Interfaz para interactuar con los datos del formulario.
 
-1. **Dependencias externas clave**:
-   - **Azure Speech SDK** para servicios de voz.
-   - **Azure OpenAI GPT-4** para procesamiento inteligente de texto.
-   - **Dynamics 365 CRM API** para manipulación de datos en formularios y entidades.
-2. **Conectividad requerida**:
-   - Acceso a **Azure services** y sus credenciales: `azureKey`, `azureRegion` y `apiKey`.
+2. **Backend**:
+   - **C# .NET Framework**: Implementación del plugin en formato de clase para Dynamics CRM.
+   - **Azure OpenAI**: API externa usada para transformar texto en JSON estructurado.
+   - **Dependency Injection (Microsoft Dynamics)**: Para manejar servicios contextuales dentro del plugin.
 
 ---
 
-### **Diagrama Mermaid**
+### Diagrama Mermaid válido para GitHub:
 
 ```mermaid
 graph TD
-    DynamicsCRM["Microsoft Dynamics CRM"]
-    AzureSpeechSDK["Azure Speech SDK - Voz"]
-    AzureOpenAI["Azure OpenAI API - GPT-4"]
-    FormContext["Contexto de formulario"]
-    VoiceProcessing["Procesamiento de voz - JS"]
-    TextProcessing["Procesamiento de texto - Plugin"]
-    User["Usuario - Formulario Web"]
-    CustomApi["API personalizada"]
-    Output["Respuesta estructurada - JSON"]
+  A["Frontend JS voiceInputHandler.js"]
+  B["Frontend JS readForm.js"]
+  C["Backend Plugin TransformTextWithAzureAI.cs"]
 
-    User --> FormContext
-    FormContext --> VoiceProcessing
-    VoiceProcessing --> AzureSpeechSDK
-    VoiceProcessing --> CustomApi
-    CustomApi --> AzureOpenAI
-    TextProcessing --> DynamicsCRM
-    DynamicsCRM --> FormContext
-    AzureOpenAI --> Output
-    DynamicsCRM --> Output
+  D["Azure OpenAI Service GPT-4"]
+  E["Azure Speech SDK"]
+  F["Microsoft Dynamics CRM"]
+
+  A --> F
+  B --> F
+  A --> E
+  B --> E
+  C --> D
+  C --> F
 ```
 
 ---
 
-### Conclusión final
-
-La solución representa una integración moderna entre servicios externos de Azure y Microsoft Dynamics CRM en una estructura modular y escalable. Su arquitectura event-driven y n-capas permite dividir la responsabilidad del procesamiento de voz y texto entre el frontend y el backend. Las tecnologías seleccionadas son adecuadas para una solución empresarial, pero se recomienda verificar la seguridad en el manejo de credenciales de Azure para garantizar la integridad en producción.
+### Conclusión final:
+Esta solución utiliza un enfoque modular y altamente integrador que aprovecha servicios en la nube (Azure Speech SDK y OpenAI) junto con tecnologías robustas como Dynamics CRM. Esto permite una arquitectura flexible centrada en microservicios y orientada a tareas específicas como el procesamiento de voz, transformación de texto y actualización de formularios dinámicos. Es apta para aplicaciones en entornos empresariales, interacción mediante voz e integración con sistemas externos.
