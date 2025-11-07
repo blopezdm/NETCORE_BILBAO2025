@@ -1,73 +1,63 @@
-### Breve resumen técnico  
-La estructura del repositorio indica que se trata de una solución híbrida con componentes frontend y backend, diseñada para integrar funcionalidades avanzadas en un sistema CRM (Dynamics CRM). Los componentes utilizan SDKs y APIs externas para mejorar accesibilidad (sintetización/habla) y procesamiento de texto (AI).
+### Breve resumen técnico
+
+El repositorio provisto incluye un sistema desarrollado para integrarse principalmente con Microsoft Dynamics 365 y Azure services, aportando funcionalidades de voz y procesamiento de texto con IA. Los archivos analizados habilitan un sistema de entrada y salida de voz enfocado en formularios y la transformación avanzada de datos utilizando Azure OpenAI.
 
 ---
 
-### Descripción de arquitectura  
-La solución está configurada como un **ecosistema de integración híbrido**:
-1. **Frontend**: Módulos de JavaScript para interacción con usuarios (voz y texto).
-   - Acceso: Directo al DOM relacionado con formularios del CRM.
-   - SDK externo: Azure Speech SDK.
-2. **Backend**: Plugins de Dynamics CRM.
-   - Componentes: `TransformTextWithAzureAI.cs` ejecuta lógica basada en eventos del CRM.
-   - Servicios: Integración con Azure OpenAI Service para procesamiento de datos.
+### Descripción de arquitectura
 
-Patrón predominante: **Hexagonal (Ports and Adapters)**, dado que los módulos interactúan mediante APIs internas y externas en una arquitectura desacoplada.
+La arquitectura del sistema puede clasificarse como **modular y de capas**, con integración hacia servicios externos como Azure Speech SDK, Azure OpenAI y Dynamics CRM. El comportamiento claramente separa responsabilidades: 
 
----
+- **Capa de Entrada** con archivos `readForm.js` y `speechForm.js`, que gestionan la interacción con el usuario mediante voz y formulario.
+- **Capa de Procesamiento** con el plugin `TransformTextWithAzureAI.cs`, que se encarga de transformar los datos en un formato manejable para Dynamics CRM.
+- **Capa de Persistencia** accesible mediante `Dynamics 365 SDK` para almacenamiento de datos generados o modificados en los formularios.
 
-### Tecnologías usadas  
-1. **Frontend**: 
-   - JavaScript nativo.
-   - **Azure Speech SDK** (para interacción por voz y síntesis de texto).
-   - Integración directa con Dynamics CRM para capturar datos y aplicar valores.
-2. **Backend**: 
-   - .NET Framework/C#.
-   - **Microsoft Dynamics SDK (Xrm SDK)**.
-   - REST API de Azure OpenAI Service.
-   - JSON (Newtonsoft.Json.Linq y System.Text.Json).
-3. **Patrones de diseño**:
-   - Modularidad.
-   - Integración de API externa (Azure Speech, Azure OpenAI).
-   - Plugins para flujos CRM (Dynamics).
+Existe un **patrón de plugins** en Dynamics que habilita las extensiones para procesamiento en el backend. Además, se observa dependencia a un API personalizada para comunicación entre las interfaces de voz y Dynamics.
 
 ---
 
-### Diagrama Mermaid válido para GitHub  
+### Tecnologías usadas
+
+1. **Frontend:**
+   - JavaScript frameworks.
+   - Azure Speech SDK para reconocimiento y síntesis de voz.
+   - DOM API para modificar dinámicamente formularios.
+   - Dynamics CRM context APIs (`Xrm.WebApi`).
+   - Custom APIs alojadas en Dynamics.
+
+2. **Backend:**
+   - .NET Framework y C# para plugins de Dynamics.
+   - Microsoft Dynamics SDK (`Microsoft.Xrm.Sdk`) para extender la funcionalidad.
+   - Azure OpenAI API para procesamiento textual con modelos GPT-4.
+
+3. **Patrones:**
+   - **Dependency Injection:** Pasos específicos del contexto a las funciones.
+   - **Facade Pattern:** Encapsulación de funcionalidades en métodos con objetivos claros (por ejemplo, `processTranscript`, `applyValueToField`).
+   - **Plugin Architecture:** Extensión de Dynamics mediante capas independientes.
+   - **Modular Components:** Cada archivo se enfoca en una subfunción funcional clara.
+
+---
+
+### Diagrama Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-    A["Frontend: VoiceInputHandler.js"]
-    B["Frontend: speechForm.js"]
-    C["Backend: TransformTextWithAzureAI.cs"]
-    D["User → Form Interaction"]
-    E["Speech-to-Text"]
-    F["Text-to-Speech"]
-    G["Custom API with Azure OpenAI"]
-    H["Dynamics CRM"]
-    I["Azure Speech SDK"]
-    J["Azure OpenAI Service API"]
-    K["Microsoft Dynamics SDK"]
-
-    D --> A
-    A --> E
-    E --> I
-    A --> F
-    F --> I
-    A --> H
-    B --> G
-    G --> J
-    B --> H
-    H --> C
-    C --> K
-    K --> J
+    A["Frontend - readForm.js/speechForm.js"] --> B["Azure Speech SDK"]
+    A --> C["Dynamics Form Context API"]
+    C --> D["Custom API - Dynamics + Azure AI"]
+    B --> E["Azure Service - OpenAI (GPT-4)"]
+    D --> E 
+    E --> F["Backend - TransformTextWithAzureAI.cs"]
+    F --> G["Microsoft Dynamics Plugin Framework"]
+    G --> H["Dynamics 365 Database"]
 ```
 
 ---
 
-### Conclusión final  
-La solución tiene un enfoque claro hacia **integración avanzada en sistemas CRM**. Ofrece:
-1. Operaciones accesibles mediante voz y síntesis de texto.
-2. Capacidad de interpretar y transformar datos con IA mediante Azure OpenAI.
-3. Modularidad y extensibilidad, ideal para entornos corporativos donde Dynamics CRM es el eje central.
+### Conclusión final
 
-Aunque no es estrictamente un conjunto de **microservicios**, la arquitectura presenta elementos distribuidos entre el cliente (frontend) y el servidor (plugins del CRM). La integración bien gestionada con Azure Speech SDK y Azure OpenAI Service hace que sea escalable para aplicaciones modernas.
+El repositorio implementa claramente una **solución hybrid para Microsoft Dynamics CRM** que utiliza múltiples tecnologías de Microsoft como Dynamics Services, Azure OpenAI y Azure Speech SDK para crear un sistema de interacción basado en voz y procesamiento de texto. 
+
+El enfoque arquitectónico queda definido por una **modularidad de capas** entre frontend, APIs, y plugin/backend, con un uso eficiente de patrones como Dependency Injection y plugins en Dynamics. Sin embargo, observaciones como incluir claves API directamente en el código podrían abrir vulnerabilidades que deberían gestionarse con configuraciones seguras (por ejemplo, Azure Key Vault).
+
+La solución muestra un diseño robusto y cualificado para mejorar la accesibilidad y automatización en entornos empresariales.
