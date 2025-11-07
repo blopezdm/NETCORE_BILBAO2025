@@ -1,52 +1,57 @@
-### Breve resumen técnico
-El código muestra un sistema que combina capacidades frontend (JavaScript en el navegador) y backend (Plugins en Dynamics CRM) para integrar servicios de Azure, específicamente Speech SDK, OpenAI y capacidades del Dynamics Web API. El enfoque está en proporcionar funcionalidades avanzadas de entrada/salida de texto y voz, incluyendo transformación mediante inteligencia artificial (IA).
+### Breve Resumen Técnico
+El repositorio contiene una solución orientada a procesar datos de formularios en Dynamics 365 mediante interacción por voz y texto, integrándose con servicios externos como **Azure Speech SDK** y **Azure OpenAI API**. El propósito principal es aumentar accesibilidad y dinamismo en CRM mediante lectura de campo en voz alta, entrada por voz, y transformación avanzada de datos utilizando IA externa.
 
-### Descripción de arquitectura
-La solución tiene una arquitectura **cliente-servidor híbrida**, donde el frontend actúa como el consumidor de servicios de backend (API de Dynamics CRM y Azure). Integra paradigmas como eventos del usuario en la interfaz y patrones comunes como el **plugin para Dynamics CRM** y **proxy para servicios externos**. El backend (plugins y servicios externos) sigue el diseño **n capas** porque las operaciones de lógica, comunicación externa y transformación de datos están separadas.
+---
 
-### Tecnologías usadas
-- **Frontend:**
-  - JavaScript ECMAScript (módulos funcionales).
-  - Azure Speech SDK.
-  - Dynamics Web API (`Xrm.WebApi.online`).
-- **Backend:**
-  - C# (.NET Framework/SDK).
-  - Microsoft Dynamics CRM SDK.
-  - Azure OpenAI Service.
-  - Newtonsoft.Json para manipulación de JSON.
-  - System.Text.Json y System.Net.Http para solicitudes HTTP.
-- **Infraestructura:**
-  - Azure para servicios externos (Speech SDK, OpenAI).
-  - Dynamics CRM para gestión de formularios y procesamiento.
-  
-### Diagrama Mermaid válido para GitHub
+### Descripción de Arquitectura
+1. **Tipo de solución**: Sistema compuesto por múltiples componentes:
+   - **Frontend**: Módulos en JavaScript que procesan entrada y salida de voz (ej. `voiceInputHandler.js`, `SpeechInputProcessor.js`).
+   - **Backend Plugins**: Funcionalidad para transformación avanzada de texto (ej. `TransformTextWithAzureAI.cs`).
+2. **Patrón arquitectónico**: Modularidad explícita en frontend (manipulación dinámica del DOM y Azure SDK) combinado con arquitectura plugin en backend (Dynamics CRM).  
+   - La interacción entre componentes sugiere un modelo **orientado a servicios**, con utilizados API externas (Speech y OpenAI).
+3. **Tipo de arquitectura**:
+   - **Híbrida**: Frontend modular con lógica separada por función (entrada/salida de voz).
+   - **Plugin-based backend**: Código modular y desacoplado para Dynamics CRM.
+4. **Patrones adicionales usados**:
+   - **Adapter Pattern**: Transformación de datos de formularios en textos legibles (`getReadableValue`, adaptaciones a CRM mediante mapeos).
+   - **Observer/Callback Pattern**: Cargado asíncrono de SDKs y manejadores de eventos.
+   - **Factory Pattern**: Creación dinámica de servicios (Azure Speech SDK, organización de Dynamics).
+
+---
+
+### Tecnologías Usadas
+1. **Frontend**:
+   - **JavaScript** con integración de Azure Speech SDK.
+   - Manipulación del DOM (**HTML API** y control de `formContext`).
+2. **Backend**:
+   - **C#** como lenguaje principal.
+   - **Dynamics CRM Framework** para plugins (`IServiceProvider`, `Xrm.Sdk`).
+   - **Azure OpenAI API** para procesamiento avanzado.
+3. **Dependencias Externas**:
+   - **Azure SDK**: Speech (gestión de entrada/salida de voz) y OpenAI (procesamiento textual).
+   - **Newtonsoft.Json** y **System.Net.Http** para gestionar respuestas HTTP y JSON en plugins.
+
+---
+
+### Diagrama Mermaid Válido para GitHub
 
 ```mermaid
 graph TD
-    A["Frontend - JS/HTML"]
-    A1["VoiceInputHandler.js"]
-    A2["MainVoiceInputHandler.js"]
-    B["Backend - Dynamics CRM"]
-    B1["TransformTextWithAzureAI.cs"]
-    C["Azure Cloud"]
-    C1["Azure Speech SDK"]
-    C2["Azure OpenAI"]
-    D["User"]
-    E["Forms"]
-    
-    D --> A["Frontend - JS/HTML"]
-    A -- Executes --> A1
-    A -- Executes --> A2
-    A -- Reads/Writes Form Data --> E
-    A1 -- SDK Communication --> C1
-    C1 -- Speech Services --> A
-    A2 -- API Call --> C2
-    C2 -- Generates JSON Response --> A2
-    A2 -- Updates Form via API --> E
-    E --> B["Backend - Dynamics CRM"]
-    B --> B1
-    B1 -- HTTP Communication --> C2
+  A["Frontend Forms JS"] --> B["voiceInputHandler"]
+  A["Frontend Forms JS"] --> C["SpeechInputProcessor"]
+  B --> D["Azure Speech SDK"]
+  C --> D["Azure Speech SDK"]
+  C --> E["Custom API"]
+  E --> F["Azure OpenAI API"]
+
+  G["Plugins - Backend CRM"] --> H["Read CRM Text"]
+  G --> I["Transform CRM Text"]
+  I --> F["Azure OpenAI API"]
+  H --> J["Dynamics CRM Entities"]
+  I --> J["Dynamics CRM Entities"]
 ```
 
-### Conclusión final
-La solución es un **frontend-backend integration** orientada a formularios y servicios basados en voz. Se utiliza una arquitectura **n capas** en el backend (separación entre interfaz de administración de datos y lógica) y patrones como plugins para Dynamics CRM y comunicación de APIs externas. El diseño permite expandir funcionalidades gracias al desacoplamiento de los componentes con servicios externalizados (Azure APIs). Aunque robusto, hay aspectos a mejorar como la externalización de las configuraciones sensibles (e.g., claves de API y endpoint de OpenAI) y optimización en la modularidad del código.
+---
+
+### Conclusión Final
+La solución presentada combina tecnologías modernas como **Azure Speech SDK** y **OpenAI API** con la extensibilidad de Dynamics CRM, optimizando interacción en formularios por voz y procesamiento externo avanzado. Su arquitectura modular y desacoplada facilita la escalabilidad y extensibilidad, y resulta ideal para sistemas de accesibilidad o automatización CRM. Las implementaciones pueden beneficiarse de mayor robustez en seguridad (gestión de claves API) y mejora en patrones de desacoplamiento entre frontend y backend.
