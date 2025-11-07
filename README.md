@@ -1,63 +1,72 @@
 ### Breve resumen técnico
-El repositorio contiene una solución que combina manejo de formularios dinámicos con capacidades de accesibilidad y procesamiento de datos por voz mediante tecnologías de Microsoft Azure (Speech SDK y OpenAI API). La funcionalidad incluye extracción de datos desde formularios y su conversión o interacción asistida por reconocimiento de voz y transformación de texto, tanto en frontend (JavaScript) como con sistemas backend (C#).
+
+El repositorio contiene tres módulos que se integran para implementar una solución que combina administración de formularios en Microsoft Dynamics CRM con capacidades de reconocimiento y síntesis de voz (Azure Speech SDK) y procesamiento avanzado de datos con Azure OpenAI Service. La solución está orientada a mejorar la experiencia de usuario a través de interfaces enriquecidas y automatización.
 
 ---
 
 ### Descripción de arquitectura
-1. **Tipo de solución:**
-   - **Multicapa**:
-     - **Frontend**: Implementado en JavaScript, realiza la interacción directa con los usuarios para el reconocimiento de voz y la síntesis de texto.
-     - **Backend de Dynamics CRM (C#)**: Procesa datos y realiza llamadas al servicio Azure OpenAI para transformar texto y estructurarlo para formularios.
 
-2. **Estructura arquitectónica:**
-   - **N capas** con enfoque modular:
-     - Capa de presentación: Representada en el frontend para el manejo de formularios y generación de voz.
-     - Capa de servicios: Gestiona la interacción con API REST de Azure Speech y Azure OpenAI.
-     - Capa de negocio: Implementación con Dynamics CRM plugins para lógica empresarial avanzada.
+La arquitectura presentada en los tres archivos indica un sistema híbrido de integración, donde se combinan funcionalidades de frontend (interacción con formularios vía reconocimiento y síntesis de voz) y backend (procesamiento de datos y operaciones en CRM). Los siguientes componentes clave de la arquitectura son observables:
 
-3. **Patrones de diseño:**
-   - **Event-driven**: Uso de eventos callback en funciones del frontend para cargar SDK y procesar inputs.
-   - **Modularización**: Separación de funcionalidades en fragmentos pequeños (por ejemplo, lectura de texto y síntesis de voz).
-   - **Plugin architecture**: En el backend, el diseño sigue las normas de desarrollo de plugins en Dynamics CRM.
-   - **Microservicio**: El backend depende de Azure OpenAI como servicio externo desacoplado para procesamiento de tareas específicas.
+1. **Frontend:**
+   - Ofrece una interfaz interactiva en JavaScript empaquetada en los formularios de Microsoft Dynamics CRM.
+   - Contiene módulos para reconocimiento de voz, síntesis de voz y automatización de la manipulación del formulario en base a datos reconocidos.
+
+2. **Backend:**
+   - Incluye un plugin (.NET) para Dynamics CRM que se conecta con Azure OpenAI Service para transformación de datos mediante inteligencia artificial.
+   - El plugin actúa como un adaptador para gestionar solicitudes HTTP hacia el servicio de Azure OpenAI y retornar un JSON estructurado a Dynamics CRM.
+
+3. **SaaS Integration:**
+   - Utiliza APIs externas, como Azure Speech SDK para voz y Azure OpenAI Service para inteligencia artificial.
+
+El diseño general emplea una **arquitectura de n capas** en un entorno **orientado a servicios**. Aunque el sistema tiene componentes modularizados y desacoplados para manejo de síntesis y reconocimiento de voz, así como transformación de datos, su relación con Dynamics CRM sugiere que está limitado por una arquitectura monolítica con capacidades extendidas mediante plugins y servicios.
 
 ---
 
 ### Tecnologías usadas
-- **Frontend:**
-   - **JavaScript**: Manejo del DOM y lógica de acceso a formularios vía APIs del navegador y Dynamics.
-   - **Azure Speech SDK**: Reconocimiento de voz, síntesis y entrada basada en audio.
-- **Backend:**
-   - **C#**: Código desarrollado con .NET Framework.
-   - **Microsoft Dynamics SDK**: Para interacción con datos y eventos del entorno CRM.
-   - **Azure APIs**:
-     - **Speech**: Procesamiento y reconocimiento de voz.
-     - **OpenAI**: Transformación de texto interpretado por modelos IA.
-- **Dependencias de otros servicios:**
-   - `Newtonsoft.Json`: Para manipulación y serialización de datos en JSON.
-   - `System.Net.Http`: Para consumos de APIs REST.
-   - **Web API de Dynamics**: Interacción con datos de entidades y atributos en formularios dinámicos.
+
+1. **Frontend (JavaScript):**
+   - **Azure Speech SDK:** Reconocimiento y síntesis de voz.
+   - **Dynamics CRM JavaScript API (executionContext, formContext):** Manipulación de datos y eventos del CRM.
+   - **Callback-flow:** Gestión asincrónica de eventos mediante callbacks para carga dinámica del SDK.
+
+2. **Backend (.NET):**
+   - **ASP.NET vía `IPlugin` de Dynamics CRM:** Extensibilidad mediante plugins.
+   - **Azure OpenAI Service:** Procesamiento avanzado usando IA para reglas personalizadas.
+   - **Newtonsoft.Json / System.Text.Json:** Serialización y deserialización de datos JSON.
+   - **System.Net.Http:** Comunicación HTTP con Azure OpenAI Service.
+
+3. **Arquitectura:**
+   - Diseño modular (separación de funciones y responsabilidades en el código).
+   - Orientación a servicios (interacción en tiempo real con APIs de Azure y Dynamics CRM).
 
 ---
 
 ### Diagrama Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-    A["User Form"] --> B["readForm.js: Get visible fields"]
-    B --> C["voiceInputHandler.js: Process fields"]
-    C --> D["speakText: Azure Speech Synthesis Voice"]
-    A --> E["startVoiceInput.js: Start voice recognition"]
-    E --> F["Azure Speech SDK"]
-    F --> G["ejecutarGrabacion: Process text Transcription"]
-    G --> H["callCustomApi: Call OpenAI API"]
-    D --> I["Output: Voice"]
-    H --> J["Text result from OpenAI API"]
-    J --> K["Dynamics 365 Form API: Update fields"]
-    K --> A
-    G --> K
+    A["FrontEnd VoiceInputHandler.js"]
+    B["FrontEnd SpeechToFormInteraction.js"]
+    C["Plugin TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Dynamics CRM Web API"]
+    F["Azure OpenAI Service"]
+
+    A --> D
+    B --> D
+    B --> E
+    C --> E
+    C --> F
 ```
 
 ---
 
 ### Conclusión final
-El repositorio presenta una solución específica orientada a mejorar la gestión de formularios en Dynamics CRM mediante la integración de capacidades avanzadas de accesibilidad (reconocimiento de voz y síntesis de texto a voz) y procesamiento de texto asistido por inteligencia artificial. La arquitectura sigue el modelo de **N capas** y está diseñada con alta modularidad y extensibilidad. La interoperabilidad con servicios externos como Azure Speech y OpenAI refuerza su actuación como una solución híbrida, donde el frontend se centra en la interacción y el backend en la lógica avanzada y la delegación de funciones.
+
+La solución corresponde a un sistema interactivo basado en **n capas** donde cada capa cumple roles específicos:
+- **Frontend:** Interacción del usuario mediante voz para manipulación de formularios.
+- **Backend:** Extensión personalizada de Dynamics CRM con capacidades de IA en Azure OpenAI para procesamiento avanzado de datos.
+
+Se utiliza una combinación de tecnologías modernas asociadas a Azure (Speech SDK y OpenAI Service), junto con la extensibilidad estándar de Dynamics CRM a través de plugins. El diseño modular y orientado a servicios garantiza escalabilidad y posibilidad de seguir integrando capacidades futuras.
+
