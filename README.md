@@ -1,62 +1,43 @@
-### **Breve resumen técnico**
-La solución es un sistema orientado a la integración de servicios de inteligencia artificial y tecnologías de voz con Microsoft Dynamics CRM. Utiliza una combinación de frontend en JavaScript y un plugin en C# implementado en Dynamics CRM. El sistema incluye:
-- **Frontend/JS**: Para integrar la lectura de formularios y reconocer la voz mediante Azure Speech SDK. También interactúa con Dynamics CRM y APIs personalizadas.
-- **Backend plugin (C#)**: Implementación de un plugin en Dynamics CRM para transformar texto utilizando Azure OpenAI.
+### Breve resumen técnico:
+El repositorio parece centrarse en ofrecer una solución orientada a mejorar la interacción con formularios en Dynamics 365 mediante el uso de tecnologías avanzadas como el Azure Speech SDK y Azure OpenAI. Los archivos analizados muestran un enfoque modular, aprovechando APIs externas y funciones dedicadas al procesamiento de datos y la interacción con IA.
 
 ---
 
-### **Descripción de la arquitectura**
-La arquitectura es de tipo **n capas**, donde el sistema incluye:
-1. **Presentación/Frontend**: Donde servicios como la captura de voz o lectura de formularios se integran con la plataforma Dynamics CRM y Azure Speech SDK.
-2. **Servicios**: Integra APIs externas, como la de Azure Speech SDK y una API personalizada para texto transformado (por ejemplo, mediante servicios de Azure AI).
-3. **Negocio/Backend**: Implementa lógica empresarial dentro de Dynamics CRM mediante plugins personalizados capaces de interactuar con APIs avanzadas como Azure OpenAI.
+### Descripción de arquitectura:
+La solución tiene una arquitectura híbrida con elementos de **n capas** en el frontend y el backend. En el frontend, las funciones están organizadas de forma modular y siguen el principio de separación de responsabilidades. Por su parte, en el backend se observan patrones orientados a servicios, como el **API Gateway**, que facilita la integración con Azure OpenAI y Dynamics 365.
 
-Importante destacar:
-- Existe **acoplamiento directo con servicios en la nube** como Microsoft Dynamics y Azure AI/Speech SDK.
-- El diseño demuestra un claro **patrón de separación de responsabilidades**, dividiendo funciones específicas y privilegios entre el frontend, los servicios y el backend.
+El uso de plugins en **Dynamics CRM** muestra una arquitectura extensible y adaptable. La inclusión de varias capas de procesamiento entre frontend, APIs externas y el sistema CRM fomenta una estructura escalable y desacoplada.
 
 ---
 
-### **Tecnologías usadas**
+### Tecnologías usadas:
 1. **Frontend:**
-   - **JavaScript**
-   - **Azure Speech SDK** (para síntesis y reconocimiento de voz).
-   - **Asistencia para Microsoft Dynamics CRM**.
-   - Interacción con APIs externas como la personalizada diseñada para la solución.
-
+   - **JavaScript ES6:** Es el lenguaje utilizado en los archivos `readForm.js` y `speechForm.js`.
+   - **Azure Speech SDK**: Implementa funcionalidades de síntesis y reconocimiento de voz.
+   - **Microsoft Dynamics 365 WebAPI (Xrm.WebApi)**: Utilizado para la interacción con los atributos y entidades del CRM.
+   - **REST APIs**: Llamadas a APIs personalizadas para servicios de IA y registro de datos.
+   
 2. **Backend:**
-   - **Microsoft Dynamics CRM**: Extensiones mediante plugins (C# `IPlugin`).
-   - **Azure OpenAI API**: Para procesamiento avanzado de texto (GPT).
-   - **C#/.NET Framework**: Gestión de plugin, manejo de datos, consumo de APIs externas.
-
-3. **Dependencias:**
-   - `Newtonsoft.Json` para manipulación de datos JSON.
-   - Servicios HTTP (`HttpClient`) para comunicación con Azure APIs.
+   - **C# (.NET Framework)**: Utilizado en los plugins de Dynamics CRM.
+   - **Newtonsoft.Json**: Manipulación JSON en el backend.
+   - **System.Net.Http**: Para realizar llamadas HTTP a servicios externos.
+   - **Azure OpenAI Service**: Procesamiento basado en IA para transformación de texto.
 
 ---
 
-### **Diagrama Mermaid**
-Basándonos en los componentes mencionados, este diagrama representa la interacción entre los módulos del sistema y sus dependencias externas.
-
+### Diagrama **Mermaid** válido para GitHub:
 ```mermaid
 graph TD
-    Frontend["Frontend-JavaScript"]
-    Plugin["Plugin-Dynamics CRM"]
-    AzureSpeechSDK["Azure Speech SDK"]
-    AzureOpenAI["Azure OpenAI API"]
-    DynamicsCRM["Dynamics CRM"]
-    CustomAPI["API personalizada: TransformTextWithAzureAI"]
-    User["User"]
-    
-    User --> Frontend
-    Frontend --> AzureSpeechSDK
-    Frontend --> DynamicsCRM
-    DynamicsCRM --> Plugin
-    Plugin --> CustomAPI
-    CustomAPI --> AzureOpenAI
+    A["Frontend: JS & Azure Speech SDK"] --> B["Azure API"]
+    A --> C["Dynamics 365 WebAPI"]
+    C --> D["Backend Plugins"]
+    D --> E["Azure OpenAI Service"]
+    D --> F["Dynamics CRM Database"]
 ```
 
 ---
 
-### **Conclusión final**
-La estructura del repositorio evidencia un sistema integrado con capacidades avanzadas para la síntesis y reconocimiento de voz, interacción con formularios de Dynamics CRM y un plugin backend basado en Azure AI para operaciones de procesamiento de texto. La solución presenta una arquitectura **n capas**, que divide las responsabilidades entre frontend, servicios intermedios y backend, asegurando la mantenibilidad y escalabilidad del sistema. Sin embargo, la dependencia directa de servicios externos (Azure Speech SDK y Azure OpenAI) aumenta el riesgo de fallos ante interrupciones de dichos servicios, por lo que deberían establecerse planes de contingencia para garantizar estabilidad.
+### Conclusión final:
+Esta solución es una implementación híbrida de herramientas y tecnologías Microsoft que combina elementos de frontend, backend y procesamiento basado en IA. La arquitectura modular asegura una buena separación de responsabilidades y escalabilidad. Además, la integración con servicios externos como Azure Speech SDK y OpenAI añade un alto nivel de funcionalidad avanzada al sistema.
+
+Se observa que los principios de modularidad, servicios desacoplados y extensibilidad en entornos de Microsoft Dynamics están bien empleados en esta solución. Sin embargo, podría mejorarse documentando explícitamente cualquier vulnerabilidad potencial en las llamadas a APIs externas, así como optimizando el manejo de errores para garantizar mayor robustez.
