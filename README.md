@@ -1,78 +1,55 @@
-### Breve resumen técnico
-
-El repositorio contiene funcionalidades que integran reconocimiento de voz y procesamiento de texto mediante Azure Speech SDK y Azure OpenAI, enfocados en la interacción con formularios (parte de frontend) y en la generación de contenido estructurado compatible con Microsoft Dynamics 365 (plugin en backend). 
-
----
-
-### Descripción de arquitectura
-
-#### Tipo de solución
-La solución combina:
-1. **Frontend** basado en JavaScript para capturar voz, procesar entrada y actualizar formularios dinámicos.
-2. **Backend plugin** diseñado para Microsoft Dynamics 365 en C#, que interactúa con datos y servicios de AI.
-
-#### Arquitectura general
-1. **Frontend (N-capas)**:
-   - Procesamiento de datos directamente en el cliente, con funcionalidades separadas en módulos.
-   - Carga dinámica de dependencias externas (Azure Speech SDK).
-
-2. **Backend (integración con Dynamics 365)**:
-   - **Plugin-Based Architecture** acoplada a Dynamics 365, extendiendo funcionalidades mediante el patrón de plugins y servicios externos.
-
-3. **Patrón de integración**:
-   - Uso de servicios REST para conectar con Azure Speech SDK y OpenAI.
-   - Dependencia explícita y directa de APIs externas como Dynamics, OpenAI y Speech SDK.
-
-En conjunto, la arquitectura es híbrida con elementos de capas en frontend y plugins en backend.
+### Breve resumen técnico:
+La solución presentada implementa funcionalidades que mezclan procesamiento y generación de voz con servicios de Azure en un entorno específico: Dynamics 365. Se trata de un conjunto de módulos separados entre frontend, backend y plugins que interactúan para procesar datos de formularios mediante servicios de inteligencia artificial (IA) y APIs específicas de Microsoft Azure.
 
 ---
 
-### Tecnologías usadas
+### Descripción de arquitectura:
+El diseño general muestra una arquitectura **n-capas** donde:
+1. **Frontend** (JavaScript): Realiza interacción directa con usuarios en formularios de Dynamics 365, centrada en funcionalidades de voz (lectura y reconocimiento) que dependen del Azure Speech SDK.
+2. **Middleware** (Plugins en C#): Extiende capacidades de Dynamics 365 para transformar texto y generar respuestas JSON mediante el servicio Azure OpenAI. Esto ocurre dentro del contexto del sistema CRM.
+3. **Servicios externos**: El sistema depende de dos servicios clave de Azure: Speech SDK (para reconocimiento y síntesis de voz) y OpenAI (procesamiento de texto con IA avanzada).
 
-#### En frontend:
-- **Lenguaje:** JavaScript.
-- **Dependencias externas:**
-  - **Azure Speech SDK** para entrada y salida de voz.
-- **Frameworks/clientes:** Dynamics 365 (integración implícita en el contexto de los formularios).
-
-#### En backend:
-- **Lenguaje:** C#.
-- **Dependencias externas:**
-  - **Azure OpenAI Services** para procesamiento de texto.
-  - **Dynamics SDK (`Microsoft.Xrm.Sdk`)** para operaciones internas.
-  - **Newtonsoft.Json** y **System.Text.Json** para manejo y serialización de JSON.
-  - **System.Net.Http** para llamadas HTTP.
-
-#### Patrones observados:
-1. **Modularización:** Uso de funciones específicas separadas por responsabilidades (en frontend y backend).
-2. **Carga dinámica:** `ensureSpeechSDKLoaded` en frontend para verificar y cargar dependencias críticas.
-3. **Plugin-Based:** Capacidades extendidas en Dynamics usando plugins (backend).
-4. **MVC implícito:** Separación entre manipulación de datos del formulario y presentación en frontend.
+El diseño está alineado con principios de modularidad y responsabilidad única, separando claramente las funciones de cada módulo. Además, el código sigue patrones relacionados con la arquitectura event-driven y utiliza manejo de promesas y callbacks para interactuar de forma asincrónica con servicios externos.
 
 ---
 
-### Diagrama mermaid válido para GitHub
+### Tecnologías usadas:
+1. **Frontend**:
+   - JavaScript (frameworks internos de Dynamics 365).
+   - Azure Speech SDK.
+   - Dynamics 365 Form API y Custom API.
 
+2. **Backend**:
+   - C# para plugins en Dynamics 365.
+   - Integration con Azure OpenAI usando `HttpClient` y JSON parsing.
+
+3. **Servicios externos**:
+   - Microsoft Azure Speech API.
+   - Microsoft Azure OpenAI API.
+
+4. **Dependencias adicionales**:
+   - Newtonsoft.Json para JSON en backend.
+   - Text manipulation y lógica de conversión en frontend.
+
+---
+
+### Diagrama **Mermaid**:
 ```mermaid
 graph TD
-  A["Frontend/formulario"]
-  B["Speech SDK desde Azure"]
-  C["Azure OpenAI API"]
-  D["Backend plugin Dynamics (C#)"]
-  E["Dynamics WebApi"]
-  F["Campos dinámicos en formulario"]
-  
-  A --> B
-  B --> A
-  A --> C
-  C --> D
-  D --> E
-  E --> F
-  F --> A
+    A["Frontend - Lectura de Formulario"] --> B["Azure Speech SDK"]
+    A --> C["Dynamics 365 Form API"]
+    C --> D["Formulario Dynamics"]
+    B --> E["Síntesis de Voz"]
+    A --> F["Reconocimiento de Voz"]
+    F --> G["Dynamics 365 Custom API"]
+    G --> H["Backend - Plugin Transformador"]
+    H --> I["Azure OpenAI API"]
+    I --> J["Texto Transformado JSON"]
 ```
 
 ---
 
-### Conclusión final
+### Conclusión final:
+La solución planteada integra dinámicamente servicios avanzados basados en inteligencia artificial (IA) y voz para extender funcionalidades en un sistema CRM (Dynamics 365). Está diseñada con enfoque modular y utilizando una arquitectura **n-capas**, donde cada elemento desempeña una función específica y controla las dependencias relacionadas. La estructura general es robusta y acoplada correctamente con servicios de Azure, aunque puntos como el manejo de credenciales y seguridad podrían mejorarse.
 
-La solución es una integración avanzada entre frontend basado en JavaScript para captura de voz y manejo de formularios, y backend orientado a Dynamics 365 utilizando servicios como Azure OpenAI. Está diseñada como una arquitectura híbrida que aprovecha tecnologías modernas como SDKs de Azure y servicios de IA. Aunque la modularidad y separación lógica son puntos fuertes, hay riesgos potenciales como la exposición directa de claves API en el código del plugin, lo que debería ser mejorado para una solución segura y escalable.
+Se recomienda validar el rendimiento y confiabilidad del sistema al interactuar con APIs externas, especialmente bajo condiciones de alta concurrencia.
