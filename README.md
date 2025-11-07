@@ -1,54 +1,51 @@
 ### Breve Resumen Técnico
-El repositorio está orientado a soluciones para **Microsoft Dynamics CRM**, donde se integran funcionalidades relacionadas con la síntesis de voz, reconocimiento de voz y procesamiento avanzado de datos mediante inteligencia artificial, utilizando servicios de **Azure Speech** y **Azure OpenAI**. Incluye componentes para el frontend (funcionalidades en JavaScript para interacción con formularios), un plugin en C# para Dynamics CRM, y lógica extensiva de cliente-servidor.
-
----
+Este repositorio consiste en módulos de software diseñados para integrar tecnologías de reconocimiento de voz, procesamiento de formularios dinámicos y conversión de texto con APIs externas (Azure Speech SDK y Azure OpenAI). Se enfocan en mejorar la interacción entre usuarios y Dynamics 365 mediante comandos de voz y automatización basada en IA.
 
 ### Descripción de Arquitectura
-La arquitectura de este repositorio es híbrida, combinando un patrón de **n capas** para la interacción entre frontend y backend con algunos elementos del patrón **hexagonal** para la integración de servicios externos (Azure). El plugin en C# funciona como un componente extensible dentro de Dynamics CRM bajo el patrón de **Plugin**. Del lado del frontend, los archivos de JavaScript operan en una arquitectura modular para manipular directamente formularios de usuario y consumir servicios de reconocimiento de voz.
-
----
+La arquitectura es **modular**, centrada en una combinación de frontend basado en JavaScript y plugins backend sobre Dynamics CRM. Utiliza APIs externas (Azure Speech SDK y Azure OpenAI) para enriquecer la funcionalidad de entradas de voz y procesamiento de texto. Aunque los módulos están organizados, el diseño general sigue una estructura **n-capas**:
+1. **Frontend Layer (UI)**: Interfaces para entrada de voz y manejo dinámico de formularios.
+2. **Backend Layer (Plugins)**: Plugins que procesan texto y lo integran al sistema CRM.
+3. **Integration Layer**: Consumidores de servicios externos (Azure APIs y Custom APIs).
 
 ### Tecnologías Usadas
-1. **Frontend**:
-   - **JavaScript**: Manejo de lógica de cliente para formularios interactivos (Dynamics CRM).
-   - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
-   - **APIs de Dynamics CRM**: Manipulación de datos y atribuciones de formulario.
+1. **Frontend (JS)**:
+   - **Azure Speech SDK**: Comercial para reconocimiento de voz, síntesis de texto y voz.
+   - DOM Manipulation: para generación dinámica de scripts y contenido.
+   - JavaScript Promises: Gestión de respuestas asíncronas.
+   - Xrm.WebApi: Interacción con CRUD y datos de Dynamics 365.
+2. **Backend (C#)**:
+   - **Microsoft.Xrm.Sdk**: Extensión para plugins Dynamics 365.
+   - **Azure OpenAI Service**: Modelo GPT para procesamiento estructurado de texto.
+   - **Newtonsoft.Json** y **System.Text.Json**: Manejo extensivo de JSON.
+   - **HTTPClient**: Integración a servicios REST externos.
 
-2. **Backend/Plugins**:
-   - **C#**: Desarrollo de plugins para Dynamics CRM.
-   - **Azure OpenAI API**: Procesamiento avanzado de texto mediante inteligencia artificial.
-   - **Newtonsoft.Json & System.Text.Json**: Manipulación de datos JSON.
-   - **Microsoft.Xrm.Sdk**: Framework para extender funcionalidades dentro de Dynamics.
+### Dependencias y Componentes Externos
+- **Azure Speech SDK**: Reconocimiento de voz y Text-to-Speech.
+- **Azure OpenAI API**: Generación y transformación de texto estructurado.
+- **Dynamics CRM SDK (Microsoft.Xrm.Sdk)**: Para manipular contexto CRM.
+- **Custom APIs**: Probable existencia de endpoints definidos por el usuario para gestionar datos específicos del formulario.
 
-3. **Patrones de Diseño**:
-   - **Cliente/Servidor**: Procesos de frontend interactúan con APIs (servidores externos) para síntesis y procesamiento de datos.
-   - **Adaptador**: Adapta las entradas (voz/texto) al formato necesario para CCM y APIs.
-   - **Modularidad**: Componentes desacoplados para facilitar integraciones.
-
----
-
-### Diagrama Mermaid
-Aquí se describe el flujo de integración de todos los componentes, enlazando frontend, backend y servicios externos de Azure:
-
+### Diagrama Mermaid (GitHub Markdown Compatible)
 ```mermaid
 graph TD
-    A["Frontend: JavaScript"]
-    B["Azure Speech SDK"]
-    C["Dynamics API"]
-    D["Plugin: TransformTextWithAzureAI"]
-    E["Azure OpenAI API"]
-
-    A --> B
-    A --> C
-    B --> A
-    C --> A
-    C --> D
-    D --> C
-    D --> E
-    E --> D
+  A["Frontend/JS/readForm.js"] --> B["startVoiceInput"]
+  A --> C["speakText - Azure Speech SDK"]
+  A --> D["getVisibleFieldData"]
+  A --> E["apply Form Field Logic"]
+  
+  F["Frontend/JS/speechForm.js"] --> G["ejecutarGrabacion"]
+  F --> H["Custom APIs"]
+  F --> I["processTranscript"]
+  
+  J["Plugins/TransformTextWithAzureAI.cs"] --> K["Dynamics Execute"]
+  J --> L["GetOpenAIResponse - Azure OpenAI"]
+  J --> M["Newtonsoft.Json Processing"]
+  
+  N["Azure Speech SDK"] --> A
+  N --> F
+  
+  O["Azure OpenAI Service"] --> J
 ```
 
----
-
 ### Conclusión Final
-Este repositorio implementa una solución orientada a extender las funcionalidades de Microsoft Dynamics CRM. Su arquitectura es adecuada para el tipo de problema que desea resolver, dado que usa componentes modulares en el frontend para interactuar con usuarios (formularios) y pasa datos al backend mediante las APIs de Dynamics. La integración con servicios de Azure Speech y OpenAI permite una experiencia enriquecida que combina reconocimiento/síntesis de voz y procesamiento avanzado de texto mediante IA. La arquitectura de **n capas** y la integración de servicios externos refuerzan la extensión del producto base (Dynamics CRM) utilizando patrones modernos y bien organizados.
+El repositorio presenta una solución diseñada para integrarse con Dynamics 365 y enriquecerse con modernas capacidades de voz e inteligencia artificial proporcionadas por servicios de Azure. Aunque modular en el diseño, sigue una estructura básica de **n-capas**: frontend para la interacción del usuario, backend para la lógica de negocio y una capa intermedia de integración con APIs externas. Es una implementación sólida para soluciones empresariales de automatización e interfaces mejoradas.
