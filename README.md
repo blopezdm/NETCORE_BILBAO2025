@@ -1,57 +1,61 @@
-## Breve resumen técnico
-El repositorio contiene una solución que integra reconocimiento y síntesis de voz basado en Azure Speech SDK y procesamiento de texto mediante Azure OpenAI dentro de Microsoft Dynamics CRM. Se compone de tres principales componentes: `readForm.js`, `speechForm.js` y `TransformTextWithAzureAI.cs`, orientados a procesar entradas de datos a través de voz y texto, integradas con funcionalidades de API externas y plugins para Dynamics CRM.
+### Breve resumen técnico
+El repositorio incluye componentes orientados a la integración y automatización en Dynamics 365 mediante entradas de voz y procesamiento de texto con Azure SDKs, OpenAI, y APIs personalizadas. Es una solución híbrida con frontend (JS) y backend (C#) que interactúa directamente con servicios de Azure.
 
 ---
 
-## Descripción de la arquitectura
-La solución tiene una arquitectura híbrida basada en una combinación de patrones de **Cliente-Servicio** para la interacción con Azure Speech SDK y Azure OpenAI Services. También incluye un componente que utiliza el **patrón Plugin** de Dynamics CRM para extender la funcionalidad nativa. En términos de organización, la arquitectura está dividida en:
-1. **Front-end**: Archivos JavaScript (`readForm.js` y `speechForm.js`) que procesan formularios y voz, actuando como cliente de los servicios externos.
-2. **Back-end**: Plugin en `TransformTextWithAzureAI.cs`, que opera en el contexto de Dynamics CRM, utilizando servicios y configuraciones específicas.
+### Descripción de arquitectura
+La arquitectura está compuesta por dos principales capas comunicativas:
+1. **Frontend (JavaScript)**: Maneja la interacción del usuario con el formulario de Dynamics 365 utilizando Azure Speech SDK para entrada y salida de voz. Opta por la modularidad y carga dinámica de dependencias.
+2. **Plugins (C#)**: Procesa textos mediante Azure OpenAI, diseñados como **plugins** para Dynamics CRM implementando clases de tipo `IPlugin`. Esta capa se comunica directamente con servicios de Azure y manipula el contexto CRM.
+
+En su conjunto, la solución implementa un diseño **n capas**, que separa claramente la interfaz (frontend), la lógica de ejecución (plugins) y los servicios externos.
 
 ---
 
-## Tecnologías usadas
+### Tecnologías usadas
 1. **Frontend**:
-   - **JavaScript ES6**: Código modular, funciones asíncronas.
-   - **Azure Speech SDK**: Implementación de síntesis y reconocimiento de voz.
-   - **Dynamics CRM SDK** (`Xrm`): Interacción con la API y los formularios del sistema CRM.
+   - **Azure Speech SDK**: Servicios de entrada y síntesis de voz.
+   - **JavaScript estándar**: Funciones modulares con promesas para integraciones dinámicas.
+   - **Dynamics 365 SDK (JavaScript)**: Manipulación de formularios.
+   
+2. **Backend (Plugins)**:
+   - **Microsoft Dynamics CRM SDK**: Para crear plugins.
+   - **Azure OpenAI API**: Procesamiento IA en texto.
+   - **C#**: Desarrollo de plugins siguiendo patrones estándar.
+   - **Dependencias adicionales**: `System.Net.Http`, `System.Text.Json`, y `Newtonsoft.Json`.
 
-2. **Backend**:
-   - **C# (.NET Framework)**: Desarrollo de plugins para Dynamics CRM.
-   - **Azure OpenAI Services (GPT-4)**: Transformación avanzada de texto mediante IA.
-   - **Librerías auxiliares**:
-     - `Newtonsoft.Json`, `System.Text.Json`: Manejo de datos JSON.
-     - `System.Net.Http`: Comunicaciones HTTP/HTTPS.
-
-3. **Otros**:
-   - Eventualmente, uso de CDN para cargar dependencias como el Azure Speech SDK.
+3. **Patrones de diseño y arquitectura**:
+   - **Modularidad**: Código estructurado en funciones y clases claras.
+   - **Carga dinámica**: "Lazy Loading" del SDK de Azure en el frontend.
+   - **Plugin-based Architecture**: Extiende Dynamics CRM mediante puntos de extensión.
+   - **Integración de servicios externos**: Interacción con Azure OpenAI y Speech SDK.
 
 ---
 
-## Diagrama Mermaid válido para GitHub
+### Diagrama Mermaid
+
 ```mermaid
 graph TD
-    A["Frontend (JavaScript)"]
-    B["readForm.js"]
-    C["speechForm.js"]
-    D["Backend (C#/Dynamics CRM Plugin)"]
-    E["TransformTextWithAzureAI.cs"]
-    F["Azure Speech SDK"]
-    G["Azure OpenAI Services"]
-    H["Dynamics CRM API"]
+    A["Frontend: Formulario Dynamics 365"]
+    B["VoiceInputHandler.js: Procesa salida de voz (speakText)"]
+    C["SpeechInputHandler.js: Captura entrada de voz (startVoiceInput)"]
+    D["Azure Speech SDK Integration"]
+    E["Custom API: trial_TransformTextWithAzureAI"]
+    F["Backend Plugin: TransformTextWithAzureAI.cs"]
+    G["Azure OpenAI API: Procesa y normaliza texto"]
+    H["Dynamics CRM SDK: Xrm.WebApi"]
 
     A --> B
     A --> C
-    B --> F
-    B --> H
-    C --> F
-    C --> G
-    C --> H
-    D --> G
-    D --> H
+    C --> D
+    C --> E
+    E --> F
+    F --> G
+    B -- SDK --> D
+    F -- SDK --> H
 ```
 
 ---
 
-## Conclusión final
-La solución presentada está diseñada para maximizar la interacción entre usuarios y Microsoft Dynamics CRM mediante el uso avanzado de reconocimiento y síntesis de voz (Azure Speech SDK) y procesamiento de texto asistido por IA (Azure OpenAI Services). Su arquitectura modular y basada en la integración de API permite desplegar funcionalidades específicas sin afectar la base del sistema CRM. Las tecnologías seleccionadas son modernas y están alineadas con las prácticas recomendadas para soluciones empresariales adaptables y con capacidades de inteligencia artificial. La combinación de JavaScript y C# ofrece eficacia en los flujos de comunicación, mientras que el uso de servicios de Azure proporciona escalabilidad y robustez.
+### Conclusión final
+La solución descrita tiene una arquitectura **n capas**, con enfoque modular y una integración efectiva entre frontend (formularios Dynamics 365) y backend (plugins C#). La dependencia de servicios externos como **Azure Speech SDK** y **Azure OpenAI API** permite agregar inteligencia artificial y automatización a los flujos del negocio en Dynamics 365. Sin embargo, la arquitectura usada puede generar riesgos relacionados con la gestión adecuada de claves API y posibles tiempos de espera en servicios externos. Se recomienda revisar estrategias de seguridad y establecer límites razonables de latencia en los servicios dependientes.
