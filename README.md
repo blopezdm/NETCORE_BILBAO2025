@@ -1,52 +1,53 @@
 ### Breve Resumen Técnico
+Este proyecto consta de tres módulos principales que integran lógica para reconocimiento de voz, síntesis de voz, y transformación de texto mediante inteligencia artificial. Se diseñó para interactuar con Dynamics 365, aprovechando tanto las APIs nativas de Dynamics como servicios de Azure como **Speech SDK** y **OpenAI GPT-4**. Los módulos siguen principios de modularidad y desacoplamiento para optimizar la interacción con formularios y datos dentro de dicha plataforma.
 
-El repositorio descrito consta de tres componentes principales:
-1. **Frontend para Voz (JavaScript)**: Gestiona la interacción entre formularios y capacidades de Speech-to-Text/Text-to-Speech using Azure Speech SDK.
-2. **Llamadas a APIs Dinámicas (JavaScript)**: Procesan formularios dinámicos utilizando reconocimiento de voz, IA basada en Azure y manipulación de atributos en Dynamics CRM.
-3. **Plugins en Backend (.NET / C#)**: Implementan lógica avanzada dentro de Dynamics CRM utilizando Azure OpenAI para transformación de texto.
+---
 
 ### Descripción de Arquitectura
+La aplicación sigue una **arquitectura modular** basada en una mezcla de patrones **n-capas** y servicios externos que colaboran para proporcionar las funcionalidades deseadas. Los diferentes componentes (frontend, backend, plugins) están organizados como unidades desacopladas que interactúan mediante APIs y eventos.
 
-La solución es un **sistema con arquitectura de capas híbridas**, compuesto de:
-- **Frontend**: Basado en JavaScript, con dos archivos que interactúan directamente con el DOM y Azure Speech SDK.
-- **Backend**: Compuesto por un _plugin_ desarrollado en C# que extiende las funcionalidades de Microsoft Dynamics CRM y conecta con Azure OpenAI.
-- **Integración con API Externas**: Azure Speech SDK y Azure OpenAI forman dos dependencias principales que interactúan con los componentes del sistema.
-- Este diseño tiene características de una **arquitectura n-capas** y utiliza comunicación asincrónica entre cliente (frontend) y servidores externos.
+Los principales roles en la arquitectura incluyen:
+- **Frontend/JS:** Manejo de UI basada en formularios con interacción por voz, que utiliza patrones de modularidad y delegación para una lógica eficiente.
+- **Dynamics Plugins:** Backend asociado al modelo de datos de Dynamics 365, implementando lógica personalizada mediante la interfaz `IPlugin`.
+- **Azure Services:** Actualización dinámica de formularios y procesamiento enriquecido de texto con Speech SDK y GPT-4 a través de integraciones HTTP.
+
+Aunque los módulos están conectados, no se observa una arquitectura completa de **microservicios**, sino más bien una composición monolítica avanzada con servicios externos.
+
+---
 
 ### Tecnologías Usadas
-
 1. **Frontend**:
-   - Lenguaje: JavaScript (modular).
-   - Integración: Azure Speech SDK para TTS (Text-to-Speech) y STT (Speech-to-Text).
-   - Frameworks/Librerías: Xrm.WebApi (Dynamics).
-   - Patrones: Modularidad, integración asincrónica con SDK y APIs.
+   - **JavaScript**: Para modularidad y lógica dinámica.
+   - **Azure Speech SDK**: Interacción con servicios de síntesis y reconocimiento de voz.
+   - **Dynamics API (Xrm)**: Manipulación de formularios y datos.
 
 2. **Backend**:
-   - Lenguaje: C# sobre .NET Framework.
-   - Servicios Azure: OpenAI (GPT-4), Dynamics CRM SDK (IPlugin).
-   - Librerías: Newtonsoft.Json, System.Net.Http, System.Text.Json.
-   - Patrones: Plugin-based architecture, DTO (data transfer objects), integración con APIs REST.
+   - **C#**: Desarrollo del plugin que integra OpenAI con Dynamics 365.
+   - **Microsoft Dynamics Plugin SDK**: Para interacción con datos y estructura interna.
+   - **HTTP Client Libraries**: Para invocación de API externa.
+   - **Newtonsoft.Json y System.Text.Json**: Procesamiento de datos JSON.
 
-3. **APIs Externas**:
-   - **Azure Speech SDK**: Procesa síntesis y reconocimiento de voz.
-   - **Azure OpenAI**: Transformación y modelado de texto.
+3. **Servicios Externos**:
+   - **Azure OpenAI GPT-4**: Procesamiento avanzado de texto.
+   - **Azure Speech Services**: Síntesis y reconocimiento de voz.
+
+---
 
 ### Diagrama Mermaid
 
 ```mermaid
 graph TD
-  A["Usuario"] --> B["Frontend JS - Voz/Formularios"]
-  B --> C["Speech-to-Text/Voice Interaction -> Azure Speech SDK"]
-  C --> D["Actualiza Campos en Formularios"]
-  D --> E["Llama API Personalizada - Transformación"]
-  E --> F["Procesa con Plugin Backend Dynamics"]
-  F --> G["Azure OpenAI -> Transform Text"]
-  G --> H["Retorno de Campos Actualizados al Frontend"]
-  B --> F
+    A["Frontend/JS Module"] --> B["Azure Speech-SDK"]
+    A --> C["Dynamics-API Form Context"]
+    C --> D["UI Interaction - Form Updates"]
+    A --> E["Recognize Voice - Update Fields"]
+    E --> F["API Custom Logic: Dynamics"]
+    F --> G["Process IA Transcription"]
+    F --> H["Call OpenAI GPT-4 API"]
+    H --> I["Return AI Response"]
 ```
 
+---
+
 ### Conclusión Final
-
-La solución combina **múltiples tecnologías en una arquitectura n-capas** buscando un entorno interactivo basado en formularios y accesibilidad por voz. Aprovecha componentes modernos como el **Azure Speech SDK** para procesamiento de voz y **Azure OpenAI** para IA avanzada, integrando la lógica en Dynamics CRM mediante un diseño modular y extensible.
-
-Este tipo de arquitectura es adecuada para sistemas interactivos empresariales (como CRM) que aprovechan tanto datos estructurados como interacciones avanzadas de usuarios para mejorar la experiencia.
+Este repositorio compone una solución integrada enfocada en mejorar la **experiencia de usuario mediante herramientas de IA** y una sólida integración entre servicios **Azure** y **Microsoft Dynamics 365**. Si bien cada componente se encuentra bien definido, la arquitectura general se asemeja más a un monolito moderno con una delegación en **servicios externos** para expandir su funcionalidad. Esto hace la solución adecuada para entornos empresariales que usan Dynamics, pero no está optimizada para escenarios de infraestructura altamente distribuida como los microservicios.
