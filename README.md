@@ -1,39 +1,65 @@
-### Breve resumen técnico
+## Breve resumen técnico
 
-El repositorio contiene módulos y archivos orientados a la integración de capacidades cognitivas en aplicaciones empresariales. Estos módulos interactúan con servicios de **Azure Speech SDK** y **Azure OpenAI** para enriquecer formularios, procesar datos mediante reconocimiento de voz, y aplicar transformaciones basadas en IA. Los patrones comunes incluyen arquitecturas en capas y dependencias con Dynamics CRM.
+El repositorio contiene una solución híbrida centrada en la integración de servicios de Azure con formularios de datos en Dynamics 365. Incluye implementación de interacción por voz, reconocimiento, síntesis de texto hablado, y transformación inteligente de datos con ayuda del modelo Azure OpenAI y el SDK de Microsoft Dynamics CRM. Se evidencia una arquitectura modular y orientada a servicios para facilitar la extensibilidad y el desacople entre componentes.
 
-### Descripción de arquitectura
+---
 
-La arquitectura adoptada es una **n capas** con interacciones en la capa de presentación (formularios), capa de lógica de negocio (procesamiento y transformación), y capa de servicios (Azure servicios y CRM API). El diseño sigue el paradigma de encapsulación de lógica en módulos que se pueden desacoplar en escenarios empresariales.
+## Descripción de arquitectura
 
-### Tecnologías usadas
+La arquitectura observada tiene características **modulares y orientadas a servicios**, pues cada archivo aborda una funcionalidad específica:
 
-- **Frontend**:
-  - **Azure Speech SDK**: Reconocimiento de voz y síntesis de texto a voz.
-  - **JavaScript (ES6)**: Desarrollo de componentes para interactuar con formularios.
-  - **DOM API**: Manipulación de formularios HTML.
+1. **`readForm.js` y `speechForm.js` (Frontend)**: Interacción con formularios para captura y síntesis de voz utilizando SDK y APIs de Azure. Estos archivos constituyen un modelo cliente-API que se ejecuta en capa de presentación y lógica.
+   
+2. **`TransformTextWithAzureAI.cs` (Plugin)**: El nivel de capa de negocio que integra directamente con Dynamics CRM y Azure OpenAI para transformar datos según reglas configuradas. Este plugin complementa procesos internos de Dynamics.
 
-- **Backend**:
-  - **Dynamics CRM (Microsoft.Xrm.Sdk)**: Procesamiento de datos vinculados a formularios y gestión del contexto del CRM.
-  - **Azure OpenAI**: Procesamiento de texto mediante modelos generativos (GPT).
-  - **Plugins .NET C#**: Lógica personalizada ejecutada como parte del ecosistema CRM.
+La solución emplea una arquitectura **multicapa**, donde cada componente tiene responsabilidades específicas:
+- **Capa de presentación**: Archivos en el directorio `FRONTEND/JS` manejan interacción usuario-aplicación.
+- **Capa de negocio/procesamiento**: Representada por el plugin en `TransformTextWithAzureAI.cs`.
+- **Servicios externos**: Azure Speech SDK y Azure OpenAI realizan procesamiento de voz y transformación inteligente mediante APIs.
 
-### Diagrama Mermaid
+---
 
-El siguiente diagrama muestra las interacciones principales entre los componentes del repositorio:
+## Tecnologías usadas
+
+### Frontend
+- **JavaScript**: Lenguaje para implementar lógica del cliente en los formularios de Dynamics 365.
+- **Azure Speech SDK**: Utilizado para síntesis y reconocimiento de voz. Cargado dinámicamente en el navegador para procesar audio y texto en tiempo real.
+
+### Backend
+- **Microsoft Dynamics CRM SDK**: Framework de desarrollo para plugins en Dynamics 365, basado en `IPlugin` y las interfaces de CRM.
+- **Azure OpenAI**: API de procesamiento de lenguaje natural (GPT) para transformación avanzada de texto.
+- **System.Net.Http / Newtonsoft.Json.Linq**: Herramientas para serialización/deserialización de datos JSON y manejo de solicitudes HTTP.
+
+### Patrones y enfoques
+- **Separación de preocupaciones**: La lógica de síntesis, obtención de campos visuales y transformación están aisladas en métodos o funciones específicas.
+- **Uso de SDKs externos**: Técnicas de integración para aprovechar servicios avanzados mediante APIs externos (Azure Speech y OpenAI).
+- **Modularidad**: Cada funcionalidad está diseñada como unidad independiente, facilitando el mantenimiento y escalabilidad.
+
+---
+
+## Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-  A["Azure Speech SDK"] --> B["Frontend - speechInputHandler.js"]
-  A --> C["Frontend - vozInputHandler.js"]
-  B --> D["Formulario dinámico - DOM API"]
-  C --> D
-  D --> E["Dynamics CRM API"]
-  E --> F["Plugin - TransformTextWithAzureAI"]
-  F --> G["Azure OpenAI API"]
-  F --> H["Respuesta JSON estructurada"]
+    A["Formulario CRM Dynamics"]
+    B["readForm.js - Capturar-datos"]
+    C["speechForm.js - Voz-a-Texto/Síntesis"]
+    D["Azure Speech SDK"]
+    E["Plugins Dynamics"]
+    F["TransformTextWithAzureAI.cs"]
+    G["Azure OpenAI API"]
+
+    A --> B
+    B --> C
+    C --> D
+    B --> F
+    F --> G
+    D --> C
+    G --> F
 ```
 
-### Conclusión final
+---
 
-Este repositorio implementa una solución orientada a mejorar la accesibilidad y automatización en plataformas empresariales a través de **Azure Cognitive Services**. La arquitectura está basada en un modelo **n capas**, con una clara separación entre presentación, lógica de negocio y servicios externos. El uso de patrones como **Dynamic Loading**, **Service Layer**, y **Event-Driven** asegura que las implementaciones sean flexibles y eficientes. Sin embargo, es importante considerar la gestión segura de parámetros API, especialmente las claves y configuraciones de conexión.
+## Conclusión final
+
+Esta solución implementa una arquitectura modular e integradora entre tecnologías de Microsoft Dynamics, Azure Speech, y Azure OpenAI para optimizar la interacción de voz y transformación de datos en un entorno CRM. Utiliza técnicas adecuadas de desacoplamiento y externalización de servicios para maximizar flexibilidad y eficiencia. La documentación del código y su organización sugieren una solución bien estructurada, ampliable y alineada con patrones modernos de desarrollo en entornos empresariales.
