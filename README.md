@@ -1,61 +1,79 @@
 ### Breve resumen técnico
-El repositorio parece centrarse en soluciones de reconocimiento de voz, accesibilidad y análisis de texto, integrándose con **Dynamics 365**, **Azure Speech SDK** y **Azure OpenAI**. Los archivos muestran funcionalidades relacionadas con la conversión de texto en audio, grabación de input de voz y transformación de texto mediante APIs externas. La estructura enfatiza módulos frontend que interactúan con APIs y plugins backend.
+El repositorio parece estar diseñado para una solución CRM/ERP basada en Dynamics 365, que integra funcionalidades de entrada por voz y procesamiento avanzado de texto con Azure AI y Azure Speech SDK. Incluye un **frontend** escrito en JavaScript y un **plugin backend** en C#, ambos enfocados en la interacción con los formularios del sistema y datos del usuario.
 
 ---
 
-### Descripción de arquitectura
-1. **Tipo de solución:** Se trata de un ecosistema integrado para plataformas empresariales, compuesto por un **frontend de accesibilidad** que interactúa con formularios de Dynamics 365 y un **plugin backend** que realiza procesamiento avanzado de texto mediante Azure OpenAI.
+### **Descripción de arquitectura**
+1. **Frontend**:
+   - Modular y desacoplado, centrado en extender las capacidades de los formularios de Dynamics 365 con entrada y salida de voz.
+   - Usa principios de asincronismo y servicios externos (Azure Speech SDK) para integrar reconocimiento y síntesis de voz.
 
-2. **Arquitectura:**
-   - **API Extendida en Dynamics 365:** Uso del patrón **plugin** para extender su funcionalidad backend mediante Azure OpenAI. 
-   - **N-capas:** Separación de responsabilidades entre UI (frontend) y lógica compleja de negocio en el backend del CRM.
-   - **Interacción con servicios externos:** Flujo típico de integración de APIs REST (Azure Speech SDK y OpenAI).
-   - **Lazy Loading:** Comportamiento del frontend para cargar dependencias dinámicas (SDK) cuando sea necesario.
+2. **Backend (Plugin)**:
+   - Plugin basado en la arquitectura de extensibilidad de Dynamics 365 (`IPlugin`), que actúa como proxy para interactuar con Azure OpenAI.
+   - Define operaciones específicas mediante servicios HTTP orientados a transformar texto proporcionado por el usuario.
 
----
-
-### Tecnologías usadas
-1. **Frontend:**
-   - JavaScript.
-   - Azure Speech SDK: Para reconocimiento de voz y síntesis de texto a audio.
-   - Dynamics 365 (Xrm API): Para manipulación dinámica de formularios.
-
-2. **Backend**
-   - Azure OpenAI: Para transformación de texto.
-   - C#: `Microsoft.Xrm.Sdk` (para extensibilidad de Dynamics CRM).
-   - `HttpClient`: Interacciones HTTP con APIs REST.
-   - `System.Text.Json` y `Newtonsoft.Json.Linq`: Serialización/deserialización JSON.
-
-3. **Patrones:**
-   - Modularidad por funciones.
-   - Lazy Loading en el frontend.
-   - Patrón Plugin en Dynamics CRM backend.
-   - Interacciones basadas en REST API.
+3. **Arquitectura general**:
+   - **Modular en n capas**, donde el frontend y el backend tienen responsabilidades separadas:
+     - **Frontend:** Interacción con el usuario y SDKs externos.
+     - **Backend:** Procesamiento avanzado y transformaciones con IA.
+   - **Integración con microservicios:** Representada por APIs externas como Azure OpenAI y Azure Speech SDK.
 
 ---
 
-### Diagrama Mermaid
+### **Tecnologías utilizadas**
+1. **Frontend**:
+   - **JavaScript** para lógica en el navegador.
+   - **Azure Speech SDK** para reconocer y sintetizar voz.
+   - **API personalizada** de Dynamics 365 (`Xrm.WebApi.online.execute`) para operar en el sistema CRM.
+
+2. **Backend (Plugin)**:
+   - **C# (.NET)** para desarrollo del plugin.
+   - **Azure OpenAI API** para procesamiento de texto.
+   - **Dynamics 365 SDK** para integración con el sistema CRM.
+
+3. **Patrones aplicados**:
+   - **Modularidad**: Separación de responsabilidades por función.
+   - **Asincronismo**: Uso de promesas y callbacks.
+   - **Event-driven**: Reconocimiento de eventos y llamadas basadas en acciones del usuario.
+   - **Proxy Pattern**: Uso del plugin para conectarse con APIs externas.
+
+---
+
+### **Diagrama Mermaid válido para GitHub**
 ```mermaid
 graph TD
-    A["Frontend-JS: readForm.js"]
-    B["Frontend-JS: voiceInputHandler.js"]
-    C["Backend-C#: Plugin TransformTextWithAzureAI.cs"]
-    D["Externo: Azure Speech SDK"]
-    E["Externo: Azure OpenAI"]
-    F["Externo: Dynamics 365 FormContext API"]
-    G["UI: Dynamics Form"]
+    A["Frontend - JS"]
+    B["Speech Form Handling"]
+    B1["Leer datos visibles del formulario (VoiceInputHandler.js)"]
+    B2["Procesar comandos vía API (speechForm.js)"]
 
-    A --> D
-    A --> F
-    B --> D
-    B --> F
+    C["Backend - Plugin - C#"]
+    D["Transformación de texto avanzada"]
+    D1["Normas predefinidas para entrada de texto"]
+    D2["Integración con OpenAI API"]
+    
+    E["Azure Speech SDK"]
+    F["Azure OpenAI API"]
+    
+    G["Dynamics 365 API"]
+    H["Formulario CRM/ERP"]
+    
+    A --> B
+    B --> B1
+    B --> B2
+    B --> G
+
+    C --> D
+    D --> D1
+    D --> D2
+    D1 --> F
+    D2 --> F
+    
+    G --> H
     B --> E
-    C --> E
-    C --> F
-    F --> G
 ```
 
 ---
 
 ### Conclusión final
-Este repositorio implementa una solución de accesibilidad y análisis inteligente mediante integración de tecnologías modernas como Azure Speech SDK, Azure OpenAI y Dynamics 365. Está diseñado con una **estructura modular y extensible**, prometiendo una arquitectura en capas con una combinación de frontend dinámico y plugins en el backend. Aunque se optimiza para la plataforma Dynamics 365, podría adaptarse a otros contextos con una ligera personalización. Sin embargo, debería mejorarse la gestión de credenciales API para mitigar riesgos de seguridad.
+Este repositorio ofrece una solución extendida para un sistema CRM basado en Dynamics 365 que integra entrada por voz y capacidades de inteligencia artificial mediante conexiones a Azure Speech SDK y Azure OpenAI. La arquitectura modular en n capas separa las responsabilidades entre frontend y backend, y combina principios de diseño modernos como asincronismo, integración de servicios externos y extensibilidad. La solución tiene un diseño sólido que permite una fácil escalabilidad y adaptabilidad a implementaciones futuras.
