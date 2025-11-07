@@ -1,55 +1,53 @@
-### Breve resumen técnico
-El repositorio parece implementar una solución que utiliza **Azure Speech SDK** y **Azure OpenAI API** para habilitar funcionalidades de entrada por voz, síntesis textual (texto a voz) y procesamiento dinámico en formularios interactivos de Dynamics CRM. Además, incluye un plugin personalizado para transformar texto con la ayuda de OpenAI.
+## Breve resumen técnico
+El repositorio contiene módulos orientados a la integración con servicios como Azure Speech SDK y Azure OpenAI. Los archivos están diseñados para interactuar con formularios de Dynamics 365, proporcionando capacidades de entrada/salida por voz, transformación de texto mediante IA, y actualización dinámica de campos del sistema.
 
 ---
 
-### Descripción de arquitectura
-La solución global muestra un **arquitectura modular** y desacoplada. Cada componente tiene un propósito específico:
-1. **Frontend (cliente):** Gestiona entrada/salida de datos desde formularios, incluyendo interacción por voz y IA.
-2. **Plugin de Dynamics CRM:** Permite integraciones personalizadas para lógica avanzada en el backend.
-3. **Dependencia de microservicios de Azure:** Utiliza servicios externos como **Azure Speech SDK** para entrada/salida por voz y **Azure OpenAI API** para transformación avanzada de texto.
+## Descripción de arquitectura
+La solución tiene características de una arquitectura distribuida con módulos independientes que interactúan entre ellos y con servicios externos. Se observa:
+1. **Front-End para Dynamics 365:** Archivos JS que manejan la manipulación de formularios y servicios de voz.
+2. **Plug-in (Back-End):** Código .NET que se ejecuta como complemento en Dynamics CRM. Sirve como intermediario entre Dynamics y Azure OpenAI.
+3. **Servicios Externos:** Azure OpenAI y Azure Speech SDK, usados para transformación de texto y síntesis de voz.
 
-Sigue el modelo **event-driven** mediante la ejecución basada en triggers en el frontend y en el backend, como plugins y funciones asincrónicas. La interacción con Dynamics CRM sugiere una **arquitectura de n capas** donde el backend (CRM y plugins) procesa lógica especializada, mientras que el frontend gestiona la interacción del usuario.
-
----
-
-### Tecnologías usadas
-1. **Frontend:**
-   - **JavaScript** para lógica de cliente.
-   - **Azure Speech SDK** para síntesis y transcripción de voz.
-   - **Dynamics Web API** para integración con formularios interactivos en Dynamics CRM.
-   - Modularidad orientada a responsabilidades claras dentro de funciones.
-   
-2. **Backend:**
-   - **C# plugins** para Dynamics CRM.
-   - **Azure OpenAI API (GPT)** para procesar texto usando IA.
-   - Librerías como `Newtonsoft.Json` para manipulación de JSON y `System.Net.Http` para solicitudes HTTP.
-
-3. **Patrones:**
-   - **Modularidad:** Separación funcional en módulos independientes.
-   - **Event-driven architecture:** Procesos reaccionan a eventos (entrada de voz, cambios en formularios, etc.).
-   - **Microservicios:** Uso de servicios externos para funcionalidades específicas como voz y procesamiento con IA.
+### Arquitectura detectada:
+- **N capas** aplicada en el diseño general:
+  - **Capa presentación:** JS que interactúan con los formularios.
+  - **Capa aplicación:** Lógica en el plug-in para la transformación de datos.  
+  - **Servicios externos:** Azure SDK y OpenAI como dependencias.
+- Además, se observa un enfoque hacia **architecture hexagonal**, dado el uso de adaptadores para interactuar con servicios como Azure Speech y OpenAI API.
 
 ---
 
-### Diagrama Mermaid válido para GitHub Markdown
+## Tecnologías usadas
+### Front-End:
+- **JavaScript:** Funciones para manipulación de formularios Dynamics y uso de APIs externas.
+- **Azure Speech SDK:** Synthesis y reconocimiento de voz.
+### Back-End:
+- **.NET Framework (C#):** Plug-in de Dynamics CRM para transformación de datos. 
+- **Azure OpenAI API:** Gpt-4o para interpretación de texto.
+### Dependencias generales:
+- **Dynamics Web APIs:** Para manejo de datos en la capa de presentación.
+- **Newtonsoft Json**, **HttpClient**: Manejo de solicitudes y formato JSON.
+
+---
+
+## Diagrama Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-    A["Frontend: JavaScript"] --> B["Azure Speech SDK"]
-    A --> C["Dynamics Web API"]
-    B --> D["Synthesis - Texto a Voz"]
-    B --> E["Recognition - Voz a Texto"]
-    E --> F["Procesamiento en formulario"]
-    F --> C
-
-    A --> G["Integración con Backend"]
-    G --> H["Plugin en Dynamics CRM (C#)"]
-    H --> I["Azure OpenAI API"]
-    I --> J["Transformaciones basadas en IA"]
-    J --> H
+    A1["Formulario Dynamics JS"] --> B1["leerFormulario - Extrae-datos"]
+    A2["Formulario Dynamics JS"] --> B2["Azure Speech SDK - síntesis de voz"]
+    B2 --> B3["Texto leído en voz"]
+    B1 --> C1["API personalizada - trial_TransformTextWithAzureAI"]
+    C1 --> C2["Azure OpenAI - Gpt-4o"]
+    C2 --> D1["JSON procesado"]
+    D1 --> E1["Plug-in Dynamics (.NET): aplica texto transformado"]
+    A1 --> D2["Actualización de campos del formulario"]
 ```
 
 ---
 
-### Conclusión final
-La solución es una combinación de una **aplicación frontend** para interacción visual y experiencias por voz, y un backend conectado a Dynamics CRM con extensiones personalizadas. La arquitectura **n capas** junto con el uso estratégico de microservicios escalables (Azure Speech SDK y OpenAI API) garantiza modularidad, flexibilidad y capacidad de adaptación. Esta solución es ideal para integraciones robustas en sistemas empresariales que requieren soporte tanto de entrada por voz como capacidades avanzadas de procesamiento de texto.
+## Conclusión final
+La solución implementa una arquitectura que aprovecha servicios externos como Azure Speech y OpenAI para extender las capacidades de Dynamics 365. La separación lógica entre Front-End, Back-End y servicios sigue buenas prácticas de modularidad. Además, se destacan patrones como **Callbacks**, el uso de **Adaptadores** para servicios externos, y la lógica orientada al contexto.
+
+Integrar inteligencia artificial y síntesis de voz en sistemas CRM como Dynamics crea una solución avanzada para manipular y transformar flujos en tiempo real, mejorando la interacción del usuario y la automatización.
