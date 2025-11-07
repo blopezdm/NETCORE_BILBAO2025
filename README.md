@@ -1,68 +1,68 @@
-### Resumen Técnico
-
-El repositorio presentado contiene tres archivos clave: dos principalmente para procesamiento de voz y uno para transformación textual mediante inteligencia artificial (AI). Su finalidad parece orientada hacia un sistema integrado con Dynamics 365, que permite captura de voz, síntesis y transformación textual utilizando servicios de Azure (Speech SDK y OpenAI). La solución tiene fuertes vínculos con la integración entre APIs externas (Azure) y el ecosistema de Dynamics 365.
-
----
-
-### Descripción de Arquitectura
-
-La arquitectura es **modular basada en capas** que combina:
-1. **Frontend funcional:** Procesamiento en los archivos JavaScript (`voiceInputHandler.js` y `speechProcessing.js`) para interactuar con usuarios mediante voz.
-2. **Backend / Plugin:** El archivo C# (`TransformTextWithAzureAI.cs`) es un plugin que realiza transformaciones textuales avanzadas en el servidor utilizando Azure OpenAI.
-
-Se puede decir que sigue un **patrón n-capas** por su división entre frontend y backend. Adicionalmente, utiliza un **arquitectura orientada a servicios (SOA)** mediante la interacción con APIs de Azure Speech y Azure OpenAI.
+### Breve resumen técnico
+El repositorio contiene tres aspectos principales:
+1. **Archivos front-end (`readForm.js` y `speechForm.js`)**: Implementan una integración basada en voz mediante el SDK de Azure Speech, facilitando entrada y salida de datos y aplicando accesibilidad en los formularios. Incluyen manipulación de DOM y funciones de integración con servicios externos.
+2. **Archivo back-end (`TransformTextWithAzureAI.cs`)**: Define un plugin para Dynamics CRM que utiliza Azure OpenAI para transformar texto, integrándose en el ecosistema del CRM como un proceso de back-office con procesamiento de datos.
 
 ---
 
-### Tecnologías Usadas
+### Descripción de arquitectura
+La arquitectura del repositorio tiene características híbridas:
+1. **Frontend**:
+   - Es modular y organizado como una capa de interacción con el usuario. Usa el patrón de *event-driven programming* para gestionar acciones por voz y manipular datos en formularios.
+   - Utiliza integración con SDKs de Azure Speech para síntesis y reconocimiento de voz, y procesamiento basado en IA.
 
-1. **Microsoft Dynamics 365 CRM**
-   - Contextos del formulario (`executionContext`).
-   - Plugins server-side como módulo backend.
+2. **Backend**:
+   - Utiliza una capacidad de extensibilidad de Dynamics CRM (patrón plugin), que acopla funcionalidades específicas en términos de ejecución.
+   - Las solicitudes externas al servicio de Azure OpenAI son realizadas mediante comunicación HTTP desde el servidor CRM.
 
-2. **Azure Speech SDK**
-   - Scripting en JavaScript para síntesis y transcripción de voz.
-   - Integración mediante APIs sobre HTTP.
-
-3. **Azure OpenAI**
-   - Procesamiento avanzado del lenguaje en plugins de Dynamics CRM.
-   - Uso de la API `Chat Completions` del modelo GPT.
-
-4. **Frameworks y Librerías**
-   - Node.js para la capa front.
-   - `.NET Framework` para Dynamics CRM Plugins.
-   - `Newtonsoft.Json`, `System.Text.Json`, y `System.Net.Http` para comunicación HTTP y manejo de JSON.
+3. **Arquitectura general del sistema**: Arquitectura de **n capas** donde hay una separación entre:
+   - Capa de presentación (frontend).
+   - Capa de lógica de negocio (plugin de CRM).
+   - Servicios externos de terceros como Azure Speech y Azure OpenAI para reconocimiento de voz e IA.
 
 ---
 
-### Diagrama **Mermaid** válido para GitHub Markdown
+### Tecnologías usadas
+1. **Frontend (JavaScript)**:
+   - SDK de Azure Speech como dependencia clave para síntesis y reconocimiento de voz.
+   - DOM Manipulation para integración con formularios web (CRM).
+   - Promises para control de asincronía en llamadas API.
 
+2. **Backend (.NET)**:
+   - Dynamics CRM SDK: `Microsoft.Xrm.Sdk`.
+   - Azure OpenAI: API para el modelo GPT-4.
+   - Comunicación HTTP: `System.Net.Http` para solicitudes externas.
+   - Serialización/Deserialización JSON: `System.Text.Json` y `Newtonsoft.Json.Linq`.
+
+---
+
+### Diagrama Mermaid válido para GitHub
 ```mermaid
 graph TD
-    A["Usuario-interacción-con-formulario"]
-    B["VoiceInputHandler.js - Captura y síntesis por voz"]
-    C["SpeechProcessing.js - Transcribe y mapea campos"]
-    D["Azure Speech SDK - Procesamiento de voz - API externa"]
-    E["Plugins Dynamics CRM - Transformación avanzada textual"]
-    F["TransformTextWithAzureAI - Plugin Dynamics 365"]
-    G["Azure OpenAI API - Procesamiento textual avanzado"]
+    A["Frontend - JS Integration"]
+    B["readForm.js - Voice Output"]
+    C["speechForm.js - Voice Input"]
+    D["SDK Azure Speech"]
+    E["Dynamics CRM Plugin"]
+    F["TransformTextWithAzureAI.cs"]
+    G["Azure OpenAI API"]
+    H["Users - Form Interaction"]
 
     A --> B
-    B --> D
     A --> C
+    B --> D
     C --> D
-    C --> F
+    E --> F
     F --> G
+    H --> A
+    H --> E
 ```
 
 ---
 
-### Conclusión Final
+### Conclusión final
+El repositorio presenta dos capas interconectadas pero independientes:
+1. **Frontend accesibilidad basada en voz**: Mejorando la interacción de usuarios con formularios en sistemas CRM mediante síntesis y reconocimiento de voz (Azure SDK).
+2. **Backend inteligencia avanzada**: Usando un plugin de Dynamics CRM para transformar textos con el modelo GPT-4 de OpenAI.
 
-El repositorio está diseñado para integrar voz, texto y AI mediante un ecosistema basado en **Azure y Dynamics 365**. Exhibe características como:
-1. Entrada de voz y síntesis mediante **Azure Speech SDK** (Frontend).
-2. Mapeo de datos y transcripción mediante funciones JavaScript dinámicas.
-3. Transformación textual avanzada usando plugins de Dynamics CRM junto con **Azure OpenAI** (Backend).
-4. Modularidad y división clara de responsabilidades con uso de APIs externas, lo que refleja una **arquitectura orientada a servicios (SOA)** y patrones como n-capas.
-
-La solución es adecuada para aplicaciones empresariales que necesitan mejorar la interacción por voz y generar procesamiento inteligente mediante Azure.
+La integración con APIs externas y el uso del diseño modular hace que este repositorio esté orientado a adaptar y mejorar el uso de tecnologías modernas en un ecosistema empresarial.
