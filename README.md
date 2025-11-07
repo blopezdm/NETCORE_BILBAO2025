@@ -1,55 +1,77 @@
 ### Breve resumen técnico
-Los archivos analizados forman parte de una solución orientada a mejorar la accesibilidad y automatización en sistemas CRM. Se implementa mediante tecnologías como **Azure Speech SDK** y servicios **Azure AI**, interactuando principalmente con formularios web y entidades en Dynamics CRM. La solución mezcla componentes backend y frontend.
+
+El repositorio contiene componentes para una solución orientada al procesamiento de voz y texto. La arquitectura incluye integraciones con Azure Speech SDK para síntesis y transcripción de voz, junto con un plugin desarrollado para un sistema CRM que utiliza Azure OpenAI para texto estructurado. Los archivos son altamente modularizados y diseñados para ser reutilizables en diversas operaciones relacionadas con formularios dinámicos.
 
 ---
 
 ### Descripción de arquitectura
-La arquitectura principal es **multicapa/multicomponente**, organizada en dos segmentos:
-1. **Capa frontend (client-side):** Maneja la lectura y síntesis de voz, así como la interacción directa con el usuario mediante HTML DOM para accesibilidad y reconocimiento vocal.
-2. **Capa backend (Dynamics CRM plugin):** Procesa texto usando **Azure OpenAI**, delegando tareas intensivas (como generación de JSON) a servicios en la nube por API. También incluye interacciones con el modelo de datos de Dynamics CRM.
 
-Es una estructura determinada por el entorno y plataforma Dynamics CRM, con **microservicios client-side** en JavaScript y extensiones backend como plugins en C#.
+La solución combina varios paradigmas arquitectónicos:
+
+- **N capas**: El sistema se organiza en niveles específicos, como lógica de presentación (procesamiento en el frontend), lógica de negocio (CRM y plugin), y capa de integración con servicios terceros (Azure SDK y Azure OpenAI).
+- **Cliente-Servidor**: Utiliza un frontend que interactúa con servicios API internos y externos.
+- **Basado en plugins**: Desarrollado para interacción directa con Dynamics CRM.
+- **Orientado a eventos**: Especialmente en el manejo de eventos asincrónicos (por ejemplo, carga del SDK de Azure Speech).
+  
+El sistema es compatible con arquitecturas orientadas a servicios, gestionando tanto datos dinámicos con el uso de APIs como un sistema CRM robusto.
 
 ---
 
 ### Tecnologías usadas
-**Frontend:**
-- **Azure Speech SDK (JavaScript):** Entrada/salida basada en voz con reconocimiento y síntesis.
-- **HTML DOM:** Manipulación directa para interfaz web.
 
-**Backend:**
-- **Dynamics CRM SDK:** Para interacción con datos y formularios CRM.
-- **Azure OpenAI API:** Procesamiento avanzado de texto basado en IA.
-- **Newtonsoft.Json:** Manejo de estructuras JSON.
-- **System.Net.Http:** Para consumir servicios REST basados en Azure.
+1. **Lenguajes de programación y tecnologías**
+   - **JavaScript**: Lógica de frontend para interacción con el SDK de Azure Speech y manipulación de formularios.
+   - **C# (.NET)**: Desarrollado para plugins de Dynamics CRM.
 
-**Patrones:**
-- **Callback (observador):** Para garantizar la carga dinámica de SDK.
-- **Adaptador:** Normalización y procesamiento de transcripciones en estructuras específicas de CRM.
-- **API Gateway:** Comunicación backend con Azure services.
+2. **Frameworks/PL**
+   - **Dynamics CRM SDK**: Para interacción con entidades de Dynamics.
+   - **Azure Speech SDK**: Integra procesamiento de voz para síntesis y transcripción.
+   - **Azure OpenAI (GPT)**: Utilizado dentro del plugin para transformar texto.
+
+3. **Patrones de diseño**
+   - **Modularización**: Código dividido en funciones claras y reutilizables.
+   - **Gestión por eventos**: Manejo asincrónico de SDK y APIs externas.
+   - **Abstracción**: Separación de lógica para transformación de datos antes de procesamiento (ej.: `getReadableValue` y `applyValueToField`).
+   - **Cliente-Servidor y REST API Integration**: Manda solicitudes al backend (API personalizada y Azure OpenAI).
 
 ---
 
-### Diagrama **Mermaid** válido para GitHub Markdown
+### Componentes y dependencias externas
+
+- **Principales servicios externos utilizados**:
+  - **Azure Speech SDK**: Para síntesis y transcripción de voz.
+  - **Azure OpenAI API**: Para transformar texto con IA.
+  - **CRM Dynamics SDK**: Para interacción dentro del entorno Dynamics.
+  
+- **Otras librerías/tecnologías externas**:
+  - **Newtonsoft.Json** y **System.Text.Json** (trabajo con JSON en C#).
+  - **HttpClient .NET**: Para REST API.
+
+---
+
+### Diagrama Mermaid (compatibilidad GitHub)
 
 ```mermaid
 graph TD
-    A["VoiceInputHandler.js"]
-    B["speechForm.js"]
-    C["TransformTextWithAzureAI.cs"]
-    D["Azure Speech SDK"]
+    A["Frontend/JS - voiceInput.js"]
+    B["Frontend/JS - readForm.js"]
+    C["Azure Speech SDK"]
+    D["Dynamics CRM - Plugins"]
     E["Azure OpenAI API"]
-    F["Dynamics CRM WebApi"]
-    
-    A --> D
-    B --> D
+    F["Xrm.WebApi"]
+
+    A --> C
+    B --> C
     A --> F
+    A --> E
     B --> F
-    C --> E
-    C --> F
+    D --> E
+    F --> B
+    F --> D
 ```
 
 ---
 
 ### Conclusión final
-La solución identifica una arquitectura centrada en la accesibilidad mediante tecnologías de procesamiento de voz e inteligencia artificial. Es una implementación híbrida con componentes frontend y backend que aprovechan altamente servicios de Azure y patrones para integración con Dynamics CRM. Está diseñada para ofrecer experiencias conversacionales y procesamiento avanzado en sistemas empresariales. La estructura es modular y extensible, aunque depende en gran medida de servicios externos (Azure y CRM). Ideal para escenarios enfocados en accesibilidad y automatización mediante IA.
+
+La solución implementada combina capacidades avanzadas relacionadas con síntesis de voz, transcripción, y análisis de datos con apoyo de IA, optimizando la interacción con formularios y CRM como Dynamics. La arquitectura se puede considerar **N capas**, orientada a servicios, y bien modularizada, permitiendo escalabilidad, reutilización, y adaptabilidad en escenarios empresariales. Adicionalmente, el uso de APIs como Azure Speech SDK y OpenAI asegura integración con servicios de última generación mientras se aprovecha la robustez del ecosistema Dynamics.
