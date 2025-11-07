@@ -1,60 +1,75 @@
 ### Breve Resumen Técnico
-El repositorio presenta varias funcionalidades orientadas a la interacción entre usuarios y formularios, utilizando reconocimiento y síntesis de voz, así como integración con servicios externos como **Azure Speech SDK**, **Dynamics CRM APIs**, y **Azure OpenAI API**. Los archivos reflejan una estructura modular que combina desarrollo frontend (JavaScript) y backend (C# plugins para Dynamics CRM). 
+Este repositorio es una solución orientada al uso de **Azure Speech SDK** y una integración personalizada con **Microsoft Dynamics 365 CRM**. La funcionalidad principal radica en procesar datos de entradas y salidas del formulario mediante voz e inteligencia artificial; la solución también abarca el uso de un plugin que extiende el CRM con capacidades de procesamiento en Azure OpenAI.
 
 ---
 
-### Descripción de Arquitectura
-La arquitectura utiliza el patrón **en capas**, donde cada archivo tiene una responsabilidad específica: 
-- **Frontend** maneja interacción del usuario, procesando formularios y voz mediante el navegador.
-- **Backend** extiende funcionalidades de Dynamics CRM mediante plugins en C#.
+### Descripción de la Arquitectura
+La arquitectura se divide en:
+1. **Frontend**: Implementado como una aplicación modular que utiliza **Azure Speech SDK** para la síntesis y el reconocimiento de voz, interactuando con formularios de Dynamics 365.
+2. **Backend**: Consta de un plugin para Dynamics CRM configurado bajo el **Plugin Pattern**, que consume la API de Azure OpenAI para transformar texto en estructuras JSON según normas definidas.
 
-Aunque no es completamente independiente, hay integración con microservicios externos como **Azure Speech SDK** y **Azure OpenAI API**, lo que introduce elementos distribuidos en la solución.
+La solución aplica un diseño de **n capas**, donde:
+- La primera capa se encuentra en el frontend (procesamiento local en el navegador).
+- La segunda capa está en el backend (Microsoft Dynamics 365 CRM API y plugin).
+- La tercera capa está integrada con servicios en la nube de Azure, como Speech SDK y OpenAI.
 
 ---
 
 ### Tecnologías Usadas
-1. **Frontend (JavaScript):**
-   - Azure Speech SDK (JS).
-   - APIs de Dynamics CRM (`Xrm.WebApi.online`).
-   - Gestión de dependencias y módulos con carga dinámica.
-   - Carga de SDK mediante `window` (script injection).
+1. **Frontend**:
+   - **JavaScript** (sintaxis moderna ES6+).
+   - **Azure Speech SDK**.
+   - Manejo asincrónico (`async/await`) para procesamiento de eventos dinámicos.
+   - Integración directa con formularios de Dynamics 365 (objetos `executionContext`, `formContext`).
+   
+2. **Backend**:
+   - **C#** (NET Framework para plugins de Dynamics CRM).
+   - **Microsoft Dynamics SDK**.
+   - **Azure OpenAI Service** (mediante llamadas HTTP a GPT-4).
 
-2. **Backend (C#):**
-   - Dynamics CRM (`Microsoft.Xrm.Sdk`).
-   - Azure OpenAI API (GPT-4).
-   - Manipulación de JSON (`Newtonsoft.Json`, `System.Text.Json`).
-   - HTTP requests (`System.Net.Http`).
-
-3. **Servicios externos:**
-   - Azure Speech SDK.
-   - Azure OpenAI API.
-
-4. **Patrones:**
-   - Modularidad: Separación de funciones específicas en ambos lados.
-   - Integración API: Utilización de servicios REST externos.
-   - Carga Dinámica: En el Frontend para reducir dependencias iniciales.
+3. **Patrones**:
+   - Modularización, delegación y asincronía en frontend.
+   - Plugin Pattern y External API Integration en backend.
 
 ---
 
-### Diagrama Mermaid Compatible con GitHub
+### Dependencias o Componentes Externos
+1. **Azure Speech SDK**
+   - Para síntesis de texto a voz y reconocimiento en frontend.
 
+2. **Azure OpenAI API**
+   - Para procesamiento avanzado de texto en el plugin backend.
+
+3. **Microsoft Dynamics 365 APIs**
+   - Funcionalidad interna del CRM para manejar formularios y registros.
+
+4. **Librerías adicionales del plugin**:
+   - `System.Net.Http`: Para llamadas HTTP al servicio OpenAI.
+   - `Newtonsoft.Json`: Para manipulación de estructuras JSON.
+
+---
+
+### Diagrama Mermaid
 ```mermaid
 graph TD
-    A["Usuario"]
-        -->|Interactúa con| B["Frontend/JS/readForm.js"]
-    B -->|Lectura de campos| C["Frontend/JS/speechForm.js"]
-    C -->|Entradas de voz| D["Azure Speech SDK"]
-    C -->|Datos del formulario| E["Dynamics CRM API"]
-    D -->|Uso de voz| F["Hardware/Navegador"]
-    E -->|Invoca plugin| G["Plugins/TransformTextWithAzureAI.cs"]
-    G -->|Usa OpenAI GPT-4| H["Azure OpenAI API"]
-    H -->|JSON estructurado| G
-    G -->|Actualización de CRM| E
+    A["Browser-FRONEND/JS/readForm.js"]
+    B["Browser-FRONEND/JS/speechForm.js"]
+    C["Microsoft Dynamics Plugin (TransformTextWithAzureAI.cs)"]
+    D["Azure Speech SDK"]
+    E["Azure OpenAI Service"]
+    F["Microsoft Dynamics CRM Web API"]
+
+    A --> D
+    B --> D
+    B --> F
+    C --> E
+    C --> F
+    D --> E
 ```
 
 ---
 
 ### Conclusión Final
-La solución está orientada hacia la integración de capacidades de inteligencia artificial y procesamiento de voz en formularios, combinando un enfoque modular en el Frontend con extensiones de funcionalidad en el Backend mediante plugins para Dynamics CRM. Se apoya en tecnologías modernas (Azure Speech SDK y OpenAI API) para manejar capacidades avanzadas como reconocimiento y síntesis de voz y procesamiento de texto estructurado.
+Este repositorio aborda la integración de inteligencia artificial en el contexto de Microsoft Dynamics 365 mediante tecnologías de Azure. La solución usa diseño modular para el frontend y gestión de plugins en el backend. Gracias a la comunicación entre el Speech SDK, Dynamics 365 API y el Azure OpenAI Service, esta arquitectura ofrece un flujo fluido y escalable para optimizar la interacción con formularios mediante comandos de voz.
 
-La arquitectura es híbrida: combina un patrón **monolítico extendido con plugins** en el backend y una ligera dependencia hacia **servicios distribuidos**. Esto es ideal para proyectos que operan dentro del ecosistema Dynamics CRM con necesidades modernas de interacción por voz, accesibilidad, y procesamiento inteligente.
+Recomendación: Se podría evaluar un enfoque hexagonal para mejorar la separación de responsabilidades y habilitar mayor facilidad de pruebas, además de reforzar la configuración dinámica de dependencias en el plugin para facilitar despliegues en múltiples entornos.
