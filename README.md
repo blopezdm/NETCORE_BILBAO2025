@@ -1,61 +1,69 @@
-### Breve resumen técnico:
+### Breve resumen técnico
+El repositorio incluye tres componentes principales:
+1. **Frontend (JavaScript)**: Dos archivos (`readForm.js`, `speechForm.js`) implementan funcionalidades para interacción entre usuario y sistemas CRM y Azure Speech SDK.
+2. **Backend Plugin (C#)**: Un archivo (`TransformTextWithAzureAI.cs`) implementa una integración con sistemas Microsoft Dataverse y Azure OpenAI.
 
-El repositorio representa una solución modular con componentes distribuidos entre frontend y backend, destinada a enriquecer las capacidades de interacción entre usuarios y formularios a través de reconocimiento de voz y procesos basados en AI. Los archivos presentados implementan funciones de sintetización de voz, captura de datos de formularios y procesamiento de comandos de voz con APIs externas (Azure Speech SDK y Azure OpenAI).
-
----
-
-### Descripción de arquitectura:
-
-La solución utiliza una **arquitectura orientada a servicios (SOA)** en combinación con patrones de diseño modular en el frontend y plugins con integración externa en el backend. La arquitectura no es estrictamente de microservicios, pero sí presenta una división clara de responsabilidades entre el frontend y el backend. 
-
-- **Frontend:** 
-  Implementa funciones distribuidas y modulares para interacción con formularios por voz. Cada archivo define funcionalidades específicas con un alto grado de acoplamiento con Azure Speech SDK.
-  
-- **Backend:** 
-  Aplica plugins orientados a servicios que extienden las capacidades de Microsoft Dynamics CRM para integrar funciones de OpenAI en operaciones específicas.
+El sistema tiene como objetivo principal realizar reconocimiento y síntesis de voz, procesamiento de entradas mediante IA, y transformar contenido textual en estructuras JSON dentro de un ecosistema Dynamics CRM.
 
 ---
 
-### Tecnologías usadas:
+### Descripción de arquitectura
+La arquitectura prevista es **modular y orientada a servicios**, donde las siguientes capas y componentes interactúan:
+- **Frontend**: Interfaz de usuario para formularios CRM.
+- **SDK/API externas**: Servicios provistos por Azure Speech y Azure OpenAI.
+- **Backend Plugins**: Integración con Dynamics Dataverse mediante extensiones basadas en la interfaz IPlugin.
+- **Orquestación** entre frontend y API externas con ejecución de lógica en módulos desacoplados.
 
-1. **Frontend:**
-   - Idioma: JavaScript (frontend).
-   - SDK: Azure Speech SDK (gestión de síntesis y reconocimiento de voz).
+Aunque la solución no es distribuida en microservicios, las distintas responsabilidades se organizan en varios niveles lógicos:
+- Capa de presentación (Frontend y CRM).
+- Capa de negocio (Transformación de texto mediante plugins dentro de Dataverse).
+- Capa de integración (Conexión con APIs externas de Azure).
 
-2. **Backend:**
-   - Idioma: C#.
-   - Framework: Microsoft Dynamics CRM SDK.
-   - API Externa: Azure OpenAI y Microsoft Speech SDK.
-
-3. **Infraestructura:**
-   - Servicios en la nube: Microsoft Azure.
-   - Comunicación con APIs: HTTP client para consumir servicios externos.
+El diseño aproxima patrones como **Hexagonal** (integración flexible con servicios externos) y prácticas de **componentización**.
 
 ---
 
-### Diagrama Mermaid válido para GitHub:
+### Tecnologías usadas
+**Frontend (JS)**
+- **Azure Speech SDK**: Para reconocimiento y síntesis de voz.
+- **JavaScript**: Lenguaje principal del frontend.
+- **Dynamics CRM WebAPI (Xrm)**: Interacción con formularios y entidades del CRM.
 
+**Backend (C# Plugin)**
+- **Microsoft Dataverse SDK (`Microsoft.Xrm.Sdk`)**: Permite integrar plugins con el sistema Dataverse.
+- **ASP.NET Framework**: Enfoque de desarrollo backend de alto nivel.
+- **Azure OpenAI API**: Modelo GPT-4 para transformación de texto en estructuras predefinidas (JSON).
+- **Newtonsoft.Json**: Librería para manejar JSON en C#.
+
+**General**
+- Modularización y desacoplamiento mediante funciones y clases independientes.
+- Dynamic loading: El frontend realiza la carga dinámica de SDKs únicamente cuando es necesario.
+- API-driven architecture: Para comunicación con Azure SDKs y servicios CRM.
+
+---
+
+### Diagrama **Mermaid** 100% compatible con **GitHub Markdown**
 ```mermaid
 graph TD
-    A["Frontend"]
-    B["Backend Plugin"]
-    C["Azure Speech SDK"]
+    A["Frontend: JS System"]
+    A1["readForm.js"]
+    A2["speechForm.js"]
+    B["Azure Speech SDK"]
+    C["Dynamics CRM WebAPI"]
     D["Azure OpenAI API"]
-    E["Microsoft Dynamics CRM"]
-    F["User"]
-    
-    F --> A["Frontend"]
-    A --> C["Azure Speech SDK"]
-    A --> D["Azure OpenAI API"]
-    A --> B["Backend Plugin"]
-    B --> D["Azure OpenAI API"]
-    B --> E["Microsoft Dynamics CRM"]
+    E["Backend: Plugin"]
+    E1["TransformTextWithAzureAI.cs"]
+    A --> B
+    A --> C
+    B --> C
+    A2 --> D
+    C --> E
+    D --> E
 ```
 
 ---
 
-### Conclusión final:
+### Conclusión final
+Este repositorio implementa una solución híbrida para interacción con Dynamics CRM, utilizando reconocimiento y síntesis de voz por Azure Speech SDK, así como inteligencia artificial de OpenAI para transformar contenido textual. La arquitectura modular y conectada a servicios cloud (Azure SDK, OpenAI) muestra un diseño adaptado a integraciones externas con Microsoft ecosistemas.
 
-La solución presentada integra múltiples tecnologías y servicios centralizados en capacidades de voz e inteligencia artificial. En el frontend, se observa una estructura modular que aprovecha un SDK externo (Azure Speech SDK) para sintetizar voz y capturar datos, mientras que el backend extiende las funcionalidades de Microsoft Dynamics CRM a través de un plugin que interactúa con Azure OpenAI API.
-
-El fuerte acoplamiento con servicios externos asegura capacidades avanzadas de AI y síntesis de voz, aunque expone dependencias críticas con Microsoft Azure. Para mejorar la seguridad, se recomienda externalizar las claves de API a configuraciones protegidas, como Azure Key Vault, y garantizar resiliencia ante posibles fallos de red mediante técnicas de reintento.
+Aunque es una solución monolítica en términos de despliegue (Frontend+Plugin funcionalizados separadamente), el diseño ya sugiere fragmentación funcional orientada a una arquitectura hexagonal o basada en componentes desacoplados mediante APIs. Esto facilita su extensión a arquitecturas más distribuidas (e.g., microservicios).
