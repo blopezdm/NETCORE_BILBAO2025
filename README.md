@@ -1,50 +1,73 @@
-### Resumen técnico
-El repositorio examinado incluye tres archivos principales que forman parte de un sistema que interactúa con formularios dinámicos en Dynamics 365, incorporando capacidades avanzadas de reconocimiento y síntesis de voz mediante Azure Speech SDK. Además, se integra con Azure OpenAI para transformar texto en dinámicas personalizadas. El sistema parece tener componentes de frontend en JavaScript y plugins en C# conectados a Dynamics CRM.
+### Breve resumen técnico
+El repositorio expuesto contiene los siguientes componentes:
+- **Frontend:** Implementación en JavaScript que habilita entrada y salida de voz mediante integración con **Azure Speech SDK**. Procesa datos del formulario y maneja reconocimiento/síntesis de voz.
+- **Backend Plugin:** Extensión del CRM Microsoft Dynamics que utiliza **Azure OpenAI** para transformar texto basado en ciertas reglas predefinidas.
 
 ---
 
 ### Descripción de arquitectura
-La arquitectura del sistema puede clasificarse como **n capas** con integración hacia servicios externos. La capa de frontend está basada en JS y Azure SDK, mientras que la capa de backend/CRM implementa funcionalidades como un plugin en C# que comunica Dynamics con Azure OpenAI, funcionando como un intermediario con servicios externos. El diseño del sistema sigue principios de modularidad y enfoque basado en patrones orientados a dependencias externas:
+El sistema presenta una arquitectura híbrida:
+1. **Frontend**:
+   - Combina un enfoque **evento-asíncrono basado en SDKs externos**. Cada módulo posee funciones autónomas que interactúan mediante **promesas/callbacks**. Permite la generación directa de datos desde voz y su transferencia a formularios en Dynamics 365.
+   - Aprovecha la arquitectura **client-server**, donde el cliente es responsable del procesamiento inicial de voz y manipulación de formularios.
+2. **Backend Plugin**:
+   - Sigue un patrón **plugin-oriented**, es decir, extiende funcionalidad del CRM con un código específico invocado en contextos determinados (e.g., validación de datos).
+   - Implementa una integración directa con servicios de IA externamente alojados (Azure OpenAI), manteniendo la lógica separada.
 
-1. **Capa de presentación** (Frontend JS): Gestión de interacción entre usuarios y formularios.
-2. **Capa lógica** (Speech SDK y plugins CRM): Funciones específicas que manipulan formularios y consumen APIs.
-3. **Arquitectura CRM Plugin**: Extensibilidad modular mediante Dynamics CRM.
+La conexión entre estos componentes es la comunicación basada en **API**: el `backend` consume resultados y transforma información para el CRM a partir de la IA.
 
 ---
 
 ### Tecnologías usadas
-#### Frontend
-- **JavaScript**: Lenguaje principal para toda la interacción en la capa de presentación del sistema.
-- **Azure Speech SDK**: Utilizado para reconocimiento de voz y síntesis de texto a voz.
-- **APIs del navegador**: Manejo de scripts dinámicos y comunicación con servicios externos.
-- **Dynamics 365 Web API**: Para realizar operaciones dentro del contexto de CRM.
+1. **Frontend**:
+   - **JavaScript**:
+     - Para lógica dinámica del cliente.
+   - **Azure Speech SDK**:
+     - Reconocimiento de voz.
+   - **Dynamics 365 Web API**:
+     - Interacción con formularios y datos del CRM.
 
-#### Backend (Plugins)
-- **C# (.NET framework)**: Desarrollo del plugin para Dynamics.
-- **Microsoft.Xrm.Sdk**: SDK de Dynamics CRM que facilita la integración y manipulación de datos dentro del sistema.
-- **Azure OpenAI API**: Utiliza GPT-4o para procesar texto y devolver respuestas transformadas en JSON.
+2. **Backend Plugin**:
+   - **C#**:
+     - Implementación de plugins.
+   - **Azure OpenAI API**:
+     - Transformación de texto.
+   - **Microsoft.Xrm.Sdk**:
+     - Interfaces para integración con Dynamics CRM.
 
 ---
 
-### Diagrama Mermaid
+### Diagramas Mermaid
 
+#### Diagrama general del flujo
+```mermaid
+graph TD
+    A["Usuario: Habla en el micrófono"] --> B["Azure Speech SDK: Reconocimiento de voz"]
+    B --> C["Sistema: Procura campos visibles"]
+    C --> D["Datos del formulario: Envío procesado"]
+    D --> E["Backend: Azure OpenAI ejecuta transformación"]
+    E --> F["CRM Dynamics recibe respuesta"]
+```
+
+#### Diagrama del módulo Frontend
 ```mermaid
 graph LR
-  A["Usuario"]
-  B["Formulario Dynamics"]
-  C["Azure Speech SDK"]
-  D["JS Frontend Handlers (readForm y speechForm)"]
-  E["Dynamics CRM Plugin"]
-  F["Azure OpenAI API"]
+    A["startVoiceInput"] --> B["ensureSpeechSDKLoaded"]
+    B --> C["ejecutarGrabacion - procesar transcript"]
+    C --> D["callCustomApi"]
+    D --> E["fillForm campos procesados"]
+```
 
-  A --> B
-  B --> D
-  D --> C
-  D --> E
-  E --> F
+#### Diagrama del plugin
+```mermaid
+graph TD
+    A["TransformTextWithAzureAI: Invoke"] --> B["CRM: Captura input texto"]
+    B --> C["Azure OpenAI: Procesa reglas normativas"]
+    C --> D["Deserializar JSON limpio"]
+    D --> E["CRM: Completa campos nuevos"]
 ```
 
 ---
 
-### Conclusión final
-El sistema analizado es una solución integrada que une el procesamiento de formularios dinámicos en Dynamics 365 con capacidades avanzadas de reconocimiento de voz (Azure Speech SDK) y personalización de datos mediante Azure OpenAI (GPT-4o). El diseño sigue una arquitectura basada en **n capas**, con un enfoque modular y de integración dinámica con servicios externos. Además, adopta patrones de carga bajo demanda para el SDK de Azure Speech, optimizando la gestión de dependencias. Este sistema es flexible y extensible, ideal para entornos que requieren interacción con usuarios mediante voz y personalización de datos a gran escala.
+### Conclusión
+El repositorio contribuye a un ecosistema híbrido que conecta operaciones de frontend (procesamiento de voz y datos) con un backend que emplea inteligencia artificial para estructuración de información. La arquitectura refleja buena separación entre responsabilidades: los datos son recogidos por el cliente, refinados por APIs de speech y AI, y completados finalmente en un entorno CRM. Esto permite escalabilidad (mediante integración de servicios externos) y modularidad en sus distintos componentes.
