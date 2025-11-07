@@ -1,58 +1,58 @@
-### Breve resumen técnico
-El repositorio parece ser una solución orientada a accesibilidad y automatización integrada con **Dynamics 365 CRM**. Está compuesto por scripts frontend (JavaScript) que usan el **Azure Speech SDK** para reconocer y sintetizar voz, junto con plugins backend en C# para realizar transformaciones con **Azure OpenAI**. La solución se enfoca en:
-- Reconocimiento de voz y síntesis para formularios interactivos.
-- Procesamiento y asignación de datos en formularios de Dynamics 365.
-- Normalización y estructuración de datos mediante IA en el backend.
+### Breve resumen técnico:
+El repositorio describe una solución dedicada a la integración de **interacción por voz** con formularios de Dynamics CRM usando **Azure Speech SDK** para reconocimiento y síntesis de voz. También incluye un plugin que utiliza **Azure OpenAI** para transformar datos textuales en transcripciones procesadas. Utiliza JavaScript para el frontend y C# para los plugins de Dynamics CRM.
 
 ---
 
-### Descripción de arquitectura
-La solución utiliza una arquitectura **n-capas**, donde:
-1. **Frontend**: Interactúa directamente con usuarios mediante DOM y recoge datos utilizando **Azure Speech SDK**.
-2. **Backend**: Define lógica de transformación mediante plugins en **Dynamics 365**, que interactúan con el servicio **Azure OpenAI**.
-3. **Servicios externos**: Servicios como Azure Speech y Azure OpenAI son utilizados para poder implementar accesibilidad por voz y procesamiento avanzado de datos.
+### Descripción de arquitectura:
+La solución se divide en:
+1. **Frontend (JavaScript)**:
+   - Procesa la voz del usuario mediante Azure Speech SDK.
+   - Genera transcripciones y las mapea a los formularios dinámicos en el CRM.
+   - Maneja reconocimiento de voz, síntesis de voz y lógica de procesamiento.
 
-Aunque hay presencia de integración con servicios externos (Azure), la arquitectura aún refleja un enfoque monolítico dentro de cada capa: tanto los scripts frontend como los plugins backend están diseñados para operar con una única instancia de CRM.
+2. **Backend Plugin (.NET y Dynamics CRM)**:
+   - Extiende las funcionalidades de Dynamics CRM con un plugin para invocar Azure OpenAI.
+   - Transforma las entradas textuales del CRM en un formato JSON estructurado.
 
----
-
-### Tecnologías usadas
-1. **Frontend**:
-   - Lenguaje: JavaScript.
-   - Cloud SDK: Azure Speech SDK (para reconocimiento y síntesis de voz).
-   - Frameworks y APIs: Dinámica interactiva con DOM, integración con Dynamics 365 mediante formularios.
-
-2. **Backend**:
-   - Lenguaje: C#.
-   - CRM Framework: Dynamics 365 Plugin Framework.
-   - Cloud SDK: Azure OpenAI (GPT models).
-   - Librerías: 
-     - Serialization: `Newtonsoft.Json` y `System.Text.Json`.
-     - HTTP API: `System.Net.Http`.
-
-3. **Servicios Externos**:
-   - Azure Speech SDK (JavaScript).
-   - Azure OpenAI Service (REST API interactuada mediante plugins).
-
-4. **Patrones identificados**:
-   - **Facade Pattern**: Funciones como `startVoiceInput` o `applyValueToField` simplifican el acceso a funcionalidades complejas como reconocimiento de voz e interacción con formularios.
-   - **Callback Pattern**: Se utiliza para cargar dinámicamente el Speech SDK en frontend.
-   - **Plugin Architecture**: Estructura típica de Dynamics 365 extensible mediante plugins (event-driven architecture).
+### Arquitectura utilizada:
+- **N capas**:
+   - **Frontend (Presentación)**: Reconocimiento de voz y síntesis integrada con formularios.
+   - **Lógica de negocio (Backend, Plugins)**: Mapeo y procesamiento de transcripciones con OpenAI, almacenamiento y APIs.
+   - **Persistencia (Dynamics CRM)**: Actualización de atributos del formulario en el CRM.
 
 ---
 
-### Diagrama Mermaid: Arquitectura del sistema
-Este diagrama refleja la interacción entre las principales capas del sistema y los servicios externos.
+### Tecnologías usadas:
+- **Frontend**:
+   - JavaScript, Azure Speech SDK.
+   - Interacción con APIs de Dynamics CRM.
 
+- **Backend**:
+   - C# (Microsoft Dynamics CRM Plugin Framework).
+   - JSON Manipulación (Newtonsoft.Json, System.Text.Json).
+   - Azure OpenAI (GPT-based processing).
+
+- **Servicios externos**:
+   - Azure Speech SDK (`https://aka.ms/csspeech/jsbrowserpackageraw`).
+   - Azure OpenAI API (`gpt-4`, Chat Completions endpoint).
+   - APIs personalizadas de Dynamics CRM (`Xrm.WebApi`, `trial_TransformTextWithAzureAI`).
+
+---
+
+### Diagrama Mermaid:
 ```mermaid
 graph TD
-    A["Frontend (JavaScript)"] --> B["Azure Speech SDK"]
-    A --> C["Dynamics 365 Form APIs"]
-    C --> D["Backend Plugins (C#)"]
-    D --> E["Azure OpenAI (REST APIs)"]
+    A["Usuario"] -->|Habla al micrófono| B["Frontend: SpeechForm.js"]
+    B -->|Reconocimiento voz y comandos| C["Azure Speech SDK"]
+    C --> D["Frontend: Procesamiento local"]
+    D -->|Datos reconocidos| E["Formulario Dynamics"]
+    E -->|Texto capturado| F["Backend Plugin: TransformTextWithAzureAI"]
+    F -->|Prompt| G["Azure OpenAI GPT-4"]
+    G -->|Respuesta JSON| H["Backend Plugin: Procesamiento JSON"]
+    H -->|Datos procesados| E
 ```
 
---- 
+---
 
-### Conclusión final
-La solución que forma este repositorio integra accesibilidad (reconocimiento y síntesis de voz) y automatización (transformaciones con IA) con un enfoque modular de **n-capas**, aunque mantiene características de arquitectura **monolítica** dentro de cada capa. Es idónea para sistemas CRM como **Dynamics 365**, en tanto que aprovecha tecnologías cloud, como **Azure Speech SDK** y **Azure OpenAI**, para resolver problemas empresariales complejos en tiempo real.
+### Conclusión final:
+La solución implementada es un sistema híbrido que combina **interacción por voz** con procesamiento por IA para enriquecer formularios en **Dynamics CRM**. La arquitectura basada en n capas facilita la separación de responsabilidades y escalabilidad del sistema. Los principales puntos de integración están con **Azure Speech SDK**, **Azure OpenAI**, y el uso de plugins en Dynamics CRM para conectar el frontend y backend. Este diseño es extensible y puede adaptarse a casos de uso avanzados con mínima modificación.
