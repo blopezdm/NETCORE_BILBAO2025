@@ -1,67 +1,72 @@
-## Breve Resumen Técnico
-
-El repositorio contiene módulos que integran procesamiento de voz, texto y servicios inteligentes de Azure, diseñados para un sistema basado en formularios, probablemente usado en un contexto CRM (Customer Relationship Management). 
-
-1. **Identificación de solución:** Mayormente orientada a la construcción de un servicio API y frontend que interactúan con un CRM mediante SDKs y plugins.
-2. **Tecnologías usadas:** Integration con Azure Speech SDK, OpenAI API, y Dynamics CRM (usando plugins y Web API). El frontend está basado en JavaScript, mientras que los plugins están implementados en .NET C#.
-3. **Arquitectura:** Predomina un enfoque de **arquitectura en capas** donde cada módulo se separa en capas de interacción de usuario, extracción de datos, procesamiento de negocio, y conexión con APIs externas. También hay un enfoque **cliente-servidor** usando plugins y SDKs externos.
-4. **Dependencias/Componentes externos:** Azure Speech SDK, OpenAI API, Dynamics CRM SDK. Además de herramientas como Newtonsoft.Json y librerías estándar para comunicación HTTP y JSON parsing.
+### Breve resumen técnico
+El repositorio implementa una solución que mezcla tecnologías web y de servicios avanzados para gestionar interacción por voz y procesamiento de texto en un entorno Dynamics 365, utilizando Azure Speech SDK y Azure OpenAI. Se estructura en tres capas principales:
+1. **Frontend:** Manejo de voz y asignación de datos en formularios mediante JavaScript.
+2. **Backend:** Plugins para Dynamics 365 que interactúan con servicio web de Azure OpenAI.
+3. **Integración externa:** Servicios en la nube de Azure.
 
 ---
 
-## Descripción de Arquitectura
+### Descripción de arquitectura
+La arquitectura general tiene un enfoque **multicapa** y distribución de responsabilidades:
+1. **Frontend:** 
+    - Captura de voz y generación/síntesis utilizando Azure Speech SDK.
+    - Procesamiento en tiempo real de datos del formulario.
+    - Asignación de valores mapeados al formulario en Dynamics 365.
+2. **Backend (Plugins):**
+    - Transformación de texto en JSON estructurado usando Azure OpenAI.
+    - Uso de Dynamics CRM SDK para integración de servicios y entidad de datos.
+3. **Servicios distribuidos:**
+    - Servicios externos como Azure Speech y Azure OpenAI son integrados mediante SDKs y APIs REST.
 
-La solución combina dos capas esenciales:
-1. **Capa frontend:** Abarca funciones para interacción con formularios, reconocimiento de voz y procesamiento de datos en campos dinámicos.
-2. **Capa backend:** Plugins y APIs personalizadas en Dynamics CRM que transforman datos según reglas específicas usando IA.
-
-Enfoques principales:
-- **Modularidad:** Los métodos están separados por responsabilidades específicas (ejemplo: procesamiento de datos, conversión de voz).
-- **Integración con servicios externos:** Uso de SDKs como Azure Speech y OpenAI y APIs de Dynamics CRM.
-- **Enfocada en escalabilidad:** Las dependencias se cargan de manera dinámica según la necesidad.
+El patrón observado más claramente es una **arquitectura modular** con integración de servicios externos (Azure). Además, la solución sigue principios de **cliente/servidor**, donde los componentes del frontend se comunican con plugins backend y servicios de terceros en la nube.
 
 ---
 
-## Tecnologías Usadas
-
+### Tecnologías usadas
 1. **Frontend:**
-   - **Lenguaje:** JavaScript.
-   - **Frameworks externos:** Azure Speech SDK.
-   - **Patrones:** Modularización, carga dinámica de dependencias, procesamiento de datos con IA.
-
+   - **JavaScript (Vanilla)** para lógica dinámica en navegadores.
+   - **Azure Speech SDK** para síntesis y reconocimiento de voz.
+   - Manejo de DOM para carga dinámica de scripts y manipulación de formularios.
+   - Dynamics 365 scripting API (`Xrm.WebApi`) para integración con web APIs.
 2. **Backend:**
-   - **Lenguaje:** C# (Dynamics CRM SDK para plugins).
-   - **APIs externas:** Azure OpenAI (texto y procesamiento IA).
-   - **Framework estándar:** .NET Framework con sistemas de plugin de Dynamics.
+   - **Microsoft Dynamics CRM SDK** para desarrollo de plugins.
+   - **C#** como lenguaje principal.
+   - **Azure OpenAI Service** para procesamiento de texto mediante inteligencia artificial.
+   - **Comunicación HTTP** vía `System.Net.Http`.
+   - JSON manipulado con **System.Text.Json** y **Newtonsoft.Json**.
+3. **Servicios externos:**
+   - **Azure Speech SDK** para voz.
+   - **Azure OpenAI Service** para IA y transformación de texto.
 
 ---
 
-## Diagrama Mermaid
-
+### Diagrama Mermaid válido para GitHub
 ```mermaid
 graph TD
-  A["Frontend - SpeechSDKIntegration.js"]
-  B["Frontend - VozInputProcessor.js"]
-  C["Backend - TransformTextWithAzureAI.cs"]
-  D["AzureSpeechSDK"]
-  E["OpenAI API"]
-  F["Dynamics CRM"]
-  G["User Form Context"]
+A["Frontend - lectura-de-formulario"]
+B["Frontend - entrada-de-voz"]
+C["Backend - Plugins CRM"]
+D["Azure Speech SDK - síntesis"]
+E["Azure Speech SDK - transcripción"]
+F["Dynamics CRM API"]
+G["Azure OpenAI API"]
+H["Formulario - Dynamics"]
+I["Usuario"]
 
-  A --> D
-  B --> D
-  C --> E
-  C --> F
-  B --> F
-  A --> G
-  B --> G
-  G --> F
-  D --> F
-  E --> F
+I --> A
+A --> D
+I --> B
+B --> E
+D --> F
+E --> B
+A --> F
+A --> H
+F --> G
+G --> C
+C --> F
 ```
 
 ---
 
-## Conclusión Final
-
-La solución combina tecnologías modernas de procesamiento de voz e integración IA, alineadas con sistemas CRM empresariales. La arquitectura es flexible, basada en módulos con soporte para escalabilidad, y presenta un enfoque claro hacia interacciones cliente-servidor. Se trata de un diseño profesional ideal para implementar soluciones inteligentes integradas en entornos corporativos.
+### Conclusión final
+La solución representa una arquitectura modular distribuida con integración de servicios en la nube. Está diseñada para interactuar con formularios en Dynamics 365 mediante entrada y salida de voz, ofreciendo accesibilidad avanzada. El uso de Azure Speech SDK permite la síntesis y transcripción de voz, mientras que Azure OpenAI provee capacidades de procesamiento de texto. La implementación sigue principios de separación de responsabilidades y gestión dinámica de dependencias.
