@@ -1,55 +1,52 @@
-### Breve resumen técnico:
-El repositorio presenta componentes para una solución de software orientada a la integración de voz, procesamiento de datos, interacción con formularios dinámicos y transformación de texto mediante inteligencia artificial. Predominantemente utiliza el Azure Speech SDK y OpenAI para ejecutar síntesis, reconocimiento de voz y procesamiento semántico del texto. Los archivos son parte de un sistema colaborativo que incluye frontend en JavaScript y backend en C# para Dynamics CRM.
+### Breve resumen técnico
+Este es un proyecto que integra funcionalidades avanzadas de procesamiento de voz y texto con una plataforma CRM (Microsoft Dynamics CRM). Utiliza Azure Speech SDK para capturar, sintetizar, y transmitir datos de voz, además de emplear servicios de Azure OpenAI para transformar texto mediante modelos de inteligencia artificial de última generación (GPT-4). Los diferentes archivos del repositorio forman parte de una solución híbrida entre frontend y backend, con interacción directa con servicios externos de Microsoft Azure.
 
 ---
 
-### Descripción de arquitectura:
-La solución tiene una arquitectura basada en **microservicios y capas (n-capas)**. Los componentes destacan por dividir tareas específicas:
-1. **Frontend/JS**:
-   - Modularización de código en archivos responsables de funcionalidades distintas (entrada de voz, síntesis de texto, actualización de formulario).
-   - Uso de servicios de Azure para interactuar con la entrada y salida de voz.
-2. **Backend/Plugins**:
-   - Lógica dentro de Dynamics CRM mediante plugins (`TransformTextWithAzureAI`).
-   - Dependencia directa de servicios de Azure para procesamiento avanzado, con interacción mediante APIs REST.
-
-La solución tiene características de **Service-Oriented Architecture (SOA)**, donde los servicios de Azure (Speech SDK y OpenAI) son puntos focales de integración.
+### Descripción de arquitectura
+La arquitectura de este proyecto está diseñada en varios niveles:
+- **N-capas:** La aplicación parece estar formada por diversos módulos que separan las responsabilidades:
+  - **Presentación:** Representada por los scripts en JavaScript que capturan y procesan inputs del formulario en Dynamics CRM.
+  - **Lógica de negocio:** Delineada por el uso del plugin `TransformTextWithAzureAI.cs`, que procesa datos del CRM y realiza solicitudes a Azure OpenAI y otros servicios necesarios.
+  - **Integración con servicios:** Uso del Speech SDK para interactuar con comandos de voz, además de llamadas a una API personalizada y las capacidades del modelo GPT en el servicio Azure OpenAI.
+- **Microservicios:** Algunas de las funciones mencionadas parecen delegarse a servicios externos mediante APIs (e.g., procesamiento AI, ejecución por speech-to-text).
 
 ---
 
-### Tecnologías usadas:
-1. **Frontend**:
-   - **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto a voz.
-   - **JavaScript**: Lenguaje base para manejar interacciones y lógica en el navegador.
-   - **Microsoft Dynamics 365 SDK (Xrm.WebApi)**: Interfaz para interactuar con los datos del formulario.
-
-2. **Backend**:
-   - **C# .NET Framework**: Implementación del plugin en formato de clase para Dynamics CRM.
-   - **Azure OpenAI**: API externa usada para transformar texto en JSON estructurado.
-   - **Dependency Injection (Microsoft Dynamics)**: Para manejar servicios contextuales dentro del plugin.
+### Tecnologías utilizadas
+1. **Azure Speech SDK:** Servicios de reconocimiento y síntesis de voz integrados con Microsoft Azure.
+2. **Microsoft Dynamics CRM SDK:** Extensiones y APIs para trabajar con datos de una plataforma CRM.
+3. **Azure OpenAI Service (GPT-4):** Servicios de procesamiento inteligente de texto, con capacidades como generación de JSON basado en reglas.
+4. **JavaScript (Frontend):** Scripts para dinámica de formularios y manipulación del DOM.
+5. **C# (Backend Plugin):** Implementación del plugin mediante el framework de Dynamics CRM y lógica necesaria para comunicación con Azure y JSON handling.
+6. **Libraries:** 
+   - `Newtonsoft.Json.Linq` y `System.Text.Json` para manipular datos JSON.
+   - `System.Net.Http` para enviar solicitudes HTTP a servicios externos.
 
 ---
 
-### Diagrama Mermaid válido para GitHub:
+### Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-  A["Frontend JS voiceInputHandler.js"]
-  B["Frontend JS readForm.js"]
-  C["Backend Plugin TransformTextWithAzureAI.cs"]
-
-  D["Azure OpenAI Service GPT-4"]
-  E["Azure Speech SDK"]
-  F["Microsoft Dynamics CRM"]
-
-  A --> F
-  B --> F
-  A --> E
-  B --> E
-  C --> D
-  C --> F
+    A[Frontend form handler - readForm.js]
+    B[Frontend voice input handler - speechForm.js]
+    C[Backend plugin - TransformTextWithAzureAI.cs]
+    D[Dynamic CRM API]
+    E[Azure Speech SDK]
+    F[Azure OpenAI Service]
+    
+    A --> B
+    B --> E
+    B --> D
+    B --> F
+    D --> C
+    C --> F
 ```
 
 ---
 
-### Conclusión final:
-Esta solución utiliza un enfoque modular y altamente integrador que aprovecha servicios en la nube (Azure Speech SDK y OpenAI) junto con tecnologías robustas como Dynamics CRM. Esto permite una arquitectura flexible centrada en microservicios y orientada a tareas específicas como el procesamiento de voz, transformación de texto y actualización de formularios dinámicos. Es apta para aplicaciones en entornos empresariales, interacción mediante voz e integración con sistemas externos.
+### Conclusión final
+Este repositorio encapsula una robusta solución que combina interacción frontend y backend con dos tipos de third-party services (Azure Speech SDK y Azure OpenAI). La architecture propuesta se inclina hacia un modelo de **N-capas** debido a la separación entre presentación, lógica de negocio y comunicación externa. Sin embargo, la integración con microservicios también juega un rol importante.
+
+La solución está diseñada utilizando tecnologías modernas y patrones estandarizados, particularmente con un enfoque en **Event-Driven Architecture**, **lazy loading**, y **modular encapsulation** para maximizar la reusabilidad y mantenimiento del código. Una posible mejora sería asegurar que las dependencias de Azure sean gestionadas adecuadamente para evitar problemas relacionados con la conectividad y los tiempos de respuesta.
