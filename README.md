@@ -1,69 +1,62 @@
-# Análisis técnico y arquitectura
-
 ### Breve resumen técnico
-El repositorio consta de tres archivos principales que forman parte de una solución para integrar extensivamente el servicio Azure Speech SDK y Azure OpenAI en aplicaciones orientadas al procesamiento y manejo de formularios en entornos web y Dynamics CRM. Los componentes están estructurados para interactuar con formularios web y plugins de Dynamics CRM, permitiendo funcionalidades como síntesis y reconocimiento de voz, y transformación de texto en formatos estructurados mediante AI.
+
+El repositorio presenta una solución orientada al manejo de datos de formularios en Microsoft Dynamics 365 mediante el uso de reconocimiento y síntesis de voz. Se compone de tres tipos de archivos:
+1. **Frontend JavaScript:** Implementa lógica en el cliente para integración y consumo de APIs (Azure Speech SDK y Dynamics API).
+2. **Backend C# Plugin:** Define dinámicas extendidas mediante un plugin conectado al entorno CRM que interactúa con Azure OpenAI Service para procesamiento inteligente.
 
 ---
 
-### Descripción de la arquitectura
-La solución combina elementos de **arquitectura modular** en los componentes JavaScript del frontend y un enfoque de **arquitectura hexagonal** para el plugin en .NET (Dynamics CRM). Los archivos tienen roles específicos: unos como frontend y otros como backend integrados con servicios de Azure. El diseño desacopla cada módulo basado en su responsabilidad:
-- Los scripts de JavaScript están orientados a trabajar con formularios web mediante la interacción con el DOM y los SDK de Azure Speech, además de integrarse con APIs personalizadas.
-- El plugin en C# funciona como un microservicio que se activa mediante eventos en Dynamics CRM, procesando inputs del usuario y enviando solicitudes a Azure OpenAI.
+### Descripción de arquitectura
 
-#### Arquitectura a nivel de solución:
-- Tipo de arquitectura global: **Orientada a servicios**, pues se integran diferentes tecnologías hacia un propósito en común.
-- **Patrones utilizados**: Modularización, Facade, Delegación, y aplicaciones de SDK.
+La arquitectura es una solución cliente-servidor integrada sobre Dynamics CRM utilizando patrones de múltiples capas:
+1. **Frontend:** A nivel del cliente, los archivos JavaScript proporcionan modularidad mediante funciones que interactúan con APIs externas (Azure Speech SDK).
+2. **Backend:** Un plugin en C# para Dynamics CRM, basado en la arquitectura de plugins, añade funcionalidad personalizada. Este realiza integración con servicios externos como Azure OpenAI para realizar transformaciones avanzadas de texto.
+3. **Integración externa:** Se utilizan servicios de Azure (Speech SDK y OpenAI) mediante patrones RESTful y SDK, permitiendo conectividad asincrónica confiable y enriqueciendo capacidades del sistema.
+
+La solución podría clasificarse como:
+- **De arquitectura de capas** (frontend-backend-API).
+- Integrada con elementos **externos en la nube** como Azure Speech y OpenAI.
 
 ---
 
 ### Tecnologías usadas
-1. **Frontend**
-    - JavaScript.
-    - Azure Speech SDK: Para síntesis de voz y reconocimiento de audio.
-    - DOM API: Utilización para manipulación dinámica de formularios.
-    - Uso de APIs personalizadas (llamadas HTTP).
 
-2. **Back-End Plugins**
-   - **C# / .NET Framework** (Microsoft Dynamics CRM Plugin):
-     - Microsoft.Xrm.Sdk
-   - **Azure OpenAI API**: Proporciona transformaciones mediante inteligencia artificial.
-   - Framework de comunicación: HTTP Client para realizar solicitudes REST.
-   - Manejo de estructuras JSON: `System.Text.Json`.
+1. **Frontend**:
+   - **Lenguaje:** JavaScript.
+   - **Frameworks y servicios:** Azure Speech SDK, Dynamics API.
+   - **Patrones:** Modularidad en funciones.
+   - **Manejo de asincronía:** Promesas y callbacks.
 
----
+2. **Backend**:
+   - **Lenguaje:** C#.
+   - **Frameworks:** Microsoft Dynamics SDK.
+   - **Servicios externos:** Azure OpenAI.
+   - **Patrones:** Plugin-based Architecture, REST API Integration.
 
-### Probables dependencias externas
-- **Azure Speech SDK**: Clave y región configuradas en el código fuente.
-- **Azure OpenAI Service**: Para el plugin en Dynamics CRM.
-- **Dynamics Web API**: Para ejecutar operativas específicas como modificar atributos o ejecutar Custom APIs en el contexto del formulario.
-- **Modern Browsers (DOM compatibility)**.
+3. **Externo**:
+   - Azure Speech SDK para síntesis y reconocimiento de voz.
+   - Azure OpenAI Service para transformación avanzada de texto.
 
 ---
 
-### Diagrama Mermaid
+### Diagram Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-  A[Frontend: readForm.js]
-  B[Frontend: speechForm.js]
-  C[Backend-Plugin: TransformTextWithAzureAI.cs]
-  D[Form contextual data]
-  E[Azure-Speech-SDK]
-  F[Azure-OpenAI API]
-  G[Custom-API]
-  H[Plugins-Dynamics-WebAPI]
-
-  A --> D
-  B --> D
-  A --> E
-  A --> G
-  B --> E
-  B --> G
-  B --> F
+  A["User Input"] --> B["VoiceInput.js"]
+  A --> C["VoiceRecognitionHandler.js"]
+  B --> D["Azure Speech SDK"]
   C --> D
-  C --> F
+  C --> E["Dynamics API"]
+  E --> F["Dynamics 365 Form"]
+  G["TransformTextWithAzureAI.cs"] --> E
+  G --> H["Azure OpenAI Service"]
+  D --> I["Audio Output (Synthesized Voice)"]
+  H --> J["Processed JSON Output"]
 ```
 
 ---
 
 ### Conclusión final
-Este repositorio implementa una solución híbrida de **integración de servicios** para aplicaciones basadas en formularios web (frontend) y extensiones para Dynamics CRM (backend plugin). Usa tecnologías modernas como Azure Speech SDK, Azure OpenAI API y Dynamics CRM Web API para interactuar con datos, proveer funcionalidades avanzadas de voz (síntesis y transcripción), así como transformación inteligente de datos. La arquitectura se beneficia de un modelo modular con tendencia hacia hexagonal para garantizar escalabilidad, integración efectiva y mantenibilidad en un entorno empresarial.
+
+La solución representa un sistema diseñado para facilitar la accesibilidad mediante voz y mejorar la interacción con formularios de Dynamics 365. La combinación de frontend modular, plugins backend personalizados y servicios externos en la nube (Azure) optimizan la experiencia del usuario, cumpliendo estándares de accesibilidad y funcionalidad avanzada. Aunque está bien estructurada, cuidado debe ser tomado en proteger las configuraciones externas como claves API, que actualmente están incrustadas en el código.
