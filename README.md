@@ -1,72 +1,82 @@
-### Breve resumen técnico:
-Este repositorio contiene fragmentos de código y archivos organizados en tres carpetas principales, cada uno enfocado en funcionalidades diferentes: los archivos de la carpeta **FRONTEND/JS** están diseñados para manejar la interacción entre el usuario y formularios web mediante reconocimiento de voz, síntesis de voz y procesamiento de formularios. Por otro lado, el archivo **Plugins/TransformTextWithAzureAI.cs** implementa un plugin que extiende Dynamics CRM con la capacidad de transformar texto mediante Azure OpenAI.
+### Breve Resumen Técnico
+
+El repositorio contiene múltiples componentes destinados a integrar funcionalidades de síntesis de voz y reconocimiento de voz con Microsoft Dynamics CRM utilizando Azure Speech SDK y Azure OpenAI. Los archivos están organizados para manejar la manipulación dinámica de formularios y procesar texto mediante inteligencia artificial.
 
 ---
 
-### Descripción de arquitectura:
-La solución parece implementar una **arquitectura n-capas**:
-1. **Capa de presentación/frontend**: Scripts JavaScript descritos en la carpeta `FRONTEND/JS` que gestionan la interacción de los usuarios con formularios web y la integración de voz mediante Azure Speech SDK.
-2. **Capa de lógica de negocio/plugins**: El archivo en `Plugins` integra el servicio Azure OpenAI con Dynamics CRM, lo que indica que este repositorio extiende la capa lógica de negocio del sistema central.
-3. **Capa de integración/API**: Conexiones a servicios externos proporcionados por Azure para IA (OpenAI) y Speech SDK.
+### Descripción de Arquitectura
 
-Además, se nota una notable modularidad en la solución. Cada función y archivo está diseñado para cumplir con una responsabilidad claramente definida.
+La solución implementa una **arquitectura n-capas** que combina elementos de integración con servicios externos. Está compuesta de distintas capas:
+1. **Frontend:** Scripts diseñados para interactuar con formularios del entorno Dynamics CRM y llevar a cabo operaciones relacionadas con la voz (síntesis y reconocimiento).
+2. **Backend/plugin:** Comprende el archivo `TransformTextWithAzureAI.cs`, que amplía las capacidades del CRM con el uso de un servicio de Azure OpenAI para transformar datos textuales.
+3. **Servicios externos:** Integraciones con Azure Speech SDK para síntesis y reconocimiento de voz, además del servicio de Azure OpenAI para procesamiento textual.
 
----
-
-### Tecnologías usadas:
-1. **Frontend (JavaScript)**:
-   - Azure Speech SDK: Para síntesis y reconocimiento de voz.
-   - FormContext (Dynamics CRM JavaScript API): Para manipulación de datos en formularios.
-2. **Backend (C#)**:
-   - Dynamics CRM SDK (Microsoft.Xrm.Sdk): Para la integración de plugins.
-   - JSON manipulación (Newtonsoft.Json y System.Text.Json): Para estructuración y transformación de texto.
-   - HTTP Client para integrar Azure OpenAI y realizar peticiones REST.
-3. **Servicios externos**:
-   - Azure OpenAI: Procesamiento de texto y generación de JSON.
-   - Azure Speech SDK: Reconocimiento y síntesis de voz.
+La arquitectura parece orientada a funcionalidad **distribuida**, donde el backend actúa como enlace entre el frontend y servicios en la nube como Azure Speech SDK y Azure OpenAI. Al mismo tiempo, los componentes siguen principios de separación de responsabilidades en módulos.
 
 ---
 
-### Dependencias o componentes externos:
-1. **Azure Speech SDK**:
-   - Para sintetizar texto a voz y realizar reconocimiento de voz.
-   - Cargado dinámicamente en el navegador.
-2. **Azure OpenAI API**:
-   - Transformación de texto según normas.
-   - Integrado mediante solicitudes HTTP desde un plugin C#.
-3. **Dynamics CRM SDK**:
-   - Usado en el archivo `TransformTextWithAzureAI.cs` para extender funcionalidad del CRM.
-4. **Internos**:
-   - Estructuras CRM (`formContext`) para manipulación de datos y formularios.
-   - Lógica del frontend optimizada para resolución específica en Chrome.
+### Tecnologías Usadas
+
+1. **Frontend:**
+   - Ecosistema web estándar (JavaScript para el procesamiento del DOM y lógica de negocios).
+   - Azure Speech SDK integrado para síntesis y reconocimiento de voz.
+   - Microsoft Dynamics CRM UI Framework (DX API, como `Xrm.WebApi.online`).
+
+2. **Backend:**
+   - Microsoft Dynamics CRM Plugin Framework (`IPlugin`).
+   - Azure OpenAI Service para procesamiento textual vía API.
+
+3. **General:**
+   - Asincronía mediante Promises y funciones de callback.
 
 ---
 
-### Diagrama Mermaid:
+### Dependencias o Componentes Externos
 
+1. **Azure Speech SDK:** Usado en el frontend para la síntesis y el reconocimiento de voz. Requiere una clave de API y una región configurada (`azureKey` y `azureRegion`).
+2. **Azure OpenAI Service:** Proporciona herramientas de procesamiento de lenguaje natural en backend para transformar texto.
+3. **Microsoft Dynamics CRM:** Componentes nativos usados en ambos frontend (formularios dinámicos) y backend (plugins).
+4. **DOM estándar y métodos del navegador:** Para manipulación del contenido visible de páginas/formularios.
+5. **Librerías externas:** 
+   - `Newtonsoft.Json` y `System.Text.Json` utilizadas en el backend para serialización y deserialización de datos JSON.
+   - `System.Net.Http` para gestionar solicitudes HTTP hacia Azure OpenAI.
+6. **Custom APIs**: Para extender la funcionalidad en el sistema CRM, como la API `trial_TransformTextWithAzureAI`.
+
+---
+
+### Diagrama Mermaid Válido para GitHub
 ```mermaid
 graph TD
-    A["Usuario"]
-    B["Frontend JS - VozInputHandler.js"]
-    C["Frontend JS - SpeechRecognitionHandler.js"]
-    D["Plugins/TransformTextWithAzureAI.cs"]
-    E["Azure Speech SDK"]
-    F["Azure OpenAI"]
-    G["Dynamics CRM"]
+    A["Frontend - JavaScript"]
+    B["Azure Speech SDK"]
+    C["Microsoft Dynamics CRM - FormContext"]
+    D["Backend CRM Plugin"]
+    E["Azure OpenAI Service"]
+    F["Custom CRM API - TransformTextWithAzureAI"]
 
-    A --> B
-    A --> C
-    
-    B --> E["Synthesis SDK - texto a voz"]
-    C --> E["Recognition SDK - voz a texto"]
-    
-    C --> F["API personalizada IA"]
-    
-    D --> G["Integración como plugin de CRM"]
-    D --> F["OpenAI servicio externo"]
+    A --> |recognition-synthesis| B
+    A --> |read-update| C
+    A --> F
+    F --> D
+    D --> E["Invoke OpenAI API"]
+    E --> D
+    C --> D
+    D --> C
+    B --> A
 ```
 
 ---
 
-### Conclusión final:
-Esta solución combina un enfoque **n-capas** con integración modular de servicios externos, lo que le permite extender funcionalidades específicas de Dynamics CRM y agregar capacidades avanzadas basadas en IA (Azure OpenAI y Speech SDK). La arquitectura brinda flexibilidad para escalar y modificar módulos sin afectar las demás capas. Además, el código destaca por su alineación a patrones de diseño como la Adaptación, Procesamiento de Eventos y Modularidad Funcional. Sin embargo, se podrían mejorar aspectos como la centralización de configuraciones (por ejemplo, claves de API).
+### Conclusión Final
+
+La solución presente en el repositorio puede considerarse un híbrido entre una **arquitectura n-capas** (frontend y backend conectados por una API) y una integración de **microservicios**. Aunque utiliza un plugin en el backend para extender las capacidades del CRM, la mayoría de la lógica del sistema parece estar en el frontend y abrirse a la comunicación directa con los servicios de Azure.
+
+Principales ventajas:
+- Uso de tecnologías modernas y servicios de nube específicos con SDK robustos (Azure Speech).
+- Capacidad de reutilización mediante el diseño modular de cada archivo.
+
+Aspectos a considerar:
+- Algunas piezas del código carecen de una organización jerárquica avanzada (por ejemplo, implementar MVC, manipuladores de eventos más robustos).
+- Múltiples dependencias externas pueden necesitar ajustes si hay cambios en las API de Azure Speech SDK o OpenAI, lo que exige mecanismos de manejo de errores robustos y pruebas constantes en los endpoints externos.
+
+En resumen, este proyecto representa una integración sólida de funcionalidades orientadas a voz y texto con un enfoque modular y distribuido, pero podría beneficiarse de ajustes de implementación para lograr mayor escalabilidad y mantenibilidad.
