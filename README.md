@@ -1,66 +1,50 @@
 ### Breve resumen técnico
-Los archivos indicados implementan una solución que mezcla funcionalidad de reconocimiento y síntesis de voz basada en Azure Speech SDK junto con integración de API y servicios en Dynamics CRM (Dynamics 365). Estos archivos están ligados directamente a formularios dinámicos y sus datos, mejorando la accesibilidad y la interacción mediante tecnología basada en voz y transformación de texto a través de Azure OpenAI.
-
----
+El proyecto consta de tres archivos principales que implementan funcionalidad relacionada con accesibilidad y procesamiento de datos en entornos CRM mediante integraciones con Azure Speech SDK y Azure OpenAI. También incluye plugin para Dynamics CRM que interactúa con modelos de GPT para transformar texto.
 
 ### Descripción de arquitectura
-La arquitectura presenta un enfoque híbrido que combina:
-1. **Arquitectura orientada a eventos:** 
-   - Los archivos `readForm.js` y `speechForm.js` están diseñados para responder a eventos en el navegador y en Dynamics 365 (e.g., carga de formularios o acciones del usuario).
-2. **Microservicios:** 
-   - El archivo `TransformTextWithAzureAI.cs` actúa como un microservicio, encapsulando lógica de negocio específica para interactuar con Azure OpenAI y Dynamics CRM.
-3. **Integración cloud-first:** 
-   - Utiliza múltiples servicios externos (Azure Speech SDK, Azure OpenAI, Dynamics CRM).
-
-Esta solución combina elementos de una **arquitectura n capas** para la lógica interna y una **arquitectura orientada a servicios** para la comunicación con SDKs y APIs externas.
-
----
+La arquitectura general del proyecto sigue un enfoque **modular** orientado a servicios, donde cada componente tiene responsabilidades bien definidas:
+- **Frontend (JavaScript)**: Permite leer y procesar formularios (text-to-speech) y manejar entrada de voz para captar, transcribir y asignar valores mediante integración con Dynamics CRM. Actividades como cargar el SDK y realizar llamadas API están desacopladas.
+- **Backend (Plugin para Dynamics CRM)**: Actúa como middleware incorporado en Dynamics CRM, conectándose con la API de OpenAI para realizar transformaciones en texto según reglas específicas.
+  
+Aunque el proyecto utiliza servicios distribuidos (Azure Speech y Azure OpenAI), la lógica sigue estando centralizada en una arquitectura de **n capas** donde cada capa (frontend y backend) interactúa con APIs externas.
 
 ### Tecnologías usadas
-1. **Frontend (JavaScript):**
-   - Azure Speech SDK (JavaScript).
-   - `window.SpeechSDK`.
-   - Dynamics 365 APIs (`Xrm.WebApi`).
-2. **Backend (.NET/C#):**
-   - Microsoft Dynamics SDK (`Microsoft.Xrm.Sdk`).
-   - System.Text.Json/ Newtonsoft.Json para JSON.
-3. **Servicios externos:**
-   - Azure Speech Service y Azure OpenAI.
+1. **Frontend**
+   - **Azure Speech SDK**: Para servicios de síntesis de voz y transcripción.
+   - **Dynamics CRM Web API**: Para manipulación de formularios y datos.
+   
+2. **Backend**
+   - **Microsoft Dynamics CRM SDK** (`Microsoft.Xrm.Sdk`): Para interacción directa con Dynamics CRM.
+   - **Azure OpenAI API**: Para procesamiento de texto mediante modelos GPT.
+   - **Newtonsoft.Json / System.Text.Json**: Parsing y serialización JSON.
+   - **.NET Framework** (probablemente versión 4.x, usado para plugins tradicionales de Dynamics CRM).
 
----
-
-### Dependencias o componentes externos
-1. **Azure Speech SDK:** Usado para reconocimiento y síntesis de voz.
-2. **Dynamics 365 Web API:** Interacción con formularios y datos en Dynamics CRM.
-3. **Azure OpenAI API:** Para transformación avanzada de texto basada en normas predefinidas.
-4. **HTTP (System.Net.Http):** Manejador de solicitudes hacia servicios externos.
-
----
+3. **General**
+   - **HTTP API calls**: Comunicación con servicios web de Azure.
+   - **Modular Design**: Cada archivo y su funcionalidad están segmentados según el principio de responsabilidad única (SRP).
 
 ### Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-    A["Frontend - readForm.js"] --> B["Azure Speech SDK"]
-    A --> C["Dynamics CRM - executionContext"]
-    C --> D["Formulario dinámico"]
-    B --> E["Convertir texto a voz"]
-    D --> F["Leer campos visibles"]
-
-    G["Frontend - speechForm.js"] --> B
-    G --> C
-    G --> H["Transcribir voz a texto"]
-    H --> I["Call Custom API"]
-    I --> C["Actualiza formulario"]
-    I --> J["API personalizada"]
-
-    K["Backend - TransformTextWithAzureAI.cs"] --> L["Azure OpenAI API"]
-    L --> M["Transformación avanzada de texto"]
-    K --> C["Integración con Dynamics CRM"]
-    K --> N["Genera respuesta - JSON"]
+    A["Formulario CRM Cliente"]
+    B["JavaScript - leerFormulario"]
+    C["JavaScript - startVoiceInput"]
+    D["Azure Speech SDK - Text-to-Speech"]
+    E["Microsoft Dynamics CRM - ejecución del plugin"]
+    F["Plugin .NET - TransformTextWithAzureAI"]
+    G["Azure OpenAI API - GPT procesamiento"]
+    
+    A --> B
+    A --> C
+    B --> D
+    C --> D
+    D --> A
+    A --> E
+    E --> F
+    F --> G
+    G --> F
 ```
 
----
-
 ### Conclusión final
-La solución describe una implementación híbrida orientada principalmente a eventos y funcionalidad basada en servicios externos como Azure Speech y Azure OpenAI. Con la integración directa al entorno de Dynamics CRM, la arquitectura facilita procesos como accesibilidad mediante voz e inteligencia artificial, promoviendo modularidad en el frontend y extensibilidad en el backend mediante integración con APIs externas.
+El proyecto representa una solución diseñada para mejorar la accesibilidad y la interacción en entornos empresariales basados en Dynamics CRM, combinando funcionalidades de frontend en JavaScript y backend mediante plugins para procesamiento de datos con asistencia de inteligencia artificial. La arquitectura es sencilla y modular, manteniendo capas definidas que interactúan con servicios externos. Si bien utiliza herramientas avanzadas como Azure AI y OpenAI, la solución se mantiene centralizada y no adopta totalmente una arquitectura distribuida como microservicios, pero está bien adaptada para sistemas CRM empresariales.
