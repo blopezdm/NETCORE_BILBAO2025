@@ -1,83 +1,69 @@
-### Resumen técnico
-
-El repositorio alberga una solución integrada que consiste principalmente en un *frontend* basado en JavaScript y un plugin para Dynamics CRM en C#. Las principales funcionalidades incluyen reconocimiento de voz, conversión a texto, síntesis de texto en voz y transformación de texto mediante Azure AI. La solución interactúa con datos de formularios en Dynamics 365 y depende en gran medida de servicios de Azure como el Speech SDK y OpenAI.
-
----
-
-## 1. ¿Qué tipo de solución es?
-Este repositorio desarrolla una herramienta combinada:
-- **Frontend interactivo**: Implementa lógica basada en formularios y voz para mejorar la interfaz de usuario.
-- **Plugin para CRM**: Extiende Dynamics CRM mediante procesamiento de texto con Azure OpenAI.  
-- **Microservicio interno**: La integración con servicios externos como Azure Speech contribuye a operatividad modular.
+### **Breve Resumen Técnico**
+El repositorio presenta una solución orientada a la interacción entre formularios en un sistema CRM basado en **Microsoft Dynamics 365** y diversos servicios en la nube proporcionados por **Azure**. La funcionalidad principal incluye:
+- La lectura y asignación dinámica de datos de formularios usando reconocimiento de voz (Azure Speech SDK).
+- La sintetización de voz basada en texto.
+- Un plugin que conecta Microsoft Dynamics CRM con Azure OpenAI para realizar transformaciones avanzadas de texto a JSON usando inteligencia artificial.
 
 ---
 
-## 2. Tecnologías, frameworks y patrones usados
+### **Descripción de Arquitectura**
+La arquitectura combina varios paradigmas:
+- **FrontEnd basado en JavaScript:**
+  - Se utiliza para la interacción en cliente con el sistema.
+  - Incluye módulos que trabajan con formularios en Dynamics 365 y aprovechan las capacidades del navegador y del Azure Speech SDK.
+- **Backend plugin en C#:**
+  - Un plugin implementado bajo Dynamics CRM extiende la funcionalidad del servidor mediante integración con Azure OpenAI.
+- **Service-Oriented Architecture (SOA):**
+  - Usa múltiples servicios de Azure: Speech SDK para reconocimiento y síntesis de voz, y OpenAI para procesamiento de texto.
 
-### **Frontend (JavaScript con Azure Speech SDK y Dynamics API):**
-- Azure Speech SDK: Para reconocimiento y síntesis de voz.
-- Xrm.WebApi: Interacción directa con formularios de Dynamics 365.
-- Lógica modular basada en funciones independientes para procesamiento.
-- JSON Mapping: Transforma datos hablados en campos del formulario mediante un mapa dinámico.
+El diseño es modular, con componentes cohesionados, cada uno siguiendo una clara asignación de responsabilidades:
+1. FrontEnd JavaScript para la capa de interfaz y reconocimiento/síntesis de voz.
+2. Backend para procesamiento avanzado de datos con APIs externas.
 
-### **Backend (C# Plugin para Dynamics CRM):**
-- ASP.NET Framework con Microsoft.Xrm.Sdk.
-- Azure OpenAI: Como servicio para transformación avanzada de textos.
-- HttpClient: Para solicitudes HTTP.
-- Newtonsoft.Json: Herramienta para manipulación de objetos JSON.
-- Plugin Architecture de Dynamics CRM.
-- SOA (Service-Oriented Architecture): Para establecer comunicación con servicios externos.
-
----
-
-## 3. Tipo de arquitectura
-### **Arquitectura global:**
-- **Multicapa (n capas) + SOA**:
-  - La solución utiliza la *frontend* para interactuar con los usuarios y el backend para procesar lógica extensiva.
-  - Dependencia de servicios de Azure (Speech SDK y OpenAI) confirma el patrón orientado a servicios.
-
-### **Componentes distintivos:**
-- **Event-driven design**: En el frontend, se asegura que elementos como el SDK se carguen antes de realizar operaciones.
-- **Modularidad**: Código dividido en funciones con responsabilidades bien delimitadas.
-- **Plugin-based architecture**: En el backend, se utiliza como extensión para CRM, coordinando la lógica relacionada a datos y transformaciones.
+Si bien hay separación entre las funcionalidades de cliente (JavaScript) y servidor (plugin C#), la arquitectura no cumple completamente con los principios de Arquitectura Hexagonal. Es más cercana a una **arquitectura de capas**.
 
 ---
 
-## 4. Dependencias o componentes externos
-- **Azure Speech SDK**: Para reconocimiento y síntesis de voz.
-- **Dynamics CRM API/Xrm.WebApi**: Comunicación directa con formularios de Dynamics 365.
-- **Azure OpenAI**: Procesamiento avanzado con IA para transformación de texto.
-- **Microsoft.Xrm.Sdk**: Librería oficial para desarrollo en Dynamics CRM.
-- **Newtonsoft.Json**: Manipulación de JSON en entornos .NET.
-- **System.Net.Http**: Para solicitudes al servicio OpenAI.
+### **Tecnologías Usadas**
+1. **Cliente (Frontend):**
+   - **Azure Speech SDK**: Integración para reconocimiento y síntesis de voz desde formularios.
+   - **JavaScript/ES6+**: Para definir lógica de procesamiento en el navegador, manipulación del DOM y asincronía.
+   - **Microsoft Dynamics 365 Web APIs**: Para interactuar con el backend del sistema CRM.
 
-### **Posibles riesgos asociados:**
-- Dependencia de servicios externos (Azure Speech SDK y OpenAI) podría representar puntos únicos de fallo ante errores de conectividad o restricciones del servicio.
-- Gestión de claves sensibles (`api-key` de Azure) directamente en código puede exponer información confidencial. Una mejor solución sería usar Azure Key Vault o variables de entorno seguras.
+2. **Backend (Plugin en C#):**
+   - **Microsoft Dynamics 365 SDK**: Framework para extensiones de funcionalidad en forma de plugins.
+   - **Azure OpenAI**: Inteligencia Artificial con el modelo **GPT-4o** para transformar texto en formato estructurado.
+   - **Newtonsoft.Json** y **System.Text.Json**: Para manejar datos JSON.
+
+3. **Patrones Observados:**
+   - **SOA (Service-Oriented Architecture):** Integración de APIs externas como servicios autónomos.
+   - **Modularización:** Cada módulo o plugin tiene una función específica.
+   - **Asincronía:** Uso de callbacks y promesas en el frontend para la gestión de SDK y opciones de voz.
+   - **Factory Pattern:** Para la creación de servicios de Dynamics CRM (`IOrganizationServiceFactory`).
 
 ---
 
-## 5. Diagrama Mermaid
+### **Diagrama Mermaid**
 ```mermaid
 graph TD
-    A["Usuario con formulario Dynamics CRM"]
-    B["Frontend - Función JS (Reconocimiento/Síntesis de voz)"]
-    C["Azure Speech SDK - Voz"]
-    D["Backend - Plugin TransformTextWithAzureAI"]
-    E["Azure OpenAI - IA texto a JSON"]
-    F["Formulario Dynamics CRM"]
-
-    A --> B
-    B --> C
-    C --> B
-    B --> F
-    A --> D
-    D --> E
-    E --> D
-    D --> F
+    A["Frontend JS: voiceInputHandler.js"] --> B["Azure Speech SDK: Text-to-Speech"]
+    A --> C["Microsoft Dynamics CRM: Form Manipulation"]
+    D["Frontend JS: speechForm.js"] --> E["Azure Speech SDK: Speech-to-Text"]
+    D --> F["Microsoft Dynamics CRM: Data Update"]
+    G["Backend Plugin: TransformTextWithAzureAI.cs"] --> H["Azure OpenAI Service: GPT-4o JSON Transformation"]
+    F --> G
+    H --> I["Microsoft Dynamics CRM: Update Records"]
 ```
 
 ---
 
-## Conclusión final
-La solución presenta una arquitectura orientada a la integración entre servicios en la nube y Dynamics CRM. El frontend interactivo permite a los usuarios manejar formularios con voz, mientras que el backend asegura procesamiento avanzado de datos mediante Azure OpenAI. Aunque la modularidad y el uso de APIs son puntos fuertes, existe una dependencia significativa en servicios externos, lo que hace crucial garantizar alta disponibilidad y seguridad en los accesos a estos servicios.
+### **Conclusión Final**
+La solución representa una arquitectura bien estructurada que aprovecha servicios en la nube (Azure Speech SDK y Azure OpenAI) y las capacidades de extensibilidad de Dynamics 365 CRM. Aunque funcional, la arquitectura se beneficia de una organización más clara siguiendo posibles principios como Arquitectura Hexagonal o uso de pipelines para desacoplar lógicas del negocio de SDKs externos.
+
+- **Fortalezas:** 
+  - Modularidad del código.
+  - Integración con tecnologías líderes.
+  - Uso de servicios asincrónicos.
+
+- **Debilidades:** 
+  - Fuerte vínculo directo con servicios externos que dificulta testeo unitario y la portabilidad.
