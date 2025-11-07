@@ -1,60 +1,67 @@
-### Breve resumen técnico
-El repositorio presenta una solución híbrida para la interacción entre voz, formularios de Dynamics 365, procesamiento de texto mediante Azure OpenAI, y generación de voz con Azure Speech SDK. Consiste en tres partes principales:
-
-1. **Frontend:** Implementación en JavaScript para la interacción en formularios web (Dynamics 365) y entrada/salida vinculada a servicios de Azure.
-2. **Backend:** Plugin en C# para procesar texto enviado por Dynamics CRM mediante Azure OpenAI.
-3. **Integración de servicios:** Uso extensivo de servicios en la nube (Azure Speech SDK, OpenAI en Azure).
+### Resumen técnico
+El repositorio combina la funcionalidad **frontend** (interacción de usuario en formularios) con un **backend** (plugins de Dynamics CRM) que se conecta a servicios de IA de Azure, principalmente **Azure Speech SDK** y **Azure OpenAI**. Está orientado a una solución CRM con capacidades de reconocimiento y síntesis de voz, así como interpretación de datos mediante IA.
 
 ---
 
 ### Descripción de arquitectura
-La solución utiliza una **arquitectura mixta**:
-- **Cliente-servidor:** Las interacciones se dividen en una capa cliente (JavaScript) que procesa formularios y vincula funciones con servicios en la nube, y una capa servidor (C#) que se integra como plugin en Dynamics CRM.
-- **N capas:** Separación clara de responsabilidades entre el cliente, plugins en Dynamics CRM, y APIs externas (Azure Speech y OpenAI).
-- **Integración con nube:** Dependencia de SDKs y APIs de Azure para la ejecución de síntesis y procesamiento de texto.
+La arquitectura general es **modular**, basada en una integración entre capas:
+1. **Frontend JS**:
+   - Maneja la interacción del usuario mediante lectura de formularios, síntesis de voz e interpretación. Utiliza **Azure Speech SDK** para la interacción de voz.
+2. **Backend Plugin (C#)**:
+   - Extiende las funcionalidades de Microsoft Dynamics CRM. Trabaja como un microservicio basado en un **plugin** que conecta el CRM con **Azure OpenAI** para la interpretación avanzada de datos y generación de JSON transformado.
+
+En términos arquitecturales:
+- Seguimiento del modelo **Cliente-Servidor**.
+- **API Gateway** mediante plugins y servicios externos como Azure Speech SDK y Azure OpenAI.
+- **Patrón Modular** claramente visible en la separación de lógica (frontend para interacción y backend para procesamiento avanzado).
 
 ---
 
-### Tecnologías usadas
-1. **Frontend:**
-   - JavaScript ES6+.
-   - Azure Speech SDK (procesamiento de voz y generación de audio).
-   - DOM API (manipulación de formularios y carga dinámica de scripts).
-
-2. **Backend:**
-   - C# (implementación de plugin en Dynamics CRM).
-   - Microsoft Dynamics SDK (gestión de datos en el CRM).
-   - Azure OpenAI (procesamiento de texto con GPT-4).
-   
-3. **Dependencias múltiples:**
-   - `Newtonsoft.Json` y `System.Text.Json` para manejar estructuras JSON necesarias en el procesamiento.
-   - `System.Net.Http` para enviar solicitudes al servicio Azure OpenAI.
+### Tecnologías y patrones utilizados
+1. **Tecnologías**:
+   - **Frontend**: Azure Speech SDK, ES6 (Javascript moderno).
+   - **Backend**: Microsoft Dynamics CRM SDK, Azure OpenAI, .NET Framework/C#.
+2. **Patrones arquitectónicos**:
+   - Integración modular.
+   - **Callback pattern** para cargar SDK de forma dinámica.
+   - **Microservicios y API-driven** para integrar servicios externos como Azure Speech SDK y Azure OpenAI.
+   - Principio **"SRP"**: separación de responsabilidades en funciones.
 
 ---
 
-### Diagrama Mermaid (válido para Markdown en GitHub)
+### Dependencias o componentes externos
+1. **Azure Speech SDK**:
+   - Reconocimiento y síntesis de voz en tiempo real.
+2. **Azure OpenAI API**:
+   - Para ejecutar transformaciones textuales basadas en reglas con inteligencia artificial.
+3. **Microsoft Dynamics CRM SDK**:
+   - Gestión del contexto del formulario CRM, actualización de campos y registros.
+4. **Custom API (`TransformTextWithAzureAI.cs`)**:
+   - Se utiliza como punto de entrada para comunicación entre el CRM y Azure OpenAI.
+
+---
+
+### Diagrama Mermaid
 ```mermaid
 graph TD
-    A[Frontend] --> B[Interaction-Forms-Dynamics-365]
-    B --> C[Azure-Speech-SDK-Read]
-    B --> D[Azure-Speech-SDK-Synthesize]
-    B --> E[Custom-API-Dynamics-365]
-    E --> F[Validate-Input-IA]
-    E --> G[Update-Form-Data]
+    A["Frontend: voiceInputHandler.js"]
+    B["Frontend: speechForm.js"]
+    C["Backend Plugin: TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Dynamics CRM"]
+    F["Azure OpenAI"]
 
-    H[Backend] --> I[Input-Plugin]
-    I --> J[Azure-OpenAI-Transform]
-    J --> K["JSON-Response"]
-    K --> L[Output-to-Dynamics]
-
-    M[External APIs]
-    M --> C
-    M --> D
-    M --> J
-    M --> N[Microsoft-Dynamics-SDK]
+    A --> D
+    A --> E
+    B --> D
+    B --> E
+    E --> C
+    C --> F
 ```
 
 ---
 
 ### Conclusión final
-La solución está diseñada para habilitar funcionalidades avanzadas de interacción mediante voz y texto en la plataforma Dynamics 365, aprovechando servicios de Azure. Utiliza una arquitectura híbrida (cliente-servidor y n-capas) con un enfoque modular y patrones definidos para manejo de datos y ejecución de plugins. La integración con Microsoft Dynamics SDK y la dependencia en servicios de Azure (Speech, OpenAI) son los principales componentes externos y puntos de comunicación de la solución.
+Este repositorio parece ser parte de una solución **CRM extendida**, diseñada para interactuar con registros personalizados en **Dynamics CRM** mediante tecnologías de voz y texto. Las dependencias con servicios de **Azure Speech SDK** y **Azure OpenAI** refuerzan las capacidades de IA, brindando una experiencia más inteligente y adaptativa para el usuario.
+
+La arquitectura está basada en una combinación de tecnología **cliente-servidor** y **microservicios**, donde cada módulo está optimizado para un propósito específico (frontend para UX, backend para análisis avanzado). Sin embargo, las dependencias en servicios de Azure implican también limitaciones relacionadas con conectividad y costos de uso de servicios externos.
