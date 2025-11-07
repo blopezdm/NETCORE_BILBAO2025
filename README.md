@@ -1,62 +1,54 @@
-### Breve Resumen Técnico:
-El repositorio implementa una solución que combina servicios de **entrada y síntesis de voz**, reconocimiento avanzado de voz, e integración con inteligencia artificial (IA) para el procesamiento de texto. Además, utiliza plugins en Microsoft Dynamics CRM para extender las funcionalidades de interacción con formularios y entidades, empleando SDKs de Azure y APIs personalizadas.
+### Breve resumen técnico
+El repositorio contiene archivos para la interacción de voz con formularios de un CRM y transformación de texto a través de un servicio de inteligencia artificial. Se compone de:
+1. **Frontend/JS**: Scripts en JavaScript que gestionan el reconocimiento y síntesis de voz con **Azure Speech SDK**, además de manipular datos en formularios.
+2. **Plugins/TransformTextWithAzureAI.cs**: Plugin C# para Dynamics CRM que utiliza **Azure OpenAI** para estructurar texto en JSON basado en normas.
+
+### Descripción de arquitectura
+La solución está distribuida en dos principales capas:
+- **Frontend**: Incluye la experiencia de usuario (reconocimiento y síntesis de voz).
+- **Backend**: Maneja la integración con Dynamics CRM y llamadas a servicios externos como Azure AI.
+  
+Patrones identificados:
+1. **Modularidad**: Se implementan funciones independientes para cada responsabilidad (e.g., cargar dependencias, interactuar con Azure Speech SDK).
+2. **API Wrapper**: Las funciones en el frontend y backend encapsulan las llamadas al SDK de Azure Speech y Azure OpenAI respectivamente.
+3. **Integración cliente-servidor**: Comunicación fluida entre frontend, backend y servicios externos.
+4. **Plugin Architecture**: El plugin en C# extiende la funcionalidad del CRM con lógica personalizada.
+
+### Tecnologías y frameworks usados
+1. **JavaScript (Frontend)**:
+   - **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto.
+   - **Fetch API**: Para realizar solicitudes HTTP.
+2. **C# (Backend)**:
+   - **Dynamics CRM Plugins**: Extensiones para la interacción con el CRM.
+   - **Azure OpenAI**: Servicio IA para procesamiento de lenguaje natural.
+   - **System.Text.Json**, **Newtonsoft.Json.Linq**: Para manejo de datos JSON.
+   - **System.Net.Http**: Para llamadas HTTP a APIs externas.
+
+### Dependencias y componentes externos
+- **Azure Speech SDK**: Utilizado para la extracción de texto hablado y síntesis a voz.
+- **Azure OpenAI Service**: Integrado en el plugin Dynamics CRM para el procesamiento avanzado de texto.
+- **Dynamics CRM API**: Enlace entre los procesos frontend/backend y el sistema CRM.
+- **Custom API CRM**: Para personalización de lógica en contextos de uso específicos.
 
 ---
 
-### Descripción de Arquitectura:
-La arquitectura general del sistema presenta características de una **arquitectura n-capas híbrida**:
-1. **Capa de presentación (Frontend):** Maneja la interacción del usuario con funcionalidades de entrada y síntesis de voz.
-2. **Capa lógica (Negocio):** Procesa la lógica pesada, incluyendo la interacción con APIs personalizadas y el SDK de Azure Speech.
-3. **Capa de acceso a datos:** Representada por los plugins de Dynamics CRM, que interactúan directamente con el modelo de datos del CRM y una API externa basada en Azure OpenAI.
-
-Además, existe un **patrón cliente-servidor**, con integración RESTful para microservicios externos como **Azure OpenAI API** y el Azure Speech SDK.
-
----
-
-### Tecnologías Usadas:
-1. **Frontend/JavaScript:**
-   - **Azure Speech SDK:** Para entrada y síntesis de voz.
-   - Formularios dinámicos (compatibles con entornos como Dynamics CRM).
-   - Uso de APIs de entidad y llamadas remotas (`REST API`).
-
-2. **Microsoft Dynamics CRM:**
-   - **Plugins (using IPlugin):** Extensión de entidades y procesamiento interno del CRM.
-
-3. **Azure OpenAI API:** Procesamiento avanzado de texto con modelos GPT.
-
-4. **Framework .NET:** Desarrollo del plugin en C# para integrar servicios externos.
-
-5. **Patrones más destacados:**
-   - **Dynamic Script Loading:** Garantiza la disponibilidad de Azure Speech SDK antes de su uso.
-   - **Factory Pattern:** Creación lógica de configuraciones (ej. `SpeechSettings`).
-   - **Encapsulación Modular:** Métodos encapsulan funcionalidad específica.
-   - **Plugin Pattern:** Extensión de eventos dentro de Dynamics CRM.
-
----
-
-### Diagrama **Mermaid**:
-
-Este diagrama describe la interacción entre los componentes del sistema y sus dependencias.
-
+### Diagrama Mermaid válido para GitHub
 ```mermaid
 graph TD
-    A["Frontend: speechForm.js y readForm.js"]
-    B["Azure Speech SDK"]
-    C["API personalizada: callCustomApi"]
-    D["Microsoft Dynamics CRM plugin: TransformTextWithAzureAI.cs"]
-    E["Azure OpenAI API"]
-    F["Entidades CRM / FormContext"]
-    
+    A["Usuario - Interacción con formulario CRM"]
+    B["Frontend: JS Speech Handlers"]
+    C["Azure Speech SDK"]
+    D["API CRM - Xrm.WebApi"]
+    E["Formulario - CRM"]
+    F["Backend Plugin: TransformTextWithAzureAI"]
+    G["Azure OpenAI Service"]
     A --> B
-    A --> C
-    B --> F
-    C --> E
+    B --> C
+    B --> D
     D --> E
-    D --> F
-    F --> A
+    F --> G
+    E --> F
 ```
 
----
-
-### Conclusión Final:
-El repositorio representa una solución integrada para interacción avanzada entre sistemas de entrada/salida de voz y procesamiento automatizado de texto con IA. Utiliza Microsoft Dynamics CRM como núcleo de gestión empresarial, complementado por Azure APIs para funcionalidades avanzadas. Proporciona un ejemplo claro de arquitectura híbrida entre n-capas y microservicios externos, con alta modularidad y escalabilidad. Ideal para entornos empresariales que busquen automatización e integración avanzada de IA.
+### Conclusión final
+La solución implementa una arquitectura de **n capas**, combinando un frontend con reconocimiento/síntesis de voz y un backend basado en **plugins para Dynamics CRM** con integración a Azure AI. Las dependencias como `Azure Speech SDK` y `Azure OpenAI` están dinamizadas para optimizar recursos en tiempo de ejecución. La modularidad permite escalar cada funcionalidad y adaptarla a diferentes contextos.
