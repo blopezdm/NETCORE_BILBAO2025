@@ -1,56 +1,50 @@
-### Breve resumen técnico
-El repositorio describe una solución integrada que utiliza reconocimiento de voz, síntesis de voz, procesamiento de formularios y transformación de texto en JSON mediante servicios externos como Azure Cognitive Services (Speech SDK, OpenAI). Se centra en ofrecer capacidades extendidas al software Dynamics CRM, mediante la interacción dinámica y manipulativa de formularios y datos a través de APIs y plugins personalizados.
+### Breve resumen técnico:
+El repositorio implementa una solución para integración de accesibilidad por voz en formularios basados en Dynamics 365 y texto procesado por IA (Azure OpenAI). Incluye módulos frontend y plugins dentro de Dynamics que interactúan con servicios de Azure Speech SDK y OpenAI. La funcionalidad principal es facilitar la entrada y salida de datos mediante comandos de voz, transformación de texto, e integración con sistemas externos.
 
 ---
 
-### Descripción de arquitectura
-La solución tiene al menos tres componentes principales:
-1. **Frontend**: Scripts ejecutados en el navegador, utilizados para manejar la interacción con el usuario, formularios de Dynamics CRM, y las capacidades de síntesis/reconocimiento de voz.
-2. **Backend-Plugin**: Código .NET que actúa como un plugin de Dynamics CRM, encargado de traducir datos y generar JSONs a través de Azure OpenAI.
-3. **Servicios de integración**: SDK y APIs externas proporcionadas por Azure para realizar las tareas de reconocimiento/síntesis de voz (Speech SDK) y procesamiento de texto (OpenAI).
+### Descripción de arquitectura:
+La arquitectura principal está orientada a un diseño **n-capas**:
+1. **Frontend:** Contiene scripts construidos en **JavaScript** para interacción directa con formularios en Dynamics 365. Estos gestionan tanto la entrada por voz (Azure Speech SDK) como la síntesis de resultados en audio.
+2. **Back-end (Plugin):** Implementa el patrón de **Plugin Architecture** de Dynamics 365 mediante la definición de un método `Execute` que lee el contexto, procesa datos con Azure OpenAI y devuelve un JSON estructurado.
+3. **Dependencias externas:** El sistema está diseñado para interactuar con APIs externas de Azure (Speech SDK y OpenAI GPT-4), lo que habilita el procesamiento avanzado de datos de texto y accesibilidad por voz.
 
-La arquitectura se asemeja a un enfoque **n-capas**:
-- **Frontend/Presentation Layer**: Manejo de interacciones de usuario dinámicas.
-- **Middleware**: Scripts que integran datos entre la capa de frontend y las APIs externas.
-- **Backend (Plugin Layer)**: Procesamiento lógico profundo e integración de API.
-
-Adicionalmente, el código demuestra características relacionadas con arquitectura **orientada a APIs** y modularidad.
+La solución conecta dos capas principales (Frontend y Back-end), mientras externaliza la inteligencia y potencia de computación a servicios en la nube como **Azure OpenAI**.
 
 ---
 
-### Tecnologías usadas
-1. **Frontend (JavaScript):**
-   - **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
-   - **Microsoft Dynamics CRM APIs**: Con Xrm.WebApi para gestionar formularios.
-   - **Promises/Asynchronous Functions**: Para interacción fluida con APIs.
-
-2. **Backend (.NET - C#):**
-   - **Microsoft Dynamics SDK (Microsoft.Xrm.Sdk)**: Extensión de funcionalidades de CRM mediante plugins.
-   - **Azure OpenAI API**: Para análisis y transformación avanzada de texto.
-   - **Newtonsoft.Json.Linq**: Manejo avanzado de datos JSON.
-   - **System.Net.Http**: Llamadas HTTP para conectarse a APIs.
-   - **Regex (System.Text.RegularExpressions)**: Validación y procesamiento de datos basados en patrones.
-
-3. **Servicios Externos:**
-   - Azure Speech SDK (para reconocimiento y síntesis de voz).
-   - Azure OpenAI API (GPT-4o para procesamiento y transformación de texto).
+### Tecnologías usadas:
+- **JavaScript:** Desarrollo de soluciones frontend integradas con Dynamics 365.
+- **Microsoft Dynamics 365:** Framework CRM para ejecutar productos empresariales personalizados con soporte de plugins y Web API.
+- **Azure Speech SDK:** Para síntesis y reconocimiento de voz.
+- **Azure OpenAI GPT-4 API:** Procesamiento avanzado de texto utilizando modelos de lenguaje.
+- **Newtonsoft.Json / System.Text.Json:** Manejo y procesamiento de estructuras JSON.
+- **Microsoft.Xrm.Sdk:** SDK usado para interacción con Dynamics CRM en el plugin.
 
 ---
 
-### Diagrama Mermaid
+### Diagrama Mermaid válido para GitHub:
+
 ```mermaid
 graph TD
-    A["Frontend-JS VoiceInputHandler"] --> B["Azure Speech SDK"]
-    A --> C["Microsoft Dynamics FormContext"]
-    E["Frontend-JS SpeechForm"] --> B
-    E --> C
-    E --> F["Custom API"]
-    E --> G["Xrm-WebApi Plugin"]
-    G --> H["Azure OpenAI API"]
-    G --> C
+    A["User - inputs voice or text"]
+    B["Frontend JS - Input Parsing"]
+    C["Azure Speech SDK - Voice Recognition"]
+    D["Azure OpenAI - Text Transformation"]
+    E["Dynamics 365 System"]
+    F["Plugin Execution Layer"]
+    
+    A --> B
+    B --> C
+    C --> D
+    B --> E
+    E --> F
+    F --> D
+    D --> F
+    F --> E
 ```
 
 ---
 
-### Conclusión final
-La solución en el repositorio es una integración avanzada de un **Frontend dinámico basado en JavaScript** y un **Backend basado en .NET** que implementa plugins para Microsoft Dynamics CRM, con soporte adicional para servicios de Azure. La arquitectura es predominantemente **n-capas** con patrón **orientado a APIs**, una transición fluida entre la gestión de formularios en cliente, y la extensión lógica en el lado del servidor. A pesar de estar funcionalmente rico, debe mejorar en aspectos como la seguridad de las credenciales y manejo de errores robusto en todas las capas.
+### Conclusión final:
+La solución del repositorio busca integrar funcionalidades avanzadas de accesibilidad (voz y audio) con capacidades inteligentes de procesamiento y transformación de texto, para mejorar la experiencia del usuario con formularios y sistemas CRM como Dynamics 365. La arquitectura conectada por n-capas utiliza dependencias externas (Azure SDKs y APIs) para potenciar características de accesibilidad y automatización.
