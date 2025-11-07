@@ -1,49 +1,57 @@
 ### Breve resumen técnico
-El repositorio contiene una solución destinada a integrar mecanismos de entrada y salida de voz, así como procesamiento de datos utilizando Microsoft Dynamics 365 y servicios de Azure (Azure Speech SDK y Azure OpenAI). La solución incluye dos módulos principales: uno enfocado en el frontend (Dynamics 365 forms) y otro en plugins backend para procesamiento avanzado.
+El repositorio presenta funcionalidades para integrar tecnologías de reconocimiento de voz y procesamiento de lenguaje natural (Azure Speech SDK y Azure OpenAI) con un sistema basado en **Microsoft Dynamics CRM**, permitiendo interacción directa con formularios y datos del sistema. Las principales capacidades abarcan síntesis de voz desde datos de formularios, reconocimiento de voz para transcribir audio/voz a texto aplicable en un sistema de CRM, y un plugin para el procesamiento avanzado de texto mediante IA.
 
 ---
 
-### Descripción de arquitectura
-La solución sigue una arquitectura híbrida:
-1. **Frontend (JavaScript):** El código JavaScript opera como un middleware entre el usuario y los servicios de Azure, utilizando un enfoque modular para la interacción asincrónica, SDKs externos y Dynamics 365.
-2. **Backend (C#):** Incluye un plugin basado en Dynamics 365 que utiliza el patrón **Service Integration** para procesar texto con Azure OpenAI.
-3. **Arquitectura Global:** La estructura combina características de **n capas** (presentación, lógica y persistencia) con integración de servicios distribuidos, reflejando un diseño **Service-Oriented Architecture (SOA)**.
+### **Descripción de arquitectura**
+El sistema parece estar diseñado bajo una arquitectura **mixta**, que combina elementos **n-capas** y **microservicios**. 
+
+1. **Frontend**: Implementado en **JavaScript**, empleando SDKs externos y APIs del navegador para eventos y dinámicas con el usuario. Los archivos (`readForm.js` y `speechForm.js`) utilizan una estructura funcional clara para interactuar con datos y servicios.
+   
+2. **Backend plugins**: Los plugins de Dynamics CRM (`TransformTextWithAzureAI.cs`) usan una estructura basada en eventos del CRM, lo que sigue el patrón de `IPlugin` de Dynamics. Estos se integran con Azure OpenAI para tareas específicas de procesamiento avanzado.
+
+3. **Servicios externos**: La arquitectura se apoya en APIs externas, como **Azure Speech SDK** y **Azure OpenAI**, configurados como microservicios accesibles desde el sistema.
+
+4. **Patrones utilizados**: Modularización, dependencia dinámica (para cargar Azure Speech SDK), delegación de lógica hacia servicios remotos (por ejemplo, Azure OpenAI) y separación de responsabilidades (cada archivo/plugin aborda una funcionalidad distinta).
 
 ---
 
-### Tecnologías usadas
-- **Plataforma:** Dynamics 365 CRM.
-- **Frontend:**
-  - JavaScript (ES6).
-  - Azure Speech SDK (para síntesis y transcripción de voz).
-- **Backend:**
-  - C#.
-  - Dynamics 365 SDK (IPlugin).
-  - Azure OpenAI (GPT-4).
-- **Dependencias generales:**
-  - HTTP Client y JSON Libraries (System.Net.Http, System.Text.Json).
-  - `Newtonsoft.Json.Linq` para manipulación avanzada de JSON.
+### **Tecnologías usadas**
+1. **Frontend**:
+   - **JavaScript** para interacción con formularios y SDKs.
+   - **Azure Speech SDK** para síntesis de voz desde texto y reconocimiento de voz.
+
+2. **Backend**:
+   - **C#**, específicamente para plugins de Dynamics CRM.
+   - **Dynamics CRM SDK** para la gestión y manipulación de datos.
+   - Comunicación con **Azure OpenAI** para procesamiento IA.
+
+3. **Dependencias externas**:
+   - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
+   - **Azure OpenAI**: Procesamiento avanzado de lenguaje natural.
+   - **Microsoft Dynamics CRM API (`Xrm.WebApi`)**: Interacción con formularios y servicios personalizados del CRM.
+
+4. **Frameworks del Backend**:
+   - Dynamics CRM SDK y .NET para plugins.
 
 ---
 
-### Diagrama Mermaid
-El siguiente diagrama ilustra la alta interacción entre los componentes del sistema:
+### **Diagrama Mermaid**
 
 ```mermaid
 graph TD
-  A["Dynamics Form"] --> B["voiceInputHandler.js"]
-  B --> C["Azure Speech SDK"]
-  B --> D["speechForm.js"]
-  D --> C
-  D --> E["Dynamics 365 API"]
-  E --> F["Custom API"]
-  F --> G["Azure OpenAI"]
-  A --> H["Plugin TransformTextWithAzureAI.cs"]
-  H --> G
-  H --> E
+    A["Frontend: SpeechForm.js - Procesar voz usuario"] --> B["Azure Speech SDK"]
+    A["Frontend: SpeechForm.js - Procesar voz usuario"] --> C["Xrm.WebApi Dynamics CRM"]
+    D["Frontend: ReadForm.js - Dictar datos formulario"] --> B["Azure Speech SDK"]
+    D["Frontend: ReadForm.js - Dictar datos formulario"] --> C["Xrm.WebApi Dynamics CRM"]
+    E["Plugin: TransformTextWithAzureAI.cs - Procesar en CRM"] --> F["Dynamics CRM Backend SDK"]
+    E["Plugin: TransformTextWithAzureAI.cs - Procesar en CRM"] --> G["Azure OpenAI (GPT-4)"]
+    B["Azure Speech SDK"] --> H["Azure Cloud Infra"]
+    G["Azure OpenAI (GPT-4)"] --> H["Azure Cloud Infra"]
+    F["Dynamics CRM Backend SDK"] --> H["Azure Cloud Infra"]
 ```
 
 ---
 
-### Conclusión final
-La solución está diseñada para enriquecer la experiencia de usuarios en Dynamics 365 mediante entrada y salida de voz integrada con servicios avanzados de Azure. El uso de SDKs y APIs refleja una arquitectura moderna basada en **n capas**, destacando un desacoplamiento entre el frontend (módulos JavaScript) y el backend (plugins y servicios OpenAI). Esto garantiza escalabilidad, claridad estructural y una buena integración de tecnologías distribuidas.
+### **Conclusión final**
+El repositorio representa una integración accesible y avanzada entre tecnologías de reconocimiento de voz, procesamiento de lenguaje y CRM. Utiliza patrones sólidos como modularización y delegación para interactuar con múltiples capas y servicios remotos. Además, combina tecnologías como Azure Speech SDK y OpenAI para IA avanzada y síntesis de voz. La arquitectura permite escalabilidad y soporte para servicios modernos en entornos corporativos mediante plugins y APIs externos, orientados a mejorar la interactuación usuario-sistema.
