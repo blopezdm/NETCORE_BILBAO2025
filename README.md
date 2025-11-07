@@ -1,52 +1,62 @@
-### Breve resumen técnico
+### Breve Resumen Técnico
 
-El repositorio contiene una solución centrada en la integración de formularios de Dynamics 365 con servicios de reconocimiento y síntesis de voz basados en Azure Speech SDK, además de un plugin para transformar textos mediante Azure OpenAI. Los archivos se dividen en un **frontend** JavaScript, que implementa funcionalidades como lectura y reconocimiento de voz, y un **plugin backend C#**, que realiza procesamiento avanzado de texto.  
-
----
-
-### Descripción de arquitectura
-
-La solución utiliza una **arquitectura de n capas** donde:
-
-1. **Capa presentación:** Los archivos JS manejan directamente la interfaz y los formularios de Dynamics 365, interactuando con Azure Speech SDK para entrada de voz y síntesis.
-2. **Capa lógica:** Las funciones en JavaScript procesan datos del formulario (formContext) y los integran con servicios externos, como APIs de IA para reconocimiento de voz personalizada.
-3. **Capa de servicios/backend:** El plugin C# en Dynamics CRM se ejecuta como un evento plugin para transformar y enriquecer el texto usando Azure OpenAI API.
-
-El diseño exhibe un híbrido entre patrones **modularización**, **adaptación** (para manipular tipos de datos o interactuar con APIs externas), y **plugin design**.
+Los archivos analizados pertenecen a un sistema que utiliza reconocimiento y síntesis de voz mediante el Azure Speech SDK, así como inteligencia artificial (Azure OpenAI) para procesar texto y estructurarlo en objetos JSON. El sistema está integrado en un entorno de Microsoft Dynamics CRM que gestiona formularios y datos. Su propósito es aportar accesibilidad mediante comandos de voz y aprovechar capacidades de IA para la transformación de información.
 
 ---
 
-### Tecnologías usadas
+### Descripción de Arquitectura
 
-1. **Frontend JavaScript:**
-   - **Azure Speech SDK:** Para sintetizar entrada y salida de voz.
-   - **Manipulación DOM:** Para interactuar con formularios dinámicos.
-2. **Backend C#:**
-   - **Dynamics CRM SDK:** Enlace directo para extender funcionalidad de Dynamics CRM.
-   - **Azure OpenAI API:** GPT-4 para procesamiento avanzado de texto.
-   - **Newtonsoft.Json y System.Text.Json:** Para manejar JSON entre componentes de CRM y servicios externos.
-3. **API externas:** Uso de APIs señaladas como Azure Speech SDK y OpenAI API.
-4. **Navegador basado en ejecución dinámica:** Scripts cargados dinámicamente para el Azure Speech SDK.
+La arquitectura combina varios patrones y estilos, lo cual sugiere un enfoque híbrido:
+
+1. **N Capas (Layered Architecture):** 
+    - Divide la lógica en capas claras como presentación (manipulación del formulario), negocio (procesamiento de datos con grabación/reconocimiento de voz) y acceso a datos (interacción con APIs externas y CRM).
+
+2. **Integración con Microservicios:**
+    - Utiliza servicios externos como Azure Speech SDK y Azure OpenAI API para funcionalidades específicas (síntesis de voz y transformación de texto). Esto promueve modularidad y desacoplamiento.
+
+3. **Complemento (Plugin Architecture):**
+    - **Dynamics CRM:** Extensiones que se ejecutan dentro del contexto del sistema CRM mediante plugins.
+
+4. **Event-driven Architecture:**
+    - Los métodos en los archivos se activan en respuesta a eventos del sistema (voz detectada, carga de SDK, clic en formularios, etc.).
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Tecnologías Usadas  
+
+1. **Frontend/JavaScript:**
+    - **Azure Speech SDK:** Reconocimiento y síntesis de voz.
+    - **API personalizada:** Procesamiento complejo de texto transcrito.
+    - **Microsoft Dynamics WebAPI:** Para manipulación directa de datos del sistema CRM.
+
+2. **Backend/.NET:**
+    - **Microsoft Dynamics CRM SDK:** Para el desarrollo de plugins que interactúan con el entorno CRM.
+    - **Azure OpenAI API:** Procesamiento avanzado de texto con IA en el backend.
+    - **System.Net.Http + JSON:** Para comunicación con servicios externos y manipulación de datos estructurados.
+
+3. **Arquitectura Modular:**
+    - Funciones separadas por tareas específicas aseguran la reutilización y claridad en la lógica.
+
+---
+
+### Diagrama **Mermaid**
 
 ```mermaid
 graph TD
-  A["Usuario"] -->|Formulario dinámico| B["Frontend/JS: VoiceInputHandler.js"]
-  A -->|"Reconocimiento de voz"| C["Frontend/JS: SpeechRecognitionHandler.js"]
-  B -->|"SDK de Azure Speech"| D["Azure Speech SDK"]
-  C -->|"Procesamiento voz a texto"| D
-  C -->|"API personalizada: TransformText"| E["Trial_TransformTextWithAzureAI"]
-  E -->|"Plugin C#: TransformTextWithAzureAI"| F["Backend/Plugins"]
-  F -->|"Texto procesado"| G["Azure OpenAI API"]
+    A["Azure Speech SDK"] --> B["Reconocimiento y Síntesis de Voz"]
+    B --> C["Entrada y Salida por Campos del Formulario"]
+    C --> D["Integración con Dynamics CRM WebAPI"]
+
+    E["Azure OpenAI API"] --> F["Transformación Avanzada de Texto"]
+    F --> D
+
+    D --> G["Formulario del Sistema Dynamics"]
+    B --> G
+    F --> H["Resultados de IA en JSON"]
 ```
 
 ---
 
-### Conclusión final
+### Conclusión Final  
 
-La solución implementa una integración robusta entre interfaces de usuario basadas en formularios dinámicos y servicios avanzados de voz e IA. La arquitectura es de **n capas** con una mezcla de patrones de modularización y adaptación. El uso de servicios externos como Azure Speech SDK y OpenAI introduce componentes externos críticos que deben gestionarse adecuadamente (por ejemplo, manejo seguro de credenciales y claves).
-
-La solución podría mejorarse implementando estrategias de seguridad para los valores sensibles (como claves API) y optimizando el manejo de errores en la interacción entre capas y dependencias externas.
+Este sistema utiliza tecnologías modernas y patrones de diseño bien definidos para cumplir funciones críticas de accesibilidad (voz) y transformación avanzada con inteligencia artificial. Su arquitectura híbrida combina un enfoque de n-capas con integración mediante microservicios, lo cual permite la escalabilidad, robustez y adaptabilidad. Sin embargo, es necesario garantizar la seguridad de las credenciales en los servicios de Azure mediante almacenamiento seguro o mecanismos de configuración externos.
