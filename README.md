@@ -1,57 +1,59 @@
-### Breve Resumen Técnico
-El repositorio parece ser una solución integrada que utiliza funcionalidad de frontend y backend sobre Dynamics 365, con servicios avanzados de Azure (Azure Speech SDK y Azure OpenAI). La finalidad principal es manipular formularios, usando reconocimiento de voz, síntesis de voz y generación de texto estructurado con inteligencia artificial.
+### Breve resumen técnico:
+
+Este repositorio contiene una solución integrada que combina **frontend** y **backend** para procesamiento de datos en formularios de Dynamics CRM con ayuda de **Azure Speech SDK** y **Azure OpenAI**. El frontend maneja la interacción entre usuarios y formularios mediante entrada de voz y síntesis de texto en español, mientras que el backend (plugin) extiende funcionalidades del CRM para estructurar datos mediante reglas definidas con Azure OpenAI. 
 
 ---
 
-### Descripción de Arquitectura
-La arquitectura implementada es **"n-capas con servicios integrados"**:
-1. **Frontend:** Contiene lógica de procesamiento de datos del formulario y síntesis/reconocimiento de voz (JavaScript). Interactúa con APIs externas y con el contexto del formulario en Dynamics 365.
-2. **Backend:** Plugins desarrollados en C# que procesan datos mediante la API de Azure OpenAI y exponen resultados JSON estructurados, que se integran a Dynamics CRM.
-3. **Servicios externos:** Azure Speech SDK y Azure OpenAI se vinculan como dependencias externas para las capacidades avanzadas de interacción con el usuario. Dynamics CRM funciona como la capa de gestión de datos y lógica empresarial.
+### Descripción de arquitectura:
+
+La solución emplea una arquitectura de **n capas** con componentes distribuidos entre:
+1. **Frontend JS** interactivo**: Se encarga de gestionar la interfaz del formulario y comunicación directa con el usuario mediante entrada y salida de texto/voz. Utiliza funciones independientes y patrones orientados a eventos y helpers.
+2. **Backend Plugin**: Implementa lógica personalizada dentro de Dynamics CRM, aplicando un patrón de **Plugin Extensibility**. El plugin transforma dinámicamente los datos ingresados con reglas configuradas y los integra al CRM.
+3. **Servicios externos**: Utiliza servicios de **Azure Speech SDK** y **Azure OpenAI** para síntesis de voz, transcripción y transformación de texto en JSON estructurado.
 
 ---
 
-### Tecnologías Usadas
-1. **Azure Speech SDK:** Para manejo de síntesis y reconocimiento de voz.
-2. **Dynamics 365 CRM SDK:** Para integraciones con formularios y APIs internas de Dynamics.
-3. **Azure OpenAI API:** Procesamiento avanzado de lenguaje y generación de JSON.
-4. **Frontend:** JavaScript (orientación modular con funciones específicas).
-5. **Backend:** C#, con uso de librerías .NET estándar y Newtonsoft.Json para manipulación de datos.
-6. **Patrones:** Dynamically Loaded Dependency, Plugin Pattern, External API Integration.
+### Tecnologías usadas:
+
+1. **Frontend**:
+   - **JavaScript**: Para lógica interactiva y entrada de datos con el formulario.
+   - **Azure Speech SDK**: Para entrada por voz, síntesis de texto y reconocimiento.
+   - **Dynamics CRM APIs** (`Xrm.WebApi`): Para manipular datos del formulario.
+
+2. **Backend**:
+   - **C#**: Lenguaje principal del plugin.
+   - **Dynamics CRM SDK**: Para ejecución de lógica dentro del contexto de Dynamics CRM.
+   - **Azure OpenAI API**: Para transformar contenido en JSON estructurado.
+
+3. **Complementos**:
+   - **HttpClient (C#)**: Consumir servicios REST de Azure.
+   - **System.Text.Json**: Serialización/deserialización de JSON en el backend.
+   - **Promesas y async/await (JS)**: Para manejo eficiente de operaciones asíncronas.
 
 ---
 
-### Dependencias o Componentes Externos
-1. **Speech SDK (Azure):** URL: `https://aka.ms/csspeech/jsbrowserpackageraw`.
-2. **Azure OpenAI:** Procesamiento de texto mediante modelos GPT.
-3. **Dynamics 365 API:** (`Xrm.WebApi.online.execute`) para datos relativos al entorno de Dynamics 365.
-4. **Newtonsoft.Json:** Serialización/deserialización avanzada en el backend.
-
----
-
-### Diagrama Mermaid (100% Compatible con GitHub Markdown)
+### Diagrama Mermaid válido para GitHub:
 
 ```mermaid
 graph TD
-A["Frontend JavaScript"]
-B["Backend Plugins - C#"]
-C["Azure Speech SDK"]
-D["Azure OpenAI API"]
-E["Dynamics 365 Form Context"]
-F["Dynamics 365 Web API"]
-G["Final User"]
+    A["Usuario - Interacción con formulario"]
+    B["Frontend - Formulario Dynamics CRM"]
+    C["Azure Speech SDK - Voz a texto y síntesis de texto"]
+    D["Dynamics CRM Custom API"]
+    E["Backend Plugin - TransformTextWithAzureAI"]
+    F["Azure OpenAI API - GPT procesamiento - salida JSON"]
+    G["Formulario actualizado - Datos estructurados"]
 
-G -->|Interacción con la UI| A
-A -->|Obtiene valores visibles| E
-A -->|Reconocimiento/Síntesis de Voz| C
-A -->|Envía datos a API| F
-F -->|Llama al Plugin| B
-B -->|Transforma texto a JSON| D
-D -->|Procesamiento GPT| D
-B -->|Actualiza formulario| E
+    A --> B
+    B --> C
+    B --> D
+    D --> E
+    E --> F
+    F --> G
 ```
 
 ---
 
-### Conclusión Final
-El repositorio implementa una solución orientada a mejorar la interacción de usuarios con datos de un CRM mediante la integración de tecnologías avanzadas como Azure Speech y OpenAI. La arquitectura es clara, eficiente y modular, combinando un diseño **n-capas** tradicional bien adaptado con integración de servicios avanzados de IA. Este enfoque permite un manejo estructurado y dinámico de interacción entre usuarios y los datos del sistema.
+### Conclusión final:
+
+La solución es una implementación de **n capas** que distribuye la lógica a nivel de **frontend** (gestión de formularios y voz) y **backend** (transformación automatizada de datos). Utiliza servicios como **Azure Speech SDK** para voz y **Azure OpenAI** para IA, integrados eficientemente a través de plugins personalizados en Dynamics CRM. Aunque no hay uso de microservicios, esta arquitectura integra dependencias externas robustas, destacándose por su capacidad para procesar datos en tiempo real y ofrecer interacción a los usuarios mediante entrada/salida de voz.
