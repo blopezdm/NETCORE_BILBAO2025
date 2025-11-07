@@ -1,46 +1,56 @@
-### Breve resumen técnico:
-El repositorio describe tres archivos que implementan un solución de integración entre una **plataforma CRM (Microsoft Dynamics)** y **Azure Cloud Services**, utilizando tecnologías como Azure Speech SDK y Azure OpenAI. La solución en su conjunto ofrece:
-1. **Frontend** que utiliza **JavaScript** para realizar síntesis y reconocimiento de voz con el SDK de Azure Speech Services.
-2. **Backend** con un **plugin para Dynamics CRM**, escrito en **C#**, que emplea **Azure OpenAI** para transformar datos en tiempo real.
+### Breve resumen técnico
+El repositorio contiene tres archivos principales que trabajan en conjunto para implementar funcionalidades de síntesis y reconocimiento de voz, así como transformación de texto utilizando Azure Speech SDK y la API de Azure OpenAI. Estas funcionalidades están integradas en un contexto de Microsoft Dynamics 365 CRM, llevando a cabo tareas relacionadas con la manipulación de formularios y procesamiento de datos mediante APIs externas.
 
-El propósito general es facilitar la interacción basada en voz entre el usuario y la aplicación, actualizando formularios dinámicamente y personalizando la experiencia mediante inteligencia artificial.
+---
 
-### Descripción de arquitectura:
-La arquitectura del sistema es **n-capas** con una separación entre:
-1. **Capa de presentación** (Frontend) para soportar la interacción visual, la síntesis y el reconocimiento de voz (VoiceInput.js y VozInputHandler.js).
-2. **Capa de negocio** en el backend, mediante un **Plugin de Dynamics CRM** que utiliza el servicio de Azure OpenAI.
-3. **Capa de integración externa**, conectando la aplicación con servicios en la nube como Azure Speech SDK y Azure OpenAI (modelo GPT) para reconocimiento de voz y generación de texto estructurado.
+### Descripción de la arquitectura
+La solución presenta un diseño modular, basado en:
+1. **Componentes en capas**, donde los archivos de frontend tienen una capa de interacción de usuario, lógica y conexión con servicios externos (Azure Speech SDK) mientras que el backend (plugin de Dynamics) aplica lógica de negocio transformando la entrada.
+2. **Integración con SDK y API externas**, como Azure Speech SDK y Azure OpenAI, permitiendo procesamiento de voz y texto.
+3. **Event-driven**, activando acciones a través de eventos en el frontend y en Dynamics CRM.
+4. **Orientación a microservicios en parte del backend**, desacoplando operaciones complejas mediante Azure OpenAI API.
 
-### Tecnologías usadas:
-1. **Frontend (JavaScript)**:
-   - **Azure Speech SDK**: Usado para síntesis y reconocimiento de voz.
-   - **Microsoft Dynamics CRM API**: Para manipular y gestionar campos en formularios.
-   - *Event-driven programming*: basado en eventos de voz y ejecución de flujo.
-   - Modularización: Los archivos están separados por roles específicos (voz, reconocimiento, API).
+---
 
-2. **Plugin (C#)**:
-   - Dynamics CRM SDK (`IPlugin`, `IPluginExecutionContext`, etc.).
-   - **Azure OpenAI API** (GPT): para procesar texto y generar datos estructurados en JSON.
-   - **System.Text.Json** y **Newtonsoft.Json.Linq**: para el trabajo con estructuras JSON.
+### Tecnologías usadas
+- **Frontend**:
+  - **JavaScript** como lenguaje principal para la interacción en el navegador.
+  - **Azure Speech SDK** para síntesis y reconocimiento de voz.
+  - **Dynamics 365 API** (`Xrm.WebApi`) para manipulación de datos del formulario.
+- **Backend**:
+  - **C#** como lenguaje (archivo `.cs`) para la ejecución de plugins en Dynamics.
+  - **Microsoft Dynamics CRM SDK** para desarrollar plugins.
+  - **Azure OpenAI API** para transformación de texto.
+  - **JSON** como formato de comunicación entre componentes.
+- **Infraestructura y comunicación**:
+  - **CDN** para cargar librerías de Azure Speech SDK.
+  - **HTTP** para comunicación con servicios externos de Azure.
 
-### Dependencias o componentes externos:
-- **Azure Speech SDK** (URL: `https://aka.ms/csspeech/jsbrowserpackageraw`): Para la síntesis y reconocimiento de voz.
-- **Azure OpenAI Service (GPT)**: Utilizado para la transformación de texto mediante solicitudes REST.
-- **Microsoft Dynamics SDK**: Framework para extender los objetos de datos y lógica en CRM.
-- **System.Text.Json & Newtonsoft.Json.Linq**: Manejo de JSON en el plugin.
+---
 
-### Diagrama Mermaid válido para GitHub:
+### Diagrama Mermaid (compatible con GitHub Markdown)
+
 ```mermaid
 graph TD
-    A["Frontend - VozInputHandler.js"] --> B["Azure Speech SDK - synthesis"]
-    D["Frontend - VoiceInput.js"] --> C["Azure Speech SDK - recognition"]
-    B --> C
-    D --> E["Microsoft Dynamics CRM"]
-    C --> E
-    E --> F["Backend Plugin (TransformTextWithAzureAI.cs)"]
-    F --> G["Azure OpenAI (GPT)"]
-    G --> F
+A["Frontend JS: readForm.js"]
+B["Frontend JS: speechForm.js"]
+C["Backend: TransformTextWithAzureAI.cs"]
+D["Azure Speech SDK"]
+E["Azure OpenAI API"]
+F["Dynamics CRM Form"]
+G["Dynamics 365 API (Xrm.WebApi)"]
+
+A --> D
+B --> D
+B --> G
+C --> E
+C --> F
+A --> F
+B --> F
+E --> F
 ```
 
-### Conclusión final:
-La solución presentada es una arquitectura **n-capas** que permite la integración entre un CRM (Microsoft Dynamics) y los servicios nube de Azure, específicamente Speech SDK y OpenAI GPT. Utiliza un enfoque modular y moderno, con implementación basada en eventos y uso extensivo de servicios externos para potenciar la funcionalidad del sistema. Esta solución es apta para mejorar la interacción en aplicaciones que requieran reconocimiento de voz y procesamiento de lenguaje natural. Sin embargo, podría considerar la protección de datos sensibles durante la comunicación con los servicios en la nube, especialmente al utilizar fórmulas de transformación personalizadas.
+---
+
+### Conclusión final
+La solución representa una arquitectura híbrida, combinando características de una arquitectura en capas (frontend y backend) con la integración de servicios externos en forma de microservicios (Azure Speech SDK y Azure OpenAI). Su diseño modular y el uso de SDKs y APIs externas la hacen escalable, reutilizable y preparada para la interacción con servicios avanzados de procesamiento de voz e inteligencia artificial.
