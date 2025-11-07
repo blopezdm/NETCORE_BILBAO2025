@@ -1,65 +1,63 @@
-### Resumen técnico
+### Breve resumen técnico
 
-El repositorio parece ser una solución híbrida que integra la funcionalidad tanto del lado frontend (JavaScript) como del backend (C#) para interactuar con Microsoft Dynamics CRM y servicios de Azure (Speech SDK y OpenAI). Este enfoque busca mejorar la interacción y entrada de datos del usuario mediante voz y transformaciones de texto avanzadas.
+El sistema descrito en los archivos incluye funcionalidades clave para procesar voz y texto con integración de servicios externos, como Azure Speech SDK y Azure OpenAI. Estas capacidades están enfocadas en facilitar la interacción mediante entrada y salida de voz, así como en transformar texto en un entorno empresarial como Microsoft Dynamics CRM.
+
+Los archivos muestran:
+- **Frontend:** Gestión de la interacción entre formularios dinámicos y servicios de texto y voz.
+- **Backend:** Extensiones (plugins) en Dynamics CRM para procesamiento avanzado mediante IA.
 
 ---
 
 ### Descripción de arquitectura
 
-La arquitectura de este proyecto combina una **arquitectura de capas** con servicios externos. Las capas principales incluyen:
-1. **Capa de presentación** (Frontend con JavaScript): Permite la interacción del usuario, configurando entradas por voz y actualización de formularios de Dynamics.
-2. **Capa de aplicación** (Plugins en C#): Procesa y transforma datos utilizando inteligencia artificial (Azure OpenAI) y extensiones personalizadas que interactúan con el servicio de Dynamics.
-3. **Capa de servicios externos**: Delegación de la síntesis y comprensión del lenguaje natural al Azure Speech SDK y al servicio Azure OpenAI.
+La arquitectura general mezcla principios de **integración modular** y **event-driven programming**. El sistema se conforma de las siguientes capas:
+1. **Frontend interactivo:** escrito en JavaScript, maneja entrada/salida de voz con Azure Speech SDK, mientras interactúa con formularios dinámicos de Dynamics CRM.
+2. **Middleware interactivo:** lógica que conecta el frontend con APIs externas o plugins internos (ejemplo: llamadas a APIs customizadas en Dynamics CRM).
+3. **Backend:** extensiones mediante plugins en Dynamics CRM usando Azure OpenAI para procesamiento de datos.
 
-Se encuentran patrones arquitectónicos como:
-- **Patrón plugin**: Implementación directa integrada en Dynamics CRM para extensibilidad.
-- **Patrón de integración externa**: Uso de SDKs y APIs de Azure para funcionalidad avanzada.
-- **Patrón modular**: Separación de responsabilidades en funciones y métodos individuales tanto en frontend como en backend.
+El sistema puede ser descrito como una arquitectura **híbrida entre monolito extendido y módulos conectados mediante servicios REST**, donde el frontend actúa como un cliente consumidor de APIs y servicios habilitados en el sistema CRM.
 
 ---
 
 ### Tecnologías usadas
 
-1. **Frontend**:
-   - **JavaScript** para lógica del lado cliente.
-   - **Azure Speech SDK** para síntesis y reconocimiento de voz.
-   - **Microsoft Dynamics Contexts** (`executionContext`, formularios y APIs).
+1. **Frontend:**
+   - **JavaScript:** para lógica del usuario.
+   - **Azure Speech SDK:** para conversión texto-voz y reconocimiento de voz.
+   - **Microsoft Dynamics CRM SDK:** interacción con formularios dinámicos.
 
-2. **Backend**:
-   - **C#** como lenguaje principal.
-   - **Microsoft Dynamics SDK** (`IPlugin` y APIs relacionadas).
-   - **Azure OpenAI Service** para transformaciones de texto.
-   - **System.Net.Http** para solicitudes HTTP.
-   - **Newtonsoft.Json** para procesamiento de JSON.
+2. **Backend:**
+   - **Microsoft Dynamics CRM Plugin:** permite extender la funcionalidad del CRM.
+   - **Azure OpenAI API:** para transformar texto mediante GPT (procesamiento avanzado de lenguaje natural).
+   - **C#:** Lenguaje principal para las extensiones backend.
 
-3. **Servicios de Azure**:
-   - Azure Cognitive Services (Speech SDK y OpenAI).
+3. **Herramientas adicionales:**
+   - `HttpClient`: para solicitudes API en el plugin.
+   - `Newtonsoft.Json`: manejo de JSON en el backend.
+   - `System.Text.Json`: operaciones en JSON nativo de .NET.
 
 ---
 
-### Diagrama Mermaid
+### Diagrama Mermaid (estructura del sistema)
 
 ```mermaid
 graph TD
-    A["Frontend: JavaScript - VoiceInput.js"]
-    B["Azure Speech SDK"]
-    C["Microsoft Dynamics Form"]
-    D["Backend: Plugin - TransformTextWithAzureAI.cs"]
-    E["Azure OpenAI API"]
-    F["Microsoft Dynamics Database"]
-
-    A --> B
-    A --> C
-    B --> A
-    C --> D
-    D --> E
-    E --> D
-    D --> F
-    F --> D
+    A["Frontend: JS - VozInputHandler"] --> B["Azure Speech SDK"]
+    B --> C["Speech-to-Text Recognition"]
+    C --> D["Forms Data Processing"]
+    A --> E["SpeechInputHandler"]
+    E --> F["Azure Speech SDK"]
+    F --> G["Webhook: API personalizada - Dynamics"]
+    G --> H["Dynamics CRM Middleware"]
+    H --> I["TransformTextWithAzureAI.cs"]
+    I --> J["Azure OpenAI"]
+    J --> K["Text Transformation via GPT"]
 ```
 
 ---
 
 ### Conclusión final
 
-El análisis del repositorio revela una solución sofisticada y bien estructurada, basada en una arquitectura de múltiples capas que apalanca servicios de Azure para inteligencia artificial y síntesis de voz. La solución combina la capacidad de entrada y salida por voz en frontend con un backend que aplica IA para transformar datos dinámicamente en Microsoft Dynamics CRM. Utiliza una arquitectura orientada a servicios para delegar tareas complejas a APIs externas, haciendo el diseño eficiente y flexible.
+Este sistema está diseñado como una solución de **automatización e interacción asistida por tecnologías de voz e inteligencia artificial**, principalmente orientada al ecosistema de **Microsoft Dynamics CRM**. Utiliza una arquitectura modular donde el frontend se conecta mediante eventos y APIs al backend gestionado por plugins y servicios externos.
+
+La implementación demuestra la aplicación de patrones como **facade**, **event-driven architecture**, y **SDK Loader**, garantizando una interacción robusta con servicios avanzados como Azure Speech SDK y Azure OpenAI. Sin embargo, algunas áreas podrían mejorar, como el manejo de credenciales (actualmente estático) y optimización para garantizar alta escalabilidad en ambientes empresariales.
