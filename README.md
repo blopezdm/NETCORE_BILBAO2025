@@ -1,47 +1,46 @@
-### Breve resumen técnico:
-El repositorio consiste en tres componentes principales:
-1. **Frontend (JavaScript):** Dos archivos (`readForm.js`, `speechForm.js`) que implementan integración entre formularios dinámicos (Dynamics 365) y el servicio Azure Speech SDK para síntesis y reconocimiento de voz.
-2. **Backend Plugin (C#):** Un archivo (`TransformTextWithAzureAI.cs`) que actúa como un plugin en Dynamics CRM, utilizando Azure OpenAI para transformar texto y realizar procesamiento avanzado.
+### Breve resumen técnico
+El repositorio gestiona interacciones entre formularios web y capacidades de procesamiento y síntesis de voz, junto con la aplicación de servicios IA (Azure OpenAI) en el contexto de Dynamics CRM. Integra SDKs y APIs externas para funcionalidades avanzadas como reconocimiento y síntesis de voz, procesamiento de texto basado en IA, y actualizaciones de formularios.
 
-### Descripción de arquitectura:
-La solución combina varios paradigmas arquitectónicos:
-1. **N-capas:** La arquitectura general sigue un enfoque de separación de responsabilidades entre:
-   - **Frontend:** Realiza captura y transformación de datos en el navegador.
-   - **Backend (plugin):** Procesa datos y realiza tareas específicas (llamadas OpenAI, transformaciones).
-   - **Servicios externos (Azure Cognitive Services):** Procesamiento de voz e inteligencia artificial.
-2. **Integración con Dynamics 365:** Utiliza APIs internas del sistema (`Xrm.WebApi`) para manejar datos del formulario en tiempo real.
-3. **Patrones específicos:**
-   - **Carga dinámica:** En el caso de los archivos JS, el SDK de Azure se carga dinámicamente.
-   - **Plugin-based architecture:** El componente en C# extiende las capacidades de Dynamics mediante el interfaz `IPlugin`.
+### Descripción de arquitectura
+1. **Tipo de solución**: 
+   - Principalmente un sistema híbrido compuesto por frontend (gestión, interacción y voz), integración con backend en forma de plugins en Dynamics CRM, y APIs externas (Azure OpenAI y Speech SDK).
+   - Actúa como una solución de interfaz avanzada para formularios, empleando mecanización vocal e inteligencia artificial.
 
-### Tecnologías y frameworks usados:
-1. **Frontend:**
-   - **JavaScript:** Desarrollo en Vanilla JS con funciones modulares.
-   - **Azure Speech SDK:** Integración para reconocimiento y síntesis de voz.
-   - **Dynamics 365 API (Xrm.WebApi):** Manipulación de datos del formulario.
+2. **Arquitectura**:
+   - **N capas**: Separación explícita entre front-end (JavaScript para gestión del formulario y síntesis/reconocimiento de voz), lógica del negocio (plugin en `.NET` para manipulación e interacción con Azure OpenAI), y APIs externas.
+   - Los componentes funcionan con alta modularidad y están distribuidos, utilizando servicios externos que envuelven operaciones específicas (voz y IA).
 
-2. **Backend (Plugin):**
-   - **C# .NET Framework:** Desarrollo de plugins en Dynamics CRM.
-   - **Microsoft.Xrm.Sdk:** Biblioteca oficial para desarrollo en Dynamics CRM.
-   - **Azure OpenAI API:** Uso de inteligencia artificial para transformar texto.
+### Tecnologías usadas
+- **Frontend**:
+  - JavaScript.
+  - Azure Speech SDK.
+- **Backend en el Plugin Dynamics CRM**:
+  - `.NET Framework` o `.NET Core` (base para el plugin).
+  - Dynamics CRM SDK (`Microsoft.Xrm.Sdk` y `Microsoft.Xrm.Sdk.Query`).
+- **Servicios externos**:
+  - **Azure Speech SDK**: Para procesamiento de voz.
+  - **Azure OpenAI**: Procesamiento de texto avanzado con inteligencia artificial.
+  - **Custom APIs**: Comunicación con CRM a través de capacidades extendidas.
 
-3. **Dependencias externas:**
-   - **Azure Cognitive Services:** Base para Speech SDK y OpenAI.
-   - **HTTP Clients/FormData:** Envía solicitudes REST a APIs externas (como Azure).
-
-### Diagrama Mermaid:
-El diagrama representa los componentes y su interacción básica.
+### Dependencias o componentes externos presentes
+- **Azure Speech SDK**: Conecta con servicios de voz en Azure.
+- **Azure OpenAI API**: Para inteligencias artificiales generativas.
+- **Dynamics CRM SDK**: Para capturar y aplicar lógica del negocio en el contexto del CRM.
+- **Newtonsoft.Json/Librerías JSON**: Para procesar y serializar datos JSON.
+- **Microsoft Dynamics Web APIs**: Manejan interacciones entre frontend y backend para formularios.
+  
+### Diagrama Mermaid
+Aquí un diagrama que muestra la relación simplificada entre los componentes principales:
 
 ```mermaid
 graph TD
-    A["Frontend readForm.js"] --> B["Frontend speechForm.js"]
-    B --> C["Dynamics 365"]
-    C --> D["Plugins: TransformTextWithAzureAI.cs"]
-    D --> E["Azure OpenAI API"]
-    A --> F["Azure Speech SDK"]
-    B --> F
-    F --> G["Azure Cognitive Services"]
+    A["Frontend: JavaScript (Speech SDK)"] --> B["Azure Speech SDK - API de Voz"]
+    A --> C["Custom API para CRM"]
+    C --> D["CRM: Backend Plugin - TransformTextWithAzureAI"]
+    D --> E["Azure OpenAI - API de Textos"]
+    A --> F["Formulario Web Interactivo"]
+    F --> G["Contexto Dinámico - Formulario"]
 ```
 
-### Conclusión final:
-Este repositorio implementa una **integración avanzada entre Dynamics 365 y Azure Cognitive Services**. Utiliza un enfoque modular y extensible, con separación de responsabilidades entre frontend (JavaScript para UI interaction), backend (C# plugins for processing), y servicios externos (Azure Speech & OpenAI). La arquitectura sigue un enfoque de **n-capas** con fuerte integración mediante APIs internas del CRM y servicios externos. La solución está diseñada para manejar interacción usuario-servicio en tiempo real, permitiendo la mejora de operaciones CRM mediante automatización e inteligencia artificial.
+### Conclusión final
+La solución presentada se basa en una arquitectura robusta de múltiples capas que integra servicios externos (Azure Speech SDK y Azure OpenAI) para ofrecer interacción de voz y procesamiento de IA en formularios asociados a Dynamics CRM. Mantiene una estructura modular y asíncrona, facilitando la delegación funcional y buenas prácticas en la gestión de SDKs y APIs. Aunque destacable en complejidad y alcance, la administración de credenciales debe ser revisada para mejorar la seguridad del sistema. El sistema resulta particularmente útil para escenarios de accesibilidad y mecanización.
