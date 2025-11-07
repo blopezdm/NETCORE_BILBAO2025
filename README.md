@@ -1,53 +1,63 @@
 ### Breve resumen técnico
-El repositorio presenta componentes de software organizados para interactuar con Dynamics 365 y Azure APIs, enfocándose en funcionalidades relacionadas con reconocimiento de voz, comandos hablados, síntesis de texto a audio, y transformación de texto mediante IA externa. Los archivos están orientados tanto al frontend como al backend, con una capa de plugins para Dynamics CRM y servicios externos que amplían las capacidades de la solución.
-
-### Descripción de arquitectura
-1. **Tipo de solución**:   
-   - La solución combina múltiples componentes:
-     - **Frontend**: para interacción directa con el usuario vía voz y texto.
-     - **Microservicios**: Utilización del Azure Speech SDK y API personalizada.
-     - **Plugin**: Extiende la funcionalidad de Dynamics CRM mediante lógica personalizada basada en Azure AI.  
-
-2. **Patrones arquitectónicos**:  
-   - **Arquitectura n-Capas**:  
-     Presenta separación clara entre las capas de presentación (frontend), lógica de negocio (plugins y procesamiento), y servicios externos (Azure APIs).
-   - **Integración Externa/Microservicios**:  
-     La solución se conecta a servicios externos (Azure Speech y OpenAI) para aportar capacidades de IA y voz.
-
-### Tecnologías usadas
-1. **Frontend/JavaScript**:  
-   - Uso de `Azure Speech SDK` para síntesis y reconocimiento de voz. 
-   - Manipulación del DOM con APIs de navegador (carga dinámica de scripts).
-2. **Backend/C#**:  
-   - Uso de `Microsoft.Xrm.Sdk` para la integración con Dynamics CRM.
-   - `Newtonsoft.Json` y `System.Net.Http` para manejo de estructuras JSON y solicitud HTTP a Azure.
-3. **Servicios externos**:  
-   - API personalizada para preprocesar comandos.
-   - Azure OpenAI para procesamiento avanzado de texto.  
-
-### Dependencias y componentes externos
-- **Azure Speech SDK**: Reconocimiento y síntesis de voz.
-- **Azure OpenAI**: Procesamiento avanzado de texto con IA.
-- **Dynamics 365 API**: Flujo interno mediante WebAPI para gestión de entidades y atributos.
-- **Bibliotecas externas**: Newtonsoft.Json, System.Net.Http, System.Text.Json.
-- **WebApi personalizada**: Integración adicional con módulos de Dynamics 365.
+Este repositorio implementa una solución híbrida que integra el reconocimiento y síntesis de voz, interacción por comandos hablados con formularios de **Dynamics 365**, y un plugin que utiliza **Azure OpenAI GPT-4** para estructuración del texto. Principalmente, contiene archivos relacionados con el frontend interactivo, reconocimiento de voz, y un plugin para procesamiento de texto optimizado.
 
 ---
 
-### Mermaid Diagram
+### Descripción de arquitectura
+La arquitectura general puede describirse como **modular y orientada a servicios**, con tres capas principales:
+1. **Frontend (JavaScript)**:
+   - Maneja la interacción del usuario mediante reconocimiento de voz y síntesis.
+   - Implementa lógica para manipular formularios en Dynamics 365, integrando datos de entrada procesados por voz.
+2. **Backend API personalizada (Dynamics CRM)**:
+   - Transforma el texto procesado mediante un plugin que interactúa con Azure OpenAI para estructuración avanzada.
+3. **Servicios de Azure**:
+   - **Azure Speech SDK**: Reconocimiento y síntesis de voz para interacción directa desde frontend.
+   - **Azure OpenAI API**: Transforma texto en JSON estructurado.
+
+---
+
+### Tecnologías usadas
+1. **Front-end**:
+   - JavaScript (paradigma funcional y modular).
+   - Azure Speech SDK para reconocimiento y síntesis de voz.
+   - DOM API para manipular HTML dinámico.
+2. **Backend**:
+   - **Microsoft Dynamics CRM SDK** para interacción de plugins.
+   - **Newtonsoft.Json** para manipulación de objetos JSON.
+   - **Azure OpenAI API** para procesamiento avanzado con modelos GPT.
+   - **System.Net.Http** para comunicación HTTP con APIs externas.
+3. **Patrones**:
+   - Modularidad (con funciones reutilizables en el frontend).
+   - Interfaz por voz.
+   - Plugin basado en eventos del CRM (modelo publisher/subscriber).
+   - Middleware para integración entre servicios de Dynamics y Azure.
+
+---
+
+### Diagrama Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-    User--"Usa Comandos de Voz o Texto"-->>Frontend
-    Frontend--"Azure Speech SDK"-->AzureSpeechApi
-    Frontend-->>DynamicsAPI
-    DynamicsAPI--"Procesa Operaciones"-->>Plugins
-    Plugins--"Transforma Texto con AzureAI"-->>AzureAI
-    AzureAI--"Devuelve JSON Transformado"-->>Plugins
-    Plugins-->>DynamicsEntities
-    AzureSpeechApi--"Texto/a/Síntesis"-->>User
+    A["Frontend - JS Modules"]
+    A1["readForm.js"]
+    A2["speechForm.js"]
+    B["Backend - Dynamics CRM"]
+    B1["TransformTextWithAzureAI.cs"]
+    C["Azure Services"]
+    C1["Azure Speech SDK"]
+    C2["Azure OpenAI GPT-4 API"]
+
+    A --> C1
+    A1 --> A2
+    A2 --> B
+    B --> C2
 ```
 
 ---
 
-### Conclusión Final
-El repositorio implementa una solución distribuida basada en **Azure Speech SDK** y **Azure OpenAI**, integrada con Dynamics 365 para procesar formularios y texto mediante la voz y una API personalizada. La arquitectura modular permite separar las responsabilidades específicas en capas: frontend (interacción y voz), backend (procesamiento y lógica dinámica en Dynamics CRM), y servicios externos (Azure Speech y OpenAI). Este enfoque facilita la escalabilidad y la integración continua en sistemas de interacción basados en IA y voz.
+### Conclusión final
+La solución representa una combinación de un enfoque **modular en el frontend** y **orientado a eventos en el backend**, con una clara división de responsabilidades:
+- **Front-end** interactivo basado en voz: Diseñado para habilitar interfaces avanzadas accesibles mediante reconocimiento y síntesis de voz. Utiliza paradigmas funcionales y SDKs externos (Azure Speech).
+- **Back-end procesador con plugins Dynamics CRM**: Principios de responsabilidad única y capacidad de extender funcionalmente el CRM, utilizando Azure OpenAI para procesamiento textual avanzado.
+  
+Aunque funcionalmente robusto, podría implementarse un sistema centralizado para gestión de configuraciones sensibles (`azureKey`, `azureRegion`, etc.) a través de entornos seguros o variables de configuración globales.
