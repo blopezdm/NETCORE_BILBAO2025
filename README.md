@@ -1,54 +1,56 @@
 ### Breve resumen técnico
-Este repositorio presenta una solución mixta que combina un frontend en JavaScript para la interacción dinámica con formularios de Dynamics 365 y un plugin de backend en C# que realiza procesamiento avanzado de texto utilizando Azure OpenAI. Esto permite una integración fluida entre la entrada por voz, el procesamiento de datos en tiempo real y su transformación semántica hacia una estructura dinámica.
-
----
+La solución presentada en el repositorio tiene múltiples archivos organizados según roles específicos en una arquitectura modular. Es una combinación de frontend en JavaScript, que incluye la gestión de formularios y síntesis de voz mediante Azure Speech SDK y Dynamics 365 APIs, complementada con un backend basado en plugins de Dynamics que utiliza servicios avanzados como Azure OpenAI.
 
 ### Descripción de arquitectura
-La solución utiliza una **arquitectura de n capas** donde:
-1. **Capa de presentación (frontend)**: Implementada en JavaScript; maneja la interacción del usuario mediante formularios y la captación de voz.
-2. **Capa de negocio (backend)**: Diseñada como un plugin para Dynamics CRM basado en C#, encargado de realizar procesamiento inteligente mediante Azure OpenAI y proporcionar datos estructurados a los sistemas cliente.
-3. **Capa de integración**: Utiliza APIs externas (Azure Speech SDK y Azure OpenAI) para manejar entradas por voz y operaciones semánticas avanzadas.
-
-Patrones observados:
-- **Modularidad**: Separación de funciones en archivos organizados por responsabilidad (voz, procesamiento, backend).
-- **Service Integration Pattern**: Integración de servicios externos como Speech SDK y OpenAI API.
-- **Plugin Architecture**: Extensibilidad específica para Dynamics 365.
-
----
+La arquitectura combina **integración de servicios externos** y facilita la automatización de procesos mediante reconocimiento de voz, generación de texto a audio, transcripciones, e incorporación de datos en formularios de Microsoft Dynamics 365. Los archivos presentan una cohesión modular, donde cada código tiene responsabilidades específicas. También se observa un patrón de comunicación con APIs externas (Azure Speech SDK y OpenAI), todo ello bajo una arquitectura **Plugin-Oriented y Service-Oriented**, con aspectos que podrían adaptarse a una arquitectura **n-capas** si se expanden los módulos.
 
 ### Tecnologías usadas
-1. **Frontend**:
-   - Javascript (Vanilla JS).
-   - APIs estándar del DOM.
-   - Azure Speech SDK.
-   - Programación basada en eventos y callbacks.
+- **Frontend**:
+  - JavaScript (funciones modulares y asincrónicas).
+  - **Azure Speech SDK**: Para reconocimiento de voz y manejo de síntesis en tiempo real.
+  - **Microsoft Dynamics 365 APIs**: Manipulación dinámica del modelo de datos y formularios.
+  
+- **Backend**:
+  - **C# Plugins**: Programación orientada a objetos y basada en la interfaz `IPlugin` específica de Dynamics.
+  - **Azure OpenAI**: Transformación de texto en JSON estructurado y formato personalizado.
+  - **Microsoft.Xrm.Sdk**: Integración directa con Dynamics 365 entidades y servicios.
+  - **HTTP & JSON Libraries**:
+    - `System.Net.Http` y `System.Text.Json`.
+    - `Newtonsoft.Json.Linq`.
 
-2. **Backend**:
-   - C# con Dynamics CRM SDK.
-   - Librerías de procesamiento JSON (`Newtonsoft.Json`, `System.Text.Json`).
-   - HTTP Client para integrarse con Azure OpenAI.
+### Dependencias o componentes externos
+- **Azure Speech SDK**: Para manejo de audio e interacciones con síntesis de voz.
+- **Azure OpenAI**: Interfaz para transformar texto según normas específicas.
+- **Microsoft Dynamics 365 APIs (Xrm namespace)**: Manipulación dinámica de formularios y datos.
+- **HTTP Clients**: Para integrar servicios externos con OpenAI.
 
-3. **Servicios externos**:
-   - Microsoft Azure Speech SDK.
-   - Microsoft Azure OpenAI.
-
----
-
-### Diagrama Mermaid válido para GitHub
-
+### Diagrama Mermaid (válido para GitHub)
 ```mermaid
 graph TD
-    A["Frontend: VoiceInputHandler.js"] --> B["Speech SDK para voz a texto y síntesis"]
-    A --> C["Formulario Dynamics 365"]
-    C --> D["Dynamics WebApi"]
-    C --> E["VoiceInputProcessor.js"]
-    E --> F["Azure Speech SDK - convertir voz en texto"]
-    E --> G["Procesar campos del formulario con IA"]
-    G --> H["Custom API en Dynamics 365"]
-    H --> I["Azure OpenAI para procesamiento semántico"]
+    A["User speaks into microphone"]
+    B["VoiceInputHandler.js processes input"]
+    C["Azure Speech SDK recognizes voice"]
+    D["Dynamics 365 entity attributes mapped"]
+    E["SpeechForm.js parses transcript"]
+    F["Custom APIs called for normalized data"]
+    G["TransformTextWithAzureAI.cs validates and formats input"]
+    H["Azure OpenAI transforms text into structured JSON"]
+    I["Dynamics 365 fields updated dynamically"]
+    A --> B
+    B --Recognition & synthesis--> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
 ```
 
----
+### Conclusión Final
+La solución se centra en integrar sistemas de reconocimiento de voz, procesamiento de texto y gestión de datos empresariales mediante Microsoft Dynamics 365 y Azure Cloud Services. Los archivos evidencian:
+- Uso de **modularidad** para optimizar la interacción entre componentes y servicios.
+- **Event-Driven Architecture**, especialmente en la gestión de entrada de voz.
+- Un **Service-Oriented Pattern** con integración de Dynamics 365 y varios servicios Azure.
+- Potencial de evolución hacia una arquitectura más integrada como **n-capas** o **hexagonal**, con servicios y facades agrupados según responsabilidades.
 
-### Conclusión final
-Este repositorio corresponde a una **solución híbrida** con características propias de una arquitectura de **n capas**, diseñada para un ecosistema Dynamics 365. Combina elementos de frontend (interacción por voz y formularios) con procesamiento avanzado en backend (OpenAI). La integración con servicios de Azure refuerza la capacidad para interactuar con usuarios en tiempo real y transformar inputs en datos estructurados, empleando tecnologías modernas de IA y reconocimiento de voz.
+Esta solución es ideal para escenarios corporativos que requieran automatización avanzada entre usuarios, formularios dinámicos y generación o procesamiento de voz bajo las mejores prácticas de arquitectura y tecnologías cloud y empresariales modernas.
