@@ -1,58 +1,52 @@
-### Breve Resumen Técnico
-
-El repositorio analiza y maneja datos provenientes de formularios en Microsoft Dynamics 365 utilizando funcionalidades avanzadas de reconocimiento de voz y transformación de texto. Se basa en tecnologías como Azure Speech SDK para interacción por voz y Azure AI para procesamiento avanzado de datos. Su arquitectura muestra características de integración modular y pone énfasis en la desacoplamiento, reutilización y scalability.
-
----
-
-### Descripción de la Arquitectura
-
-1. **Tipo de solución:** La solución integra varios componentes:
-   - *Frontend:* Manejo de voz y procesamiento de datos en el navegador (JavaScript).
-   - *Backend/plugin:* Procesamiento y transformación de datos mediante un plugin en Dynamics CRM (C#).
-   - *Terceros:* Dependencias externas como Azure Speech SDK y Azure AI para proporcionar funcionalidades de síntesis de voz y manipulación de texto.
-
-2. **Tipo de arquitectura:**
-   - La solución implementa arquitectura de *n capas*:
-     - **Frontend (Capas):** Interfaces de usuario en Dynamics 365 y procesamiento por voz en el navegador.
-     - **Lógica intermedia (Plugins):** Transformaciones y manejo en Dynamics CRM.
-     - **Servicios externos:** APIs de Azure (Speech SDK y OpenAI).
-   - Integra patrones de arquitectura orientados a servicios (SOA), dado el uso extensivo de APIs externas.
-
-3. **Tecnologías y frameworks utilizados:**
-   - **Frontend:**
-     - **JavaScript (ES6):** Para la lógica de procesamiento del formulario y voz.
-     - **Azure Speech SDK:** Gestión dinámica de síntesis y reconocimiento de voz.
-     - **Microsoft Dynamics CRM SDK:** Contexto del formulario.
-   - **Backend:**
-     - **C#:** Para la lógica de plugins en Microsoft Dynamics.
-     - **Azure OpenAI Service:** Para transformaciones avanzadas de texto.
-     - **Newtonsoft.Json:** Para serialización de JSON en plugins.
-     - **Microsoft.Xrm.Sdk:** Manejo de servicios en la plataforma CRM.
-
-4. **Dependencias y componentes externos:**
-   - Azure Speech SDK.
-   - Azure OpenAI Service (`openai-netcore.openai.azure.com`).
-   - Microsoft Dynamics CRM SDK.
-   - Framework para HTTP Requests (`HttpClient`).
-   - Newtonsoft.Json para manipulación de datos JSON.
+### Resumen técnico
+El repositorio contiene principalmente una solución que integra funcionalidades de frontend y backend para operar con datos de formularios y servicios externos. Consiste en tres componentes principales:
+1. **Frontend/scripts**: Manejo de formularios dinámicos, procesamiento de datos visible y entrada/síntesis de voz con Azure Speech SDK.
+2. **Backend/plugin**: Transformación de textos usando el modelo Azure OpenAI dentro de Dynamics CRM.
+3. **Integración con APIs externas**: Comunicación con Azure Speech y OpenAI para entrada de voz, síntesis de texto y transformación avanzada de datos.
 
 ---
 
-### Diagrama Mermaid válido para GitHub Markdown
+### Descripción de la arquitectura
+La arquitectura combina elementos de diseño de **integración basada en servicios** y **n-capas**:
+- En el lado frontend, las funcionalidades están estructuradas en módulos pequeños con responsabilidades bien definidas que interactúan con un formulario dinámico.
+- En el backend, los plugins adoptan una capa lógico-procesal de Dynamics CRM para manipular información estructurada y comunicarse con APIs como Azure OpenAI.
+- El uso de tecnologías como Azure y Dynamics 365 refuerza el carácter cloud-based orientado a la integración con third-party services.
+
+---
+
+### Tecnologías usadas
+1. **Frontend**:
+   - **JavaScript**: Implementado usando módulos de scripts.
+   - **Azure Speech SDK**: Para entrada de voz y síntesis en el navegador.
+   - **Dynamics 365 APIs**: Para manipulación del contexto del formulario.
+
+2. **Backend**:
+   - **Microsoft Dynamics CRM SDK**: Interfaz de plugins y acceso a APIs del CRM.
+   - **System.Net.Http**: Comunicación vía HTTP con Azure OpenAI.
+   - **Azure OpenAI API**: Para procesamiento y transformación avanzada de texto.
+
+3. **Patrones arquitectónicos**:
+   - Callback Pattern en frontend.
+   - Plugin Pattern en backend.
+   - Service-Oriented Integration con APIs de terceros (Azure Speech SDK, Azure OpenAI, Dynamics CRM).
+   - Modularización: separación funcional en módulos compensando diversas responsabilidades del sistema.
+---
+
+### Diagrama Mermaid válido para GitHub
 ```mermaid
 graph TD
-    A["Frontend: Dynamics 365 Interface"] --> B["Javascript VozInputHandler.js: Procesa formularios"]
-    B --> C["Azure Speech SDK: Síntesis y reconocimiento de voz"]
-    B --> D["Azure API: Toma texto - normas -> texto ajustado"]
-    B --> E["Frontend Actualiza formularios de Dynamics 365"]
-    E --> F["Dynamics CRM Plugin: Manejo de texto con OpenAI"]
-
-    F --> G["Azure OpenAI Service: API de texto a JSON"]
-    F --> H["Microsoft Dynamics CRM (Xrm SDK)"]
+  A["Usuario"] --> B["voiceInputHandler"]
+  A --> C["voiceInput"]
+  B --> D["Azure-Speech-SDK"]
+  C --> D
+  C --> E["API-Dynamics-365"]
+  E --> F["TransformTextWithAzureAI.cs"]
+  F --> G["Azure-OpenAI"]
 ```
 
 ---
 
-### Conclusión Final
+### Conclusión final
+Este repositorio implementa una solución que conecta un interfaz de usuario dinámico con habilidad de entrada y conversación por voz, junto con lógica backend avanzada para transformar datos mediante la integración altamente acoplada de APIs externas. La combinación de integración con servicios de terceros, diseño modular, y estructura típica de frontend-backend lo sitúan como una solución **n-capas basada en servicios**, altamente adecuada para entornos como Dynamics 365. Además, refuerza el uso de servicios cloud como Azure Speech y OpenAI para realizar cálculos externos clave. 
 
-La solución es una arquitectura robusta que combina el procesamiento por voz (Azure Speech SDK), interacción directa con formularios en Dynamics CRM, y transformación de datos mediante Azure OpenAI. Su diseño muestra una correcta implementación de los principios de modularidad y desacoplamiento. Pueden identificarse áreas para optimización (ej., pruebas automatizadas o refactorización según patrones como la arquitectura hexagonal) dependiendo de la ampliación futura del alcance.
+Sin embargo, las dependencias muy específicas como Dynamics y Azure podrían limitar su adaptabilidad a entornos diferentes sin extensiva personalización.
