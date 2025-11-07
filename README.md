@@ -1,51 +1,68 @@
 ### Breve resumen técnico
-Este repositorio está centrado en implementar una solución que utiliza reconocimiento y sintetización de voz, así como generación de datos con ayuda de APIs externas, en un contexto de CRM (Dynamics 365). La funcionalidad abarca tanto la interacción frontend (usando JavaScript y Azure SDK) como un plugin backend programado en C#. El objetivo es mejorar la entrada y manejo de datos en formularios de Dynamics CRM mediante reconocimiento de voz, sintetización en audio, y procesamiento avanzado con OpenAI.
+
+El repositorio analiza elementos relacionados con un sistema interactivo de frontend y backend para manejo de voz y procesamiento de datos dinámicos en Microsoft Dynamics CRM utilizando servicios de Azure. La solución parece ser un conjunto integrado que combina funcionalidades de cliente (frontend), complementos servidores (backend) y servicios externos.
 
 ---
 
 ### Descripción de arquitectura
-La arquitectura parece ser híbrida: presenta una capa frontend implementada en JavaScript y atada al navegador y al CRM. También contiene una capa backend en forma de plugin para Dynamics CRM que interactúa con APIs externas (Azure OpenAI para procesamiento avanzado). Esto indica una **arquitectura de n-capas** donde el frontend gestiona la entrada de datos y comunicación con servicios (como Azure Speech SDK), y el backend centraliza la lógica avanzada y persistencia mediante el plugin CRM.
+
+La arquitectura utiliza un enfoque híbrido:
+- **N capas**: Existe una separación clara en frontend para manejar la interacción del usuario, mientras que el backend con plugins realiza operaciones en conjunto con Dynamics y Azure OpenAI API.
+- **Integración con servicios externos**: Uso de **Azure Speech SDK** en el cliente para reconocimiento y síntesis de voz, y **Azure OpenAI API** en el servidor para procesamiento avanzado de texto.
+- La arquitectura del frontend cataliza la experiencia interactiva en tiempo real, mientras que los plugins server-side actúan como microservicios en segundo plano. Esto muestra elementos que combinan estructuración orientada a servicios (SOA) y arquitectura n capas.
 
 ---
 
 ### Tecnologías usadas
-1. **Frontend:**
-   - **JavaScript:** Lenguaje base para la lógica de procesamiento de formularios y conexión con el SDK.
-   - **Azure Speech SDK:** Para reconocimiento y síntesis de voz.
-   - **Dynamics CRM**: Para integrar los formularios y datos con un contexto empresarial.
-   - **Xrm.WebApi:** API que permite interactuar con Dynamics CRM desde el frontend.
 
-2. **Backend:**
-   - **C#:** Lenguaje de programación utilizado para extender funcionalidades en Dynamics CRM mediante plugins.
-   - **Microsoft.Xrm.Sdk & Microsoft.Xrm.Sdk.Query:** Dependencias para interactuar con entidades de Dynamics CRM.
-   - **Azure OpenAI:** Servicios GPT-4 en Azure para procesamiento avanzado de texto.
-   - **System.Net.Http:** Para realizar solicitudes HTTP a APIs externas.
-   - **Newtonsoft.Json & System.Text.Json:** Manejo de estructuras JSON en las respuestas.
+1. **Frontend**:
+   - **JavaScript**: Implementación en `voiceInputHandler.js` y `SpeechInputHandler.js` para lógica de reconocimiento y síntesis de voz.
+   - **Azure Speech SDK**: Utilizado para la interacción voz-texto en el navegador.
+   - **Microsoft Dynamics SDK - Xrm.WebApi**: Integración dinámica con formularios de CRM.
+
+2. **Backend**:
+   - **C#**: Lenguaje utilizado en `TransformTextWithAzureAI.cs` para crear un plugin de Dynamics CRM y conexión con Azure OpenAI API.
+   - **ASP.NET Framework**: Posible framework usado, dada la referencia a `Microsoft.Xrm.Sdk`.
+
+3. **Servicios externos**:
+   - **Azure OpenAI API**: Manejo de procesamiento avanzado de texto (transformación según reglas).
+
+4. **Formatos y herramientas**:
+   - **JSON**: Estructuración de datos y respuesta de las APIs externas.
 
 ---
 
 ### Diagrama Mermaid válido para GitHub
+
 ```mermaid
 graph TD
-    A["Usuario inicia voz en formulario"]
-    B["JavaScript: obtener datos visibles con leerFormulario"]
-    C["Azure Speech SDK: sintetizar texto"]
-    D["Enviar datos visibles a plugin CRM en backend"]
-    E["Plugin CRM: transformar texto con OpenAI"]
-    F["Azure OpenAI: procesar texto para estructura JSON"]
-    G["Retornar estructura transformada"]
-    H["Actualizar contexto de campos CRM"]
-    
-    A --> B
-    B --> C
-    B --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
+  A["Usuario - Interacción en el navegador"]
+  B["Frontend - voiceInputHandler.js"]
+  C["Frontend - speechForm.js"]
+  D["Azure Speech SDK - Reconocimiento y síntesis"]
+  E["Microsoft Dynamics API - Xrm.WebApi"]
+  F["Backend (Plugin) - TransformTextWithAzureAI.cs"]
+  G["Servicio externo - Azure OpenAI API"]
+
+  A --> B
+  A --> C
+  B --> D
+  C --> D
+  D --> E
+  E --> F
+  F --> G
 ```
 
 ---
 
 ### Conclusión final
-Este sistema implementa una solución innovadora para complementar la entrada de datos en un entorno CRM mediante tecnologías avanzadas como reconocimiento de voz (Azure Speech SDK) y generación de texto estructurado (Azure OpenAI). La arquitectura sigue patrones de n-capas con un frontend (JavaScript) interactivo que complementa el backend C# en Dynamics CRM. Además, usa servicios externos para manejar inteligencia en la interpretación de datos, lo cual optimiza la experiencia del usuario y reduce errores humanos en la entrada de datos. Es una solución robusta que combina UX/enriquecimiento de datos con integración profunda en el ecosistema Dynamics.
+
+La solución parece ser una extensión para Microsoft Dynamics que agrega funcionalidades avanzadas de voz y procesamiento textual utilizando tecnologías de Azure. 
+
+#### Aspectos destacados:
+1. **Híbrido cliente-servidor**: Cubre tanto la interacción directa en el frontend como el procesamiento avanzado en el backend.
+2. **Modularidad**: Las funciones están divididas claramente para manejo de voz, llamado a APIs, y procesamiento desde el contexto del formulario.
+3. **Integración extensiva**: Conexión directa con Dynamics CRM y servicios de Azure (Speech y OpenAI).
+
+#### Mejora sugerida:
+Si el sistema opera en producción, la seguridad en el manejo de claves API y acceso dinámico a los servicios debería reforzarse con tokens más robustos y almacenamiento cifrado para credenciales sensibles.
