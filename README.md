@@ -1,53 +1,69 @@
 ### Breve resumen técnico:
-El repositorio contiene código que implementa integración avanzada entre Dynamics 365 y servicios de Microsoft Azure, lo que permite manejar formularios y datos por medio de interacción de voz y procesamiento avanzado de texto mediante Azure Speech SDK y Azure OpenAI API. Hay una combinación de frontend (JavaScript para gestión de formularios y voz) y backend (C# Plugin para AI).
+Este repositorio presenta una solución que integra funcionalidades de entrada y síntesis de voz con Azure Speech SDK, manipulación de formularios en Microsoft Dynamics CRM y procesamiento mediante IA (Azure OpenAI). Los principales archivos muestran una solución orientada al manejo de interfaces de usuario (frontend) y servicios backend para procesamiento avanzado con IA.
 
 ---
 
 ### Descripción de arquitectura:
-La solución utiliza una arquitectura **n capas**, donde:
-- **Frontend:** Código JavaScript procesa datos visibles del formulario y gestiona interacción por voz y síntesis de texto mediante Azure Speech SDK.
-- **Backend:** Plugins desarrollados en C# se integran como extensiones de Dynamics 365; estos utilizan Azure OpenAI para transformar texto en objetos JSON estructurados.
-Esta arquitectura combina componentes de Dynamics CRM (como web APIs) con servicios externos en la nube (Azure Speech SDK y Azure OpenAI), siguiendo un patrón de integración de servicios (SoA).
+La arquitectura de este repositorio combina múltiples capas y patrones:
+1. **Frontend:** Manejo de interacción con el usuario mediante funciones de JavaScript, integrando Azure Speech SDK para entrada de voz y síntesis de texto a voz.
+2. **Backoffice o backend:** Uso de plugins en Dynamics CRM que interactúan con Azure OpenAI API para transformar texto según reglas específicas.
+3. **Patrones de arquitectura:**
+   - **N-capas:** Separación explícita entre el frontend y el backend.
+   - **Interacción con APIs externas:** Azure Speech SDK y Azure OpenAI API.
+   - **Modularidad:** Código en el frontend y el backend estructurado como funciones/archivos separados con responsabilidades específicas.
+   - **Event-driven architecture:** Actividades desencadenadas por interacción del usuario (eventos de voz, transcripción, etc.).
 
 ---
 
 ### Tecnologías usadas:
 1. **Frontend:**
-   - Lenguaje: JavaScript.
-   - Dependencias:
-     - Azure Speech SDK.
-     - Dynamics 365 Form API (`executionContext`, `formContext`, etc.).
+   - JavaScript (modularidad mediante funciones).
+   - Azure Speech SDK (API de síntesis de voz y manejo de entrada de voz).
+   - Xrm.WebApi de Dynamics CRM para comunicación con formularios.
+
 2. **Backend:**
-    - Lenguaje: C#.
-    - Dynamics 365 SDK para la implementación del plugin.
-    - Azure OpenAI API para procesamiento de texto mediante inteligencia artificial.
-    - Librerías: Newtonsoft.Json, System.Net.Http, System.Text.Json.
-  
-### Patrones:
-- **Event-driven:** Ejecución basada en eventos tanto en el frontend (callbacks por eventos de voz) como en el backend (listeners en Dynamics).
-- **Factory Pattern:** En el frontend, el Azure Speech SDK y sus configuraciones son creados dinámicamente mediante fábricas (`SpeechConfig`, `AudioConfig`).
-- **Modular design:** Organización del código en funciones y clases con responsabilidades claras para la modularidad y reutilización.
-- **SoA (Service-oriented Architecture):** Significativa dependencia en servicios externos (Azure).
+   - .NET Framework (C#) con Microsoft Dynamics CRM SDK.
+   - Azure OpenAI API (GPT-4) para procesamiento de texto con inteligencia artificial.
+   - Newtonsoft.Json para manejo de estructuras JSON.
+   - Peticiones HTTP para servicios remotos.
 
 ---
 
-### Diagrama Mermaid (válido para GitHub):
+### Dependencias:
+1. **Externas:**
+   - Azure Speech SDK (integrado dinámicamente en el frontend).
+   - Azure OpenAI API para procesamiento y transformación textual en JSON.
+   - Microsoft Dynamics CRM SDK para plugins de backend.
+   - Newtonsoft.Json y namespaces estándar de .NET para operaciones de manejo de datos.
+
+2. **Internas:**
+   - Funciones JavaScript modulares que contribuyen al manejo de formularios (p. ej., extracción y actualización de datos visibles, conexión con APIs externas).
+   - Plugins .NET para la integración funcional con servicios de backend (Dynamics CRM y Azure IA).
+
+---
+
+### Diagrama Mermaid:
 ```mermaid
 graph TD
-    A["Frontend: readForm.js, speechForm.js"]
-    B["Backend: TransformTextWithAzureAI.cs"]
-    C["Dynamics 365 CRM"]
-    D["Azure Speech SDK"]
-    E["Azure OpenAI API"]
+    A["Frontend-Interacción de usuario"]
+    B["JavaScript: Modular funciones"]
+    C["Azure Speech SDK"]
+    D["Xrm-WebApi Dynamics"]
+    E["Plugin Dynamics CRM"]
+    F["TransformTextWithAzureAI.cs"]
+    G["Azure OpenAI API"]
+    H["Formulario Dynamics"]
 
-    A --> D
-    A --> C
+    A --> B
     B --> C
-    C --> B
-    B --> E
+    B --> D
+    D --> H
+    E --> F
+    F --> G
+    G --> H
 ```
 
 ---
 
 ### Conclusión final:
-Esta solución integra un sistema de síntesis y reconocimiento de voz con funcionalidades de dinamismo en formularios de Dynamics 365, habilitando interacción por comandos de voz y transformación textual avanzada usando IA. La combinación de front-end basado en JavaScript con APIs de Dynamics y back-end basado en plugins para Azure OpenAI sigue una nítida arquitectura **n capas**, orientada a servicios. Además, aprovecha patrones como event-driven programming y modular design para mantener el código manejable y extensible.
+Este repositorio permite la interacción de usuarios mediante entrada de voz y la automatización avanzada de formulación textual en Microsoft Dynamics CRM con uso de servicios y APIs de Azure. La arquitectura reflejada es una solución de **n-capas** con características de modularidad y comunicación con servicios externos, potenciadas por inteligencia artificial. Tiene una estructura bien dividida y usa patrones relevantes como SOA y event-driven en sus componentes. Es un modelo efectivo para soluciones de negocio automatizadas en entornos específicos como CRM y manejo de voz.
