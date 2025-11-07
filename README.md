@@ -1,47 +1,73 @@
 ### Breve resumen técnico
-El repositorio implementa capacidades de procesamiento de voz y texto en un entorno integrado con Dynamics CRM, utilizando tecnologías como el Azure Speech SDK y Azure OpenAI. Los archivos proporcionan funcionalidades para interactuar con formularios mediante voz, sintetizar texto y transformar datos con inteligencia artificial, todo ello con integración directa a APIs externas y una arquitectura basada en eventos y servicios.
+
+- El proyecto incluye una solución que integra reconocimiento de voz y servicios de transformación de texto mediante APIs cognitivas de Azure, específicamente Azure Speech SDK y Azure OpenAI.
+- Se compone de múltiples módulos que interactúan con formularios dinámicos y sistemas CRM (Microsoft Dynamics) para lectura, procesamiento y actualización de información.
+- Las tecnologías involucradas abarcan **JavaScript**, **Dynamics CRM SDK**, y servicios de **Azure**.
+- La arquitectura se basa en una combinación de capas funcionales y servicios externos.
 
 ---
 
 ### Descripción de arquitectura
-La solución combina los siguientes elementos arquitectónicos:
-- **Arquitectura de capas**:
-  - **Frontend:** Código JavaScript para interacción de usuario (captura de entrada de voz, procesamiento de formularios).
-  - **Backend:** Código en C# diseñado como un plugin para Dynamics CRM, encargado de transformar datos y conectarse con Azure OpenAI.
-- **Integración de SDK y servicios externos:** El Frontend utiliza Azure Speech SDK para síntesis de voz, mientras que el plugin backend conecta con Azure OpenAI para procesamiento avanzado de texto.
-- **Eventos dinámicos:** A nivel de frontend, la ejecución depende de activadores como el inicio de entrada de voz o interacción del usuario con formularios. A nivel backend, el plugin responde al contexto de ejecución en Dynamics CRM.
+
+**Tipo de solución**: 
+- La solución es una composición de módulos frontend especializados en reconocimiento de voz y procesamiento textual, junto con un plugin backend que conecta Azure OpenAI con Dynamics CRM.
+
+**Arquitectura**: 
+- La solución sigue un modelo híbrido:
+  - **Frontend modular**: Basado en JavaScript con una arquitectura de micro-módulos sueltos. Estas funciones están diseñadas para integrarse con formularios dinámicos. Predominan los patrones como integración con servicios externos y modularidad.
+  - **Backend basado en plugins (Dynamics CRM)**: Implementa el patrón de plugins y opera bajo una arquitectura de servicios.
+
+**Patrones usados**:
+- **Patrón de servicio**: Interfaz con APIs externas (Speech SDK, Azure OpenAI).
+- **Patrón modular**: Separación de responsabilidades mediante funciones que gestionan la lectura, procesamiento y síntesis de datos en el frontend.
+- **Capas de arquitectura**: Backend implementa estructuras de middleware claramente definidas (plugin), mientras que el frontend incorpora un flujo funcional basado en eventos y accesos dinámicos a formularios.
 
 ---
 
-### Tecnologías usadas
+### Tecnologías y frameworks usados
+
 1. **Frontend**:
-   - `Azure Speech SDK` (JavaScript): Para síntesis y reconocimiento de voz.
-   - APIs de `Dynamics CRM`: Manipulación programática del contexto de formularios (`Xrm.WebApi`).
+   - **JavaScript**: Base del desarrollo en el frontend.
+   - **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto a voz.
+   - **Dinámica de formularios en Dynamics CRM**: Manipulación de atributos y campos mediante el contexto `executionContext`.
 
-2. **Backend (Plugins)**:
-   - `Microsoft Dynamics SDK` (C#): Para implementar un plugin que interactúa con Dynamics CRM vía la interfaz `IPlugin`.
-   - `Azure OpenAI API`: Para transformar y procesar texto usando modelos GPT.
-   - `System.Net.Http`: Para realizar solicitudes REST a Azure OpenAI.
+2. **Backend**:
+   - **Microsoft Dynamics CRM SDK**: Para extensibilidad del sistema mediante plugins.
+   - **ASP.NET Core/C#**: Implementación del plugin de transformación de texto.
+   - **Azure OpenAI**: Servicios de procesamiento avanzado de texto.
+   - **JSON manipulation**:
+     - `Newtonsoft.Json`.
+     - `System.Text.Json`.
 
-3. **Otros**:
-   - Serializadores JSON como `Newtonsoft.Json.Linq` y `System.Text.Json`.
+3. **Servicios externos**:
+   - APIs cognitivas de Azure: Speech y OpenAI.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Diagrama Mermaid 100 % compatible con GitHub Markdown
 
 ```mermaid
 graph TD
-    A["Azure Speech SDK"]
-    A --> B["voiceInputHandler.js - Obtener datos del formulario. Sintetizar voz."]
-    A --> C["voiceInput.js - Reconocimiento de voz. Llamada a API Dynamics."]
-    B --> D["Dynamics CRM - Xrm.WebApi"]
-    C --> D["Dynamics CRM - Xrm.WebApi"]
-    D --> E["Plugins - TransformTextWithAzureAI.cs - Procesamiento de texto."]
-    E --> F["Azure OpenAI API - Transformación y reglas IA."]
+A["Frontend: JS Module - VoiceInputHandler"]
+B["Frontend: JS Module - FormReader"]
+C["Backend: Plugin - TransformTextWithAzureAI"]
+D["Azure API: Speech SDK"]
+E["Azure API: OpenAI"]
+F["Dynamics CRM: FormContext"]
+
+A --> D
+B --> D
+A --> F
+B --> F
+C --> F
+C --> E
+D --> F
 ```
 
 ---
 
 ### Conclusión final
-Esta solución implementa una integración eficaz entre un frontend basado en JavaScript y un backend plugin en C# para Dynamics CRM. La funcionalidad principal gira en torno a procesar datos de formularios y permitir una interacción por voz utilizando Azure Speech SDK, mientras que el backend aprovecha Azure OpenAI para transformar y manipular el texto según reglas definidas. La arquitectura es de tipo n-capas, con eventos dinámicos y dependencias clave en servicios externos de Azure y Dynamics CRM.
+
+- La solución presentada es una **composición modular** para integrar reconocimiento de voz y transformación textual con sistemas CRM, utilizando un enfoque orientado a servicios. 
+- El uso de tecnologías como **Azure APIs** permite extender funcionalidades de una plataforma existente (Dynamics CRM) con capacidades cognitivas avanzadas.
+- La arquitectura es diseñada para la interoperabilidad y reusabilidad y tiene componentes que pueden ser adaptados, mantenidos o escalados con facilidad.
