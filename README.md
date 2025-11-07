@@ -1,62 +1,62 @@
 ### Breve resumen técnico
-El repositorio integra múltiples componentes para la interacción con formularios en **Microsoft Dynamics CRM**, utilizando tecnologías avanzadas como el **Azure Speech SDK** y **Azure OpenAI**. Está diseñado para permitir la transformación automática del texto y la interacción avanzada mediante entrada de voz y generación de texto sintetizado.
+
+El repositorio muestra integración de funcionalidades avanzadas para aplicaciones basadas en formularios, principalmente mediante entrada de voz y procesamiento de texto con inteligencia artificial (Azure AI). Incluye dos archivos orientados al frontend para la interacción directa con SDK, y otro archivo backend que actúa como un plugin para integrarse con Dynamics CRM y utilizar GPT-4 de Azure OpenAI.
 
 ---
 
-### **Descripción de arquitectura**
-La arquitectura se basa en una estructura de **n capas** adaptada a un ecosistema de **Microsoft Dynamics CRM**, donde cada componente tiene un rol definido:
-1. **Frontend (JS):** Permite el procesamiento de datos en tiempo real mediante funcionalidades como entrada de voz (speech-to-text) y síntesis de voz (text-to-speech).
-2. **Backend (C# Plugin):** Extiende las funciones de Dynamics CRM, utilizando servicios externos como Azure OpenAI para transformar texto estructurado.
-3. **Integración con APIs:** Uso extensivo de APIs externas (Azure Speech y OpenAI) para proporcionar funcionalidades enriquecidas y procesamiento de datos.
+### Descripción de arquitectura
+
+La estructura evidencia:
+1. **Frontend**: Modularidad orientada a la integración con servicios de entrada de voz de Azure Speech SDK y procesamiento de datos para su asignación en formularios dinámicos.
+2. **Plugin backend**: Diseño del lado servidor (Dynamics CRM) con lógica de interceptación usando patrones de plugin, integrando transformación de texto con servicios de GPT-4 de OpenAI Azure.
+3. **Arquitectura de capas**: Se combina lógica de presentación, procesamiento de datos y acceso mediante servicios externos/API.
+
+En conjunto, se puede clasificar dentro de una arquitectura **híbrida de n capas + servicios externos**, que combina varias tecnologías para ofrecer una solución de entrada y procesamiento de datos. 
 
 ---
 
-### **Tecnologías usadas**
-1. **Frontend (JS):**
-   - **Principal tecnología:** JavaScript.
-   - **Servicios:** Azure Speech SDK para reconocimiento y síntesis de voz.
-   - **Framework:** Dynamics CRM JavaScript SDK.
-   - **Patrones:** Event-oriented, Modular Functions, API-driven.
-   
-2. **Backend (C# Plugin):**
-   - **Framework:** Microsoft Dynamics CRM SDK.
-   - **Servicios:** Azure OpenAI API para generación de texto estructurado.
-   - **Librerías:** Newtonsoft.Json para manipulación de JSON, System.Net.Http para solicitudes HTTP.
-   - **Patrón de diseño:** Plugin Pattern, Microservicios vía API Gateway.
+### Tecnologías usadas
+
+1. **Frontend (JavaScript)**:
+    - **Azure Speech SDK**: Manejo de entrada y síntesis de voz.
+    - **Dynamics CRM Web API** (`Xrm.WebApi`): Acceso y actualización de datos en formularios de CRM.
+    - **Vanilla JavaScript**: Para la manipulación del DOM y lógica.
+
+2. **Backend (C#)**:
+    - **Dynamics CRM SDK (`Microsoft.Xrm.Sdk`)**: Intercepción de eventos y acceso a datos en la plataforma CRM.
+    - **Azure OpenAI GPT-4**: Procesamiento de lenguaje natural mediante peticiones HTTP.
+    - **Newtonsoft.Json**: Manejo y creación de objetos JSON.
+    - **HttpClient**: Para integración API externa.
 
 ---
 
-### **Dependencias o componentes externos**
-1. **Azure Speech SDK:** Para la síntesis y reconocimiento de voz. Descargado dinámicamente en el frontend mediante `ensureSpeechSDKLoaded`.
-2. **Azure OpenAI API (GPT-4):** Servicio externo que recibe texto y devuelve respuestas estructuradas usando inteligencia artificial.
-3. **Dynamics CRM SDK:** Permite manipulación de datos del formulario y mapeo entre campos CRM.
-4. **Frameworks y librerías:**
-   - **Newtonsoft.Json:** Serialización/deserialización JSON en plugins.
-   - **System.Net.Http:** Llamadas HTTP al servicio OpenAI.
-   - **System.Text.Json:** Alternativa para JSON manipulación en plugins.
+### Diagrama Mermaid válido para GitHub
 
----
-
-### **Diagrama Mermaid**
 ```mermaid
 graph TD
-  A["Usuario: Entrada de datos y voz"]
-  B["Frontend/JS: Procesamiento de entrada de voz y datos del formulario"]
-  C["Azure Speech SDK: Synth/Recognition"]
-  D["Backend (Plugins de CRM): Transformación y procesamiento avanzado"]
-  E["Dynamics CRM: Mapeo y actualización de campos del formulario"]
-  F["Azure OpenAI: GPT-4 API"]
+    A["Frontend: VozInput.js"]
+    B["Frontend: SpeechProcessing.js"]
+    C["Backend: TransformTextWithAzureAI.cs"]
+    D["Azure Speech SDK"]
+    E["Dynamics CRM"]
+    F["API: Azure OpenAI - GPT-4"]
+    G["User"]
 
-  A --> B
-  B --> C
-  B --> E
-  B --> F
-  C --> B
-  F --> D
-  D --> E
+    G --> A
+    A --> D
+    A --> E
+    G --> B
+    B --> D
+    B --> E
+    A --> B
+    E --> C
+    C --> F
 ```
 
 ---
 
-### **Conclusión final**
-El repositorio implementa una solución robusta y moderna para extender las capacidades de **Microsoft Dynamics CRM** mediante la integración de servicios avanzados como **Azure Speech** y **Azure OpenAI**. Este sistema tiene un diseño modular basado en **n capas**, donde tanto el frontend en JavaScript como los plugins backend en C# interactúan con APIs externas para completar la funcionalidad deseada. La arquitectura está bien estructurada para satisfacer requisitos de extensibilidad en un entorno empresarial.
+### Conclusión final
+
+La solución representa una integración moderna de procesamiento de datos mediante reconocimiento de voz y transformación de texto respaldada por servicios de inteligencia artificial. La arquitectura híbrida de n capas con extensión a servicios externos es ideal para sistemas CRM que buscan ofrecer una capa de interacción avanzada y rica para el usuario final. 
+
+La combinación de dinámicos SDK de Azure (Speech, OpenAI), la lógica precisa para formularios de CRM, y la estructura modular de los componentes, hacen del proyecto una solución escalable, adaptada para plataformas empresariales modernas.
