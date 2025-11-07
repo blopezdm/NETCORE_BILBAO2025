@@ -1,57 +1,73 @@
 ### Breve resumen técnico
-El repositorio analizado contiene tres componentes principales:
-1. **Frontend**: Implementa interacción entre formularios y el reconocimiento de voz, con integración de Azure Speech SDK.
-2. **Plugin en Dynamics CRM**: Realiza transformaciones del texto mediante Azure OpenAI en entornos Dynamics.
-3. **API personalizada**: Expone transformación de texto hacia el frontend.
 
-### Descripción de arquitectura
-La arquitectura representada en el repositorio sigue un enfoque **modular con integración externa**. El sistema tiene las siguientes características clave:
-1. **Frontend con SDK externo**: Procesa datos de formularios y emplea reconocimiento o síntesis de voz.
-2. **Plugin centrado en CRM**: Extiende funcionalidad mediante procesamiento de OpenAI.
-3. **Uso de un patrón de capas**:
-   - Una capa para la interfaz de usuario (Frontend).
-   - Una capa de lógica del negocio (Plugins CRM).
-   - Una capa para integración con servicios externos (Azure Speech, OpenAI).
-
-### Tecnologías usadas
-- **Frontend**:
-  - SDK de reconocimiento de voz: Azure Speech SDK.
-  - Llamadas a APIs externas y personalizadas: Dynamics CRM WebAPI.
-  - JavaScript para lógica del cliente y manipulación DOM de formularios.
-- **Plugin Dynamics**:
-  - Framework .NET para desarrollo de extensiones.
-  - Microsoft.Xrm.Sdk para interacción con Dynamics CRM.
-  - Azure OpenAI para procesamiento de datos mediante IA.
-  - Librerías JSON (`System.Text.Json`, `Newtonsoft.Json.Linq`) para manejo de respuestas API.
-
-### Dependencias o componentes externos presentes
-#### En el Frontend:
-- **Azure Speech SDK**: Integración directa desde un CDN para reconocimiento de voz y síntesis.
-- **Dynamics 365 API (Xrm.WebApi)**: Utilizada para operaciones CRUD y de interfaz.
-- **Custom API**: Captura y procesa texto mediante Dynamic API personalizada.
-#### En el Plugin:
-- **Azure OpenAI Services**: Endpoint de OpenAI en Azure para transformaciones de texto.
-- **Dynamics CRM SDK**: Abstrae acceso en contexto CRM.
+El repositorio contiene componentes que integran funcionalidades de interacción vocal y procesamiento de formularios en Microsoft Dynamics CRM mediante Azure Speech SDK y OpenAI GPT API. Se observa una solución híbrida que combina frontend y backend, utilizando integraciones con servicios externos.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Descripción de arquitectura
 
+1. **Tipo de solución**: La solución implementa una arquitectura de integración en Dynamics CRM con un enfoque de **process automation**:
+   - **Frontend**: Scripts que interactúan con formularios de Dynamics a través del `executionContext` y actualizan datos en tiempo real mediante interacción por voz.
+   - **Backend**: Un plugin (.NET) que transforma texto mediante Azure OpenAI GPT y modifica datos en el CRM.
+
+2. **Patrones de arquitectura**:
+   - **API-first**: Integración directa con Azure Speech SDK y servicios OpenAI en Azure para funcionalidades extendidas.
+   - **Orientación a eventos**: Dependencia de triggers/contextos dinámicos de Dynamics.
+   - **Plugin extensivo**: Extensiones backend reutilizables que acoplan reglas de negocio y servicios externos como Azure GPT.
+
+---
+
+### Tecnologías usadas
+1. **Frontend (JavaScript)**:
+    - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
+    - **Dynamics Web API / Xrm**: Interacción con formularios del CRM.
+
+2. **Backend (.NET)**:
+    - **Microsoft Dynamics CRM SDK**: Desarrollo de plugins en C#.
+    - **Azure OpenAI Service**: Procesamiento de texto con GPT.
+    - **HTTPClient y JSON Libraries**: Manejo de solicitudes a servicios externos.
+
+3. **Patrones utilizados**:
+    - Modularización en funciones y clases reutilizables.
+    - Gestión de dependencias dinámicas (carga de SDK en tiempo de ejecución).
+    - Delegación de lógica compleja hacia servicios externos.
+    - Microservicio backend basado en plugins.
+
+---
+
+### Diagramas validos para GitHub Markdown
+
+#### Diagrama Mermaid: Frontend
 ```mermaid
 graph TD
-    A["Frontend - HTML y JS"] --> B["Azure Speech SDK"]
-    A --> C["Custom API - Procesamiento IA"]
-    B --> D["Reconocimiento y síntesis de voz"]
-    C --> E["Plugins CRM"]
-    E --> F["Dynamics CRM API"]
-    E --> G["Azure OpenAI"]
-    F --> H["Campos del formulario"]
-    G --> I["Transformación de texto JSON"]
+    A["startVoiceInput"] --> B["leerFormulario"]
+    B --> C["getVisibleFieldData"]
+    A --> D["ejecutarGrabacion"]
+    B --> E["speakText"]
+    D --> F["callCustomApi"]
+    F --> G["processTranscript"]
+    G --> H["applyValueToField"]
+    H --> I["searchLookupByName"]
 ```
 
-### Conclusión final
-Esta solución es una integral entre tecnologías frontend, extensiones de Dynamics CRM, y servicios externos para interacción con inteligencia artificial. Su arquitectura modular permite mejorar la funcionalidad de interacción con formularios mediante reconocimiento y síntesis de voz, así como el procesamiento de datos con IA. Sin embargo, algunas áreas tienen oportunidades de mejora, como:
-1. **Uso síncrono de APIs en el plugin CRM**: Esto puede impactar el rendimiento en escenarios de alta concurrencia.
-2. **Acoplamiento fuerte con servicios externos**: Aunque necesario, podría generar fallos críticos si las dependencias como Azure OpenAI no están disponibles.
+---
 
-En general, la arquitectura presentada está diseñada para la interacción avanzada con formularios y servicios de AI, siendo adecuada para aplicaciones empresariales.
+#### Diagrama Mermaid: Backend
+```mermaid
+graph TD
+    J["Plugin: TransformTextWithAzureAI"] --> K["InputParameters: Texto"]
+    K --> L["GetOpenAIResponse"]
+    L --> M["Azure OpenAI GPT API"]
+    M --> N["OutputParameters: JSON"]
+```
+
+---
+
+### Conclusión final
+
+Esta solución representa una arquitectura híbrida de **Frontend-Backend** bien definida y "event-driven" que extiende las capacidades del CRM mediante servicios como **Azure Speech SDK** y **Azure OpenAI API**. Se adoptan patrones que optimizan la experiencia dinámica del usuario (formularios vocales) y el procesamiento de texto (IA). 
+
+Puntos clave:
+- Modularización efectiva en el diseño orientado a reutilización y escalabilidad.
+- Alta dependencia en servicios externos para funciones críticas.
+- Funcionalmente preparada para integrar aplicaciones de automatización basadas en IA y voz.
