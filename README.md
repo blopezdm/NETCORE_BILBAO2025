@@ -1,54 +1,63 @@
-### Breve resumen técnico
-El repositorio contiene múltiples archivos que implementan funcionalidades para la interacción mediante voz y texto con formularios de **Dynamics 365**, utilizando **Azure Speech SDK** y **Azure OpenAI Service**. Por otro lado, un plugin basado en **Dynamics CRM** se integra con **Azure OpenAI** para transformar texto con normas específicas.
+# Análisis técnico del repositorio
+
+A continuación, se presenta un desglose detallado según los puntos solicitados:
+
+### Resumen técnico
+El repositorio reúne módulos orientados a procesar datos y comandos hablados con Azure Speech SDK, además de un plugin backend para Dynamics 365 que utiliza Azure OpenAI para el procesamiento de texto. Promueve la accesibilidad, automatización y expansión de la funcionalidad dentro de aplicaciones empresariales altamente personalizables.
 
 ---
 
 ### Descripción de arquitectura
-La solución completa tiene una arquitectura **n capas** con separación entre las siguientes niveles:
-1. **Capa de Presentación/Frontend**:
-   - Implementada mediante archivos JavaScript que gestionan la interacción con el usuario, incluyendo lectura y procesamiento de formularios mediante voz.
-   - Usa SDKs como **Azure Speech SDK** y el objeto `formContext` de Dynamics.
-   
-2. **Capa de Negocio/Integración**:
-   - Aparece en la ejecución de lógica personalizada en los plugins de Dynamics CRM. Aquí el plugin `TransformTextWithAzureAI` se encarga de interactuar con **Azure OpenAI** para transformar texto en formatos estructurados.
-   
-3. **Capa de Servicios Externos**:
-   - Comunicación con servicios en la nube, específicamente **Azure Speech SDK**, **Azure OpenAI API** y APIs personalizadas en Dynamics 365.
+1. **Tipo de solución**:
+   - La solución combina un **frontend** (JavaScript) habilitado para entrada y salida con comandos de voz, acompañado de un **plugin backend** extensible mediante Dynamics 365 y Azure OpenAI.
+
+2. **Arquitectura**:
+   - **Híbrida**: Combina un frontend modular enfocado en SDKs (basada en servicios) y un backend basado en la **arquitectura contextual** de Plugins de Dynamics 365. También aprovecha conceptos de microservicios al comunicarse con Azure OpenAI. Si bien el repositorio no implementa directamente microservicios en términos estrictos, usa conceptos clave como desacoplamiento y servicios independientes.
 
 ---
 
 ### Tecnologías usadas
-- **Frontend**:
-  - **JavaScript**.
-  - **Dynamics 365 SDK** (para manipular formularios y llamadas asincrónicas).
-  - **Azure Speech SDK**: Manejo de conversión de voz a texto y viceversa.
+1. **Frontend**:
+   - **Azure Speech SDK**: Decodificación de voz, síntesis de audio y reconocimiento de comandos hablados.
+   - **JavaScript**: Desarrollo del entorno web para interacción; uso de ECMAScript estándar.
+   - **Dynamics 365 Web API**: Para interactuar con campos y formularios dinámicos.
 
-- **Backend/Plugins de CRM**:
-  - **Microsoft Dynamics SDK**: Utilizado para integrar clases y lógica específica mediante la interfaz `IPlugin`.
-  - **C# (.NET)**: Codificación del plugin personalizado para consumir el endpoint de Azure OpenAI.
-  - **Azure OpenAI Service**: Procesamiento de texto siguiendo reglas de transformación específicas.
-  - **Newtonsoft.Json** y **System.Text.Json**: Manipulación y serialización JSON.
-  - **System.Net.Http**: Realización de llamadas REST para consumir APIs de Azure OpenAI.
+2. **Backend**:
+   - **Azure OpenAI**: Solicitudes a modelos GPT con reglas específicas para estructuración de texto.
+   - **Dynamics 365 Plugin Architecture**: Para la ejecución de integraciones nativas con Dynamics 365.
+   - **Newtonsoft.Json** y **System.Text.Json**: Para operaciones con JSON estructurados.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Componentes externos y dependencias
+1. **Azure Speech SDK**: Dinámicamente cargado en `SpeechInputHandler.js`.
+2. **Azure OpenAI Service**: Utilizado por el plugin para transformar datos.
+3. **Dynamics 365 Web API**: Permite procesar datos del formulario y realizar llamadas adicionales (e.g., buscar registros en campos de tipo `lookup`).
+4. **Microsoft Dynamics 365 SDK**: Base de integración para los plugins.
+
+---
+
+### Diagrama Mermaid
 
 ```mermaid
 graph TD
-  UI--"Frontend/JS/readForm.js"-->Dynamic-Forms-SDK
-  UI--"Frontend/JS/speechForm.js"-->Dynamic-Forms-SDK
-  UI--Azure-Speech-SDK-->Voice-Recognition
-  Azure-Speech-SDK-->Azure-APIs
-
-  Plugin--TransformTextWithAzureAI-->Backend
-  Backend-ASYNC-->Azure-OpenAI
-  Azure-OpenAI--JSON-Rules-Based-Output-->Backend
-
-  Backend-->Dynamic-Forms-SDK
+    A["Frontend-JS-readForm"]
+    B["Frontend-JS-speechForm"]
+    C["Backend-Plugin 'TransformTextWithAzureAI'"]
+    D["Azure Speech SDK"]
+    E["Azure OpenAI"]
+    F["Dynamics 365 Web API 'Xrm.WebApi.online'"]
+    
+    A --> D
+    A --> F
+    B --> D
+    B --> F
+    C --> E
+    C --> F
+    F --> "Dynamics-Forms"
 ```
 
 ---
 
 ### Conclusión final
-La solución presentada tiene una arquitectura de **n capas**, donde las operaciones del frontend interactúan con formularios de Dynamics 365 y funcionalmente se basan en **Azure Speech SDK** para integración de voz. En el backend, se implementa lógica adicional mediante plugins personalizados que consumen servicios de **Azure OpenAI** para transformar texto inteligentemente. Este enfoque modular y extensible es ideal para sistemas CRM que necesitan integrar servicios de inteligencia artificial y mejorar la experiencia del usuario mediante nuevas formas de interacción como el uso de voz/IA.
+Este repositorio representa una solución empresarial orientada a accesibilidad y mejora de formularios dinámicos en Dynamics 365 usando tecnologías emergentes como Azure Speech SDK para entrada y salida por voz, y Azure OpenAI para procesamiento de texto basado en IA. La arquitectura, aunque no es completamente microservicios, es modular y extensible, con una clara separación entre frontend y backend. Es una solución adecuada para sistemas integrados que requieren altas capacidades de personalización y soporte de procesos digitales avanzados.
