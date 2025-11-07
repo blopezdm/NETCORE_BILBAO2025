@@ -1,59 +1,43 @@
-### Breve resumen técnico
-El repositorio integra soluciones de síntesis y reconocimiento de voz, interacción con un sistema CRM y procesamiento de texto mediante el servicio de inteligencia artificial de Azure. Está compuesto por tres archivos clave y opera como un conjunto organizado de funcionalidades orientadas principalmente al frontend y a la integración de servicios externos.
+### Breve Resumen Técnico
+El repositorio presenta una solución centrada en la interacción con formularios de Dynamics CRM, mediante reconocimiento y síntesis de voz con Azure Speech SDK y un plugin que utiliza Azure OpenAI para procesamiento de texto estructurado. Incluye componentes de frontend en JavaScript y un plugin backend desarrollado en C#.
 
 ---
 
-### Descripción de arquitectura
-La solución presenta una arquitectura basada en **n capas**, donde cada capa está enfocada en una responsabilidad específica:
+### Descripción de Arquitectura
+La arquitectura es **modular de n capas** con integración de servicios externos a través de APIs. Los componentes de frontend interactúan con formularios web, facilitando lectura y entrada mediante reconocimiento de voz. Los plugins en la capa de backend manejan la transformación avanzada de datos a través de Azure OpenAI y Dynamics CRM.
 
-1. **Capa de presentación (Frontend)**: Los archivos JavaScript (`readForm.js`, `speechForm.js`) implementan la lógica para procesar la entrada de voz y sintetizar texto, interactuando directamente con el usuario.
-2. **Capa de negocio**: El archivo `TransformTextWithAzureAI.cs` actúa como un plugin en el lado del servidor (Dynamics CRM), encargándose de realizar tareas de procesamiento de texto mediante Azure OpenAI y devolviendo datos estructurados.
-3. **Capa de integración (API externa)**: Los módulos JavaScript y los plugins están diseñados para interaccionar con servicios de Azure como Speech SDK y OpenAI API.
+### Tecnologías Usadas
+1. **Frontend (JavaScript)**:
+   - Azure Speech SDK para reconocimiento y síntesis de voz.
+   - Manipulación del DOM para obtener y procesar formularios.
+   - Asynchronous JS (promesas y callbacks) para manejar eventos.
+   - Dynamics CRM API para acceso y manipulación de datos del sistema.
 
-El uso de SDKs externos y un plugin en el backend sugiere una cierta orientación hacia **microservicios**, especialmente a través de la integración con Azure OpenAI como herramientas externas independientes, aunque el diseño general aún aplica los principios de una arquitectura **n capas**.
+2. **Backend (.NET/C#)**:
+   - Microsoft Dynamics CRM SDK para construir plugins integrados.
+   - Integración con Azure OpenAI para procesamiento de texto.
+   - HTTP Request/Response (API REST) para comunicación con OpenAI.
+   - Serialización/Deserialización con `System.Text.Json` y `Newtonsoft.Json`.
 
----
-
-### Tecnologías usadas
-1. **Frontend**:
-    - JavaScript para lógica del cliente.
-    - **Azure Speech SDK**: Para interacción con servicios de síntesis y reconocimiento de voz.
-    - **Dynamics Web API**: Manipulación de formularios y datos en el CRM.
-
-2. **Backend**:
-    - **Microsoft Dynamics CRM Plugin**: Para extender la funcionalidad del sistema CRM.
-    - **Azure OpenAI**: Para procesamiento avanzado de texto.
-    - Bibliotecas .NET como `System.Net.Http` y `System.Text.Json` para solicitudes web y manejo de estructuras JSON.
-
-3. **Patrones arquitectónicos**:
-    - **Event-driven**: Uso de eventos como disparadores para la grabación de voz y el reconocimiento.
-    - **Service-Oriented Architecture (SOA)**: Uso de servicios externos de Azure, como OpenAI y Speech SDK.
-    - **Callback pattern**: Es común en el manejo de SDKs, como el `ensureSpeechSDKLoaded`.
-    - **Single Responsibility Principle**: Cada archivo se enfoca en tareas específicas (interacción con SDK, procesamiento AI, actualización de formularios).
+3. **Externo**:
+   - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
+   - **Azure OpenAI**: Procesamiento de texto utilizando GPT modelos.
 
 ---
 
-### Diagrama Mermaid
-
+### Diagrama Mermaid (100 % compatible con GitHub Markdown)
 ```mermaid
 graph TD
-  SpeechFormHandler["Frontend SpeechFormHandler JS"]
-  ReadFormHandler["Frontend ReadFormHandler JS"]
-  CRMDynamics["Microsoft Dynamics CRM"]
-  AzureSpeechSDK["Azure Speech SDK"]
-  AzureOpenAI["Azure OpenAI"]
-  Plugins["CRM Plugin TransformTextWithAzureAI"]
-
-  SpeechFormHandler --> AzureSpeechSDK
-  SpeechFormHandler --> CRMDynamics
-  ReadFormHandler --> AzureSpeechSDK
-  CRMDynamics --> Plugins
-  Plugins --> AzureOpenAI
+    A["Frontend JS - readForm.js"] --> B["Azure Speech SDK - síntesis de voz"]
+    C["Frontend JS - speechForm.js"] --> B
+    C --> D["Dynamics CRM APIs"]
+    A --> D
+    E["Backend Plugin - TransformTextWithAzureAI.cs"] --> F["Azure OpenAI API - procesamiento de texto"]
+    C --> E
+    D --> E
 ```
 
 ---
 
-### Conclusión final
-La solución es un sistema **orientado al procesamiento de voz y texto** integrado con un CRM y servicios externos de Azure. La arquitectura general sigue un enfoque modular con **n capas**, donde distintas piezas de código tienen su responsabilidad bien definida. Sin embargo, el uso de servicios como Azure Speech SDK y OpenAI apunta hacia la implementación de microservicios ligeros para mejorar la interoperabilidad y la escalabilidad del sistema.
-
-La utilización de patrones como **event-driven** y **SOA** es adecuada, dado que agilizan la interacción entre capas y con servicios externos. Sin embargo, para mejorar la robustez, puede ser útil incluir pruebas unitarias y logs más detallados, especialmente en los métodos que interactúan con APIs externas.
+### Conclusión Final
+El repositorio implementa una solución altamente modular y escalable basada en la integración de APIs externas y servicios en la nube. El sistema permite interacción vocal, captura dinámica de formularios en entornos web y procesamiento avanzado de datos en el backend mediante técnicas de Inteligencia Artificial. La combinación de **Azure Speech SDK** y **Azure OpenAI** demuestran que la solución está diseñada para tareas avanzadas relacionadas con accesibilidad, automatización y transformación inteligente de datos.
