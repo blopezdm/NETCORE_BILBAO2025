@@ -1,71 +1,60 @@
-## Breve resumen técnico
-
-El repositorio contiene componentes que, en conjunto, brindan una solución para **procesamiento de entrada y salida de voz** en un entorno Dynamics 365 CRM. Utiliza el SDK de Azure Speech para realizar síntesis y reconocimiento de voz, junto con una Custom API basada en Azure OpenAI para transformar datos de manera estructurada y aplicarlos dinámicamente a formularios del CRM. Las entidades de este repositorio se integran con diversas APIs y servicios externos de Microsoft Azure y Dynamics 365.
-
----
-
-### Descripción de la arquitectura
-
-La solución aplica una arquitectura **modular** y orientada a eventos:
-
-1. **Frontend**:
-   - Archivos como `readForm.js` y `speechForm.js` implementan lógica de interfaz que interactúa con formularios de Dynamics 365 y el SDK de Azure Speech.  
-   - Utiliza patrones basados en funciones y promesas para dividir responsabilidades como síntesis de voz, captura de audio, transcripción y el procesamiento de datos resultantes.
-
-2. **Backend (Plugins)**:
-   - El archivo `TransformTextWithAzureAI.cs` es un plugin dinámico que, mediante Microsoft Dynamics CRM, transforma datos de texto en JSON utilizando Azure OpenAI.  
-   - Sigue el patrón de desarrollo estándar de plugins definidos en la interfaz `IPlugin`.
-
-#### Tipo de arquitectura
-
-La arquitectura general es **n-capas**:
-- Capa de presentación (Frontend): Archivos JS interactúan con los usuarios y los datos del formulario.  
-- Capa lógica: Plugins en .NET actúan como la lógica de negocio central, transformando datos y realizando procesamientos complejos.  
-- Capa de servicios externos: Se integra con servicios de Azure como Speech SDK y OpenAI, además del backend REST de Dynamics 365.
-
-Este diseño modular y desacoplado sugiere una transición hacia una arquitectura **orientada a microservicios**, pero actualmente opera como un sistema distribuido con interdependencia entre componentes.
+### Breve resumen técnico
+El repositorio representa una solución orientada a formularios en Dynamics CRM que utiliza funcionalidades avanzadas de reconocimiento y síntesis de voz junto con IA (Mediante Azure Speech SDK y Azure OpenAI). La arquitectura se basa en la integración de servicios externos y se estructura en archivos que manejan de manera modular toda la lógica del frontend y los plugins del backend.
 
 ---
+
+### Descripción de arquitectura
+La solución tiene una estructura **modular y orientada a servicios**, donde cada archivo cumple un propósito específico y se comunica directa o indirectamente con APIs externas. La arquitectura general podría clasificarse como **n capas**, con una separación entre:
+1. **Frontend**: JavaScript para capturar voz, sintetizarla, convertirla en datos y procesarla en formularios.
+2. **Backend**: Plugins en C# que interactúan con Dynamics CRM mediante llamadas a APIs y servicios de Azure.
 
 ### Tecnologías usadas
-
 1. **Frontend**:
-   - JavaScript.
-   - SDK de Azure Speech para síntesis y reconocimiento.
-   - APIs de Dynamics 365 (`Xrm.WebApi`).
+   - **JavaScript**: Lógica de procesamiento de voz y manipulación de formularios.
+   - **Azure Speech SDK**: Para reconocimiento y síntesis de voz.
+   - **APIs de Dynamics CRM**: Para interacción con formularios dinámicos y datos relacionados.
+   - **Event-driven programming**: Uso de callbacks y promesas.
+   - **Data Mapper**: Transformación y mapeo de transcripciones en datos de formulario.
 
-2. **Backend**:
-   - C# (.NET Framework o .NET Core).
-   - Microsoft Dynamics CRM Plugin API.
-   - Azure OpenAI API (REST HTTP).
-
-3. **Patrones**:
-   - Modularización por funciones específicas.
-   - Promesas para controlar la asincronía en el frontend.
-   - Plugin Dynamics CRM basado en la interfaz `IPlugin`.
-
----
+2. **Backend (Plugins)**:
+   - **C#**: Desarrollo de la lógica del plugin.
+   - **Microsoft.Xrm.Sdk**: Para integración con Dynamics CRM.
+   - **Azure OpenAI API**: Transformación avanzada de texto.
+   - **Newtonsoft.Json** / **System.Text.Json**: Manejo de objetos JSON.
 
 ### Dependencias y componentes externos
-
-1. **Azure Speech SDK** - Integración directa para síntesis y reconocimiento de voz.  
-2. **Azure OpenAI API** - Procesamiento avanzado de texto (transformación a JSON).  
-3. **Dynamics 365 API** - Para manipular datos del CRM, incluidos formularios y entidades.  
-4. **Newtonsoft.Json (backend)** - Manejo de estructuras JSON en el plugin.  
-5. **HttpClient (backend)** - Realiza solicitudes HTTP a Azure OpenAI.  
+1. **Azure Speech SDK**: Reconocimiento de voz y síntesis Text-to-Speech.
+2. **Azure OpenAI API**: Transformación semántica de texto.
+3. **Dynamics 365 CRM APIs**: Gestión y actualización de datos de formularios.
+4. **HTTP Client Libraries (e.g., System.Net.Http)**: Para interacción con servicios externos.
+5. **JSON Parsers**: Para serializar/deserializar datos JSON.
 
 ---
 
-### Diagrama **Mermaid**
-
-Este diagrama representa la estructura general del repositorio y su interacción con dependencias externas.
+### Diagrama Mermaid válido para GitHub
 
 ```mermaid
 graph TD
-    A["FrontEnd - JS"] --> B["readForm.js"]
-    A --> C["speechForm.js"]
-    B --> D["Azure-SDK 'synthesis and voice'"]
-    C --> E["Azure-SDK 'recognition and AI'"]
-    B --> F["Dynamics-365 'data-fields of individual forms'"]
-    F --> G["Agent"]
+  A["Frontend"]
+  A1["voiceInputHandler.js"]
+  A2["speechForm.js"]
+  B["Azure Speech SDK"]
+  C["Dynamics 365 CRM APIs"]
+  D["Backend (Plugin)"]
+  D1["TransformTextWithAzureAI.cs"]
+  E["Azure OpenAI API"]
+
+  A --> C
+  A1 --> B
+  A1 --> C
+  A2 --> B
+  A2 --> C
+  A --> D
+  D --> C
+  D1 --> E
 ```
+
+---
+
+### Conclusión final
+Este repositorio implementa una solución integrada para la interacción dinámica con formularios en Dynamics CRM, utilizando tecnologías avanzadas de voz (Azure Speech SDK) y procesamiento de texto (Azure OpenAI). La arquitectura en capas permite una división clara entre frontend (captura/síntesis de datos) y backend (transformación avanzada y almacenamiento). Gracias a su modularidad y uso de APIs externas, sigue principios de **event-driven programming** y es capaz de escalar, integrar microservicios y extender funcionalidades según sea necesario, siendo ideal para aplicaciones empresariales.
