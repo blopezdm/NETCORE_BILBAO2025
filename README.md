@@ -1,61 +1,47 @@
-### Breve Resumen Técnico:
-
-Este repositorio contiene una solución que implementa funcionalidades relacionadas con la interacción y procesamiento de datos de formularios utilizando reconocimiento de voz y síntesis de audio con **Azure Speech SDK**. Además, incluye integración con **Azure OpenAI** para transformar texto en JSON estructurado según normas definidas. Está orientado a proporcionar capacidades mejoradas en Dynamics 365 mediante el uso de plugins y manejo avanzado de formularios.
-
----
-
-### Descripción de Arquitectura:
-
-La arquitectura de este repositorio es un **sistema de integración basado en capas y servicios externos**, donde cada capa tiene responsabilidades específicas:
-
-1. **Frontend (JavaScript):**
-   - Gestiona la interacción del usuario a través del navegador.
-   - Implementa lógica para sintetizar texto en voz y capturar entradas de voz.
-   - Utiliza patrones de modularidad y funciones auxiliares para estructurar el código.
-
-2. **Backend/Plugins (C# para Dynamics CRM):**
-   - Proporciona capacidades extendidas al sistema CRM mediante plugins personalizados.
-   - Interactúa con **Azure OpenAI** para generación de datos estructurados, como JSON, desde texto proporcionado.
-
-3. **Servicios Externos:**
-   - Azure Speech SDK: Para reconocimiento de voz y síntesis de audio.
-   - Azure OpenAI: Para procesamiento avanzado de datos y transformación de texto.
+### Breve Resumen Técnico
+El repositorio presentado contiene una solución enfocada en la integración de *Microsoft Dynamics 365* con servicios de inteligencia artificial y manejo de voz utilizando **Azure Speech SDK** y **Azure OpenAI**. La solución combina tres principales componentes: un *frontend JS* para gestión de formularios y voz, otro archivo para entrada y procesamiento de voz con asistencia externa, y un plugin en C# para transformación de texto con normas específicas a través de la API de Azure.
 
 ---
 
-### Tecnologías Usadas:
-
-1. **Frontend:**
-   - **JavaScript**: Lenguaje principal para implementar la lógica del cliente.
-   - **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto a audio.
-   - **Xrm.WebApi (Dynamics 365)**: Para interactuar con los formularios y datos de CRM.
-
-2. **Plugins Backend:**
-   - **C#**: Lenguaje utilizado en los plugins.
-   - **Microsoft Dynamics SDK**: Extensiones para interactuar con el CRM.
-   - **Azure OpenAI Service**: Para la transformación avanzada de datos mediante IA.
-
-3. **Dependencias Externas:**
-   - System.Net.Http: Solicitudes a APIs externas.
-   - System.Text.Json y Newtonsoft.Json: Manejo y manipulación de datos JSON.
+### Descripción de Arquitectura
+1. **Tipo de Solución**: Esta solución implementa funcionalidades para complementar **Microsoft Dynamics 365** mediante:
+   - **Frontend**: Funciones de captura de entrada y síntesis de voz.
+   - **Backend (Plugin)**: Procesamiento avanzado de texto con capacidades de AI.
+2. **Arquitectura**: Este diseño combina lógicamente la **arquitectura de n capas** (para separación estructural de datos, lógica y presentación en Dynamics) con ciertas influencias de la **arquitectura hexagonal** al interactuar con APIs externas (Azure Speech SDK y OpenAI) mediante puertos y adaptadores.
+3. **Modularización**: Cada componente (frontend y plugin backend) tiene roles bien definidos y encapsulación funcional.
+4. **Integración de tecnología externa**: Interacciones dinámicas con servicios de Azure (OpenAI API y Speech SDK) y la API de Dynamics 365 CRM.
 
 ---
 
-### Diagrama Mermaid:
+### Tecnologías Usadas
+- **Frontend**:
+  - **JavaScript ES6**: Utilizado para control dinámico y modular de formularios y voz.
+  - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
+  - **REST API**: Comunicación dinámica con la API personalizada en Dynamics.
+- **Backend**:
+  - **C#**: Desarrollo de plugins integrados con Dynamics CRM.
+  - **Microsoft.Xrm.Sdk**: Acceso a servicios para interacción con el motor de Dynamics CRM.
+  - **Azure OpenAI API**: Procesamiento de texto con AI utilizando modelos avanzados como GPT-4o.
+  - **NewtonSoft.JSON** / **System.Net.Http**: Manejo de JSON y comunicación HTTP.
+- **Servicios Externos**:
+  - **Microsoft Dynamics 365 CRM API**: Gestión de datos (formularios, atributos).
+  - **Azure Cloud Services**: Para síntesis de voz, procesamiento AI y API intermedia.
 
+---
+
+### Diagrama Mermaid
 ```mermaid
 graph TD
-    A["Frontend: JavaScript Modules"]
-    B["Backend: Plugins para Dynamics CRM"]
-    C["Azure Speech SDK - Voz y Texto"]
-    D["Azure OpenAI - Transformación de datos"]
-    A --> C
-    A --> B
-    B --> D
+    A["Frontend/JS: readForm.js"] --> B["Frontend/JS: speechForm.js"]
+    B --> C["Azure Speech SDK: reconocimiento-y-síntesis-de-voz"]
+    B --> D["Custom API (Dynamics 365): procesamiento IA"]
+    D --> E["Azure OpenAI API: texto-a-JSON"]
+    E --> F["Plugins/TransformTextWithAzureAI.cs"]
+    F --> G["Dynamics CRM: actualización-de-formulario"]
+    C --> G
 ```
 
 ---
 
-### Conclusión Final:
-
-El repositorio implementa una solución integral basada en la interacción entre formularios de Dynamics CRM y tecnologías de IA y reconocimiento de voz en Azure. Estas funcionalidades aprovechan varios patrones de arquitectura como modularidad, integración con servicios externos, y extensibilidad mediante plugins. Esto permite una experiencia avanzada en la captura, procesamiento y presentación de datos, mejorando el flujo de trabajo en CRM Dynamics. El diagrama representa claramente cómo los componentes interactúan.
+### Conclusión Final
+La solución presentada es una integración avanzada de Dynamics 365 con servicios de Azure para extender sus capacidades de interacción con usuarios. La arquitectura, aunque simple en organización, es robusta al utilizar patrones como modularización, separación por capas, y componentes externos para habilitar procesamiento cognitivo y síntesis de voz. Para un despliegue efectivo, se necesitará validar la compatibilidad de librerías (como Speech SDK y Dynamics Plugin Framework) y la seguridad de las llaves API utilizadas.
