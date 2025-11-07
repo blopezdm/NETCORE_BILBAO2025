@@ -1,77 +1,60 @@
-### Breve resumen técnico
+### Breve Resumen Técnico:
 
-El repositorio describe una solución completa donde se integran múltiples tecnologías para la interacción entre formularios, reconocimiento de voz, síntesis de voz, y procesamiento de datos mediante inteligencia artificial. Está diseñado para Dynamics CRM, extendiendo sus capacidades mediante plugins y funcionalidad JavaScript en formularios.
-
----
-
-### Descripción de la arquitectura
-
-#### Tipo de solución
-1. **Frontend especializado en Dynamics CRM**: JavaScript ejecutándose en formularios del CRM.
-2. **Ejecutables y Plugins personalizados**: Extensiones que corren en eventos del servidor.
-3. **Integración con servicios externos**: Uso de Azure Speech SDK, Azure OpenAI Service, y APIs personalizadas de Dynamics CRM.
-
-#### Arquitectura empleada
-La arquitectura combina los siguientes conceptos:
-1. **Capas**:
-   - Capa cliente (JavaScript en el navegador).
-   - Capa lógica de negocio (plugins de Dynamics CRM).
-   - Capa de servicios externos (SDK, Azure OpenAI).
-
-2. **Patrón Plugin-Based**:
-   - Plugin extensible del CRM como intermediario para procesamiento avanzado en la capa de negocio.
-
-3. **Arquitectura SOA (orientada a servicios)**:
-   - Uso de APIs web externas (Azure Speech SDK y Azure OpenAI).
-
-4. **Integración modular**:
-   - Todo el procesamiento JavaScript está altamente modularizado, basado en funciones.
-   
----
-
-### Tecnologías, frameworks y patrones empleados
-
-1. **Frontend (Javascript):**
-   - **Azure Speech SDK**: Para síntesis y reconocimiento de voz.
-   - **Microsoft Dynamics CRM WebAPI**: Consultas y operaciones en entidades CRM.
-
-2. **Backend (.NET):**
-   - Plugins usando:
-     - **Microsoft Dynamics SDK**.
-     - **Azure OpenAI Service** para generación de datos procesados.
-
-3. **Patrones de diseño:**
-   - **ETL**: Flujo de extracción de datos de formularios, transformación por IA, y carga en formularios CRM.
-   - **Delegación dinámica**: Reutilización de funciones específicas para modularidad.
-   - **Integración REST API**: Comunicación eficiente con servicios externos.
+El repositorio contiene tres archivos principales que implementan diferentes funcionalidades para la interacción entre interfaces frontend y un backend orientado a servicios integrados en Microsoft Dynamics CRM. Las soluciones en el repositorio se enfocan en el procesamiento de datos usando voz, reconocimiento mediante Azure Speech SDK, formulación, y transformación de datos mediante Azure OpenAI.
 
 ---
 
-### Diagrama **Mermaid**
+### Descripción de Arquitectura:
+
+1. **Tipo de solución**: 
+   - La solución abarca principalmente la integración entre un frontend (interacción por voz) y un backend (procesamiento de datos y plugins en un CRM), con aspectos de API backend que interactúan con Azure OpenAI para la generación y transformación de contenido.
+   - Es una combinación de **frontend modular** y plugins que complementan la lógica de negocio del backend (Dynamics 365 CRM).
+
+2. **Arquitectura**: 
+   - **N capas**: Dividida en frontend (interacción por voz y comandos hablados), procesamiento mediante plugins backend en CRM, y comunicación con servicios externos (Azure Speech SDK, OpenAI).
+   - **Microservicio parcial**: Las funciones encapsuladas en el plugin delegan procesamiento intenso a APIs externas, lo que refuerza la modularidad.
+
+---
+
+### Tecnologías Usadas:
+
+1. **Frontend**:
+   - **JavaScript**: Funciones client-side para gestionar interacción con formularios y entrada/salida de voz.
+   - **Azure Speech SDK**: Integra la funcionalidad de síntesis y reconocimiento de voz.
+
+2. **Backend**:
+   - **C#**: Uso de plugins de Microsoft Dynamics CRM para la lógica personalizada de procesamiento de texto.
+   - **Microsoft Dynamics 365 SDK**: Manipulación de entidades y formularios CRM directamente vinculados al entorno de Dynamics.
+   - **Azure OpenAI API (GPT)**: Procesa y transforma datos textuales de entrada en un formato estructurado.
+
+3. **Servicios Externos**:
+   - Azure Cognitive Services (Speech y OpenAI APIs).
+   - HttpClient para realizar solicitudes HTTP asíncronas al API REST.
+
+---
+
+### Diagramas Mermaid Válidos Para GitHub:
 
 ```mermaid
 graph TD
-    A["Frontend-Javascript Dynamics CRM"]
-    B["SpeechIntegration.js"]
-    C["speechProcessing.js"]
-    D["Azure Speech SDK"]
-    E["Dynamics-Custom API"]
-    F["Microsoft WebApi CRM"]
-    G["TransformTextWithAzureAI.cs"]
-    H["Azure OpenAI Service"]
-    A --> B
-    A --> C
+    A["VoiceInputHandler.js - Procesa datos y síntesis por voz"]
+    B["speechForm.js - Entrada por voz y procesamiento de formularios"]
+    C["TransformTextWithAzureAI.cs - Plugin CRM que transforma texto con Azure OpenAI"]
+    D["Azure Speech SDK - Reconocimiento y síntesis de texto a voz"]
+    E["Dynamics 365 CRM - Procesamiento de formularios y API de integración"]
+    F["Azure OpenAI API - Transformación de texto con IA"]
+    
+    A --> D
     B --> D
-    C --> D
-    C --> F
+    A --> E
+    B --> E
     C --> E
-    E --> H
-    F --> G
-    G --> H
+    C --> F
+    E --> F
 ```
 
 ---
 
-### Conclusión final
+### Conclusión Final:
 
-La solución integra formularios dinámicos de Dynamics CRM con servicios avanzados de Azure (reconocimiento de voz, síntesis y procesamiento de IA). Utiliza una arquitectura híbrida basada en capas, plugins y servicios independientes, lo que permite una buena escalabilidad y adaptabilidad para entornos corporativos. Implementa patrones de desarrollo que aseguran modularidad, delegación funcional, y integración REST API para asegurar eficiencia en el flujo de trabajo.
+El repositorio representa una solución integrada que combina **frontend modular**, **backend dinámico basado en plugins para Microsoft Dynamics CRM**, y **servicios de inteligencia artificial en Azure**. La arquitectura de **n capas** permite una separación lógica entre las herramientas que interactúan con el usuario, procesan datos, y aprovechan servicios externos para inteligencia artificial. Esto lo hace una solución robusta para sistemas CRM que demandan capacidades avanzadas de entrada, procesamiento y salida de datos integrados con tecnología de nube.
