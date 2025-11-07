@@ -1,47 +1,58 @@
-### Breve resumen técnico
-El repositorio presenta una integración avanzada entre Microsoft Dynamics 365, el Azure Speech SDK y la API de Azure OpenAI para habilitar capacidades de entrada y síntesis de voz, así como mapeo y transformación de datos en formularios dinámicos. Se incluyen tres archivos representativos: dos del frontend (`readForm.js` y `VoiceInputHandler.js`) y un plugin para Dynamics CRM (`TransformTextWithAzureAI.cs`).
+### Análisis Técnico
 
----
-
-### Descripción de arquitectura
-La solución presentada es un sistema distribuido basado en **arquitectura de microservicios**, con un fuerte enfoque en la integración entre componentes. El proyecto utiliza un enfoque **event-driven** y **orientado a servicios** a través de la interacción entre SDK y APIs externas. Muestra una orquesta entre el cliente (con componentes frontend) y el backend (plugin para Dynamics CRM). Además, se emplea un diseño modular con funciones específicas separadas, cada una cumpliendo la responsabilidad única.
-
-El plugin, por su parte, opera como un miembro explícito de la arquitectura **hexagonal** al actuar como un adaptador especializado para la integración con servicios de Azure OpenAI.
-
----
-
-### Tecnologías usadas
+#### Resumen técnico
+El sistema tiene tres componentes clave:
 1. **Frontend**:
-   - **JavaScript** (ES6)
-   - Dynamics 365 Context APIs via `formContext` and `executionContext`.
-   - **Azure Speech SDK** (`https://aka.ms/csspeech/jsbrowserpackageraw`) para procesamiento de voz.
-   - Web APIs (promesas para comunicación con Dynamics 365 Custom APIs).
+   - Utiliza **Azure Speech SDK** para reconocimiento y síntesis de voz desde formularios dinámicos.
+   - Dos archivos principales (`readForm.js` y `speechForm.js`) gestionan la interacción del usuario con formularios y voz, integrándose directamente en el contexto de Dynamics.
+   - Modularidad a nivel de funciones con patrones como `Facade` y `Event-driven programming`.
 
-2. **Backend/Plugins**:
-   - **Microsoft Dynamics CRM (XRM SDK)**.
-   - `.NET Framework` para el desarrollo de plugins.
-   - **Azure OpenAI API** para procesamiento avanzado de lenguaje natural.
-   - JSON serialization (`System.Text.Json`, `Newtonsoft.Json.Linq`).
+2. **Backend plugin**:
+   - Implementa un plugin (`IPlugin`) para Dynamics CRM que usa **Azure OpenAI API** para transformar texto en JSON estructurado según reglas específicas.
+
+#### Descripción de arquitectura
+La arquitectura general parece ser **cliente-servidor** con un enfoque **n-capas (multitier)**:
+- La capa frontend contiene lógica para interacción con el usuario (extracto de datos y reconocimiento/síntesis de voz).
+- La capa backend está basada en plugins que interactúan dinámicamente con los datos del sistema CRM usando APIs de servicios externos (Azure).
+
+#### Tecnologías usadas
+1. **Frontend**:
+   - **Javascript**: Mediante funciones para la integración y manejo del SDK.
+   - **Azure Speech SDK**: Reconocimiento de voz y síntesis de texto.
+   - **Facades** y estructura modular para simplificar la gestión.
+
+2. **Backend**:
+   - **C#**: Lenguaje orientado a objetos para la creación del plugin.
+   - **Microsoft.Xrm.Sdk**: Interacción con el pipeline de Dynamics CRM.
+   - **Azure OpenAI API**: Procesamiento de lenguaje natural y generación de JSON semántico.
+   - **System.Net.Http**, **Newtonsoft.Json.Linq**, y **System.Text.Json**: Para manejo de API REST y operaciones con JSON.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Diagrama **Mermaid** para **GitHub Markdown**
+
 ```mermaid
 graph TD
-    A["Frontend - VoiceInputHandler.js"] --> B["startVoiceInput ejecuta leerFormulario y usa getVisibleFieldData"]
-    B --> C["SDK Speech - speakText"]
-    B --> D["Formulario procesado vía DOM: getReadableValue"]
-    C --> E["API externa: Azure Cognitive Speech SDK"]
-    B --> F["SpeechForm.js: EjecutarGrabación"]
-    F --> G["Functions: ProcessTranscript"]
-    F --> H["Call: CustomAPI Dynamics 365"]
-    H --> I["Dynamics CRM Adapter (Xrm SDK)"]
-    H --> J["Azure OpenAI Plugin"]
-    J --> K["Plugin: TransformTextWithAzureAI"]
-    K --> L["Azure OpenAI GPT API"]
+A["Usuario"] -->|Interactúa| B["Formulario dinámico (Frontend)"]
+B --> C["readForm.js"]
+B --> D["speechForm.js"]
+C -->|Recopila-datos-de-campos| E["getVisibleFieldData"]
+D -->|Transforma-comando hablado| F["processTranscript"]
+C -->|Convierte-datos-en-texto| G["getReadableValue"]
+C -->|Síntesis-de-voz| H["speakText 'Azure Speech SDK'"]
+D -->|Llama-API personalizada| I["callCustomApi REST"]
+D -->|Procesa-transcripción| J["processTranscriptIA"]
+I --> K["Azure Speech API"]
+
+B --> L["Dynamics CRM"]
+D --> L
+L --> M["Plugin: TransformTextWithAzureAI"]
+M -->|Llama Azure OpenAI API| N["GetOpenAIResponse"]
+M -->|Transformación-de-texto-a-JSON| O["Text -> JSON"]
+M --> L
 ```
 
 ---
 
-### Conclusión final
-La solución está diseñada como **una integración avanzada entre Dynamics 365 y Azure**, que opera de manera modular y con principios arquitectónicos escalables y reutilizables. Los archivos del frontend gestionan la captura de datos mediante voz y sintetizan texto a voz a través de Azure Speech SDK. En el backend, el plugin encargado de la transformación de texto sigue el patrón de **servicio externo encapsulado**. La arquitectura es **hexagonal distribuida**, soportando una interacción fluida entre la capa del cliente y servicios cloud, lo que asegura alta flexibilidad y adaptabilidad.
+### Conclusión Final
+Esta solución se presenta como una integración avanzada entre componentes frontend y plugins personalizados para Dynamics CRM utilizando servicios de Azure. La arquitectura forma parte de un enfoque **n-capas**, que permite una clara separación de responsabilidades: el frontend gestiona la interacción con los usuarios, incluida la entrada y salida de voz mediante **Azure Speech SDK**, mientras que el backend usa plugins que se integran de manera fuerte con APIs externas como Azure OpenAI. Además, la solución aplica patrones como **Facade** (para simplificar la interacción con SDK) y programación por eventos mediante funciones asincrónicas en **JavaScript**.
