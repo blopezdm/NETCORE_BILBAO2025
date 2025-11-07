@@ -1,59 +1,52 @@
-# Breve Resumen Técnico
-La solución presentada es un sistema híbrido diseñado para formularios interactivos en Dynamics CRM, utilizando el SDK de Azure Speech y el servicio Azure OpenAI. Su enfoque principal incluye la síntesis de voz, la transcripción de comandos de voz, y su procesamiento para manipular datos del formulario en Dynamics.
+### Breve resumen técnico
+El repositorio presenta una solución orientada a la integración de capacidades de voz y procesamiento de datos con Microsoft Dynamics CRM, aprovechando servicios de Azure, específicamente Azure Speech SDK y Azure OpenAI. Incluye módulos frontend en JavaScript para manipulación del DOM y SDK, y plugins backend en C# para extender las capacidades de Dynamics CRM mediante procesamiento avanzado.
 
 ---
 
-# Descripción de Arquitectura
-Este sistema sigue una **arquitectura de capas**, en la cual cada capa tiene una responsabilidad específica:
-1. **Frontend:** Implementa módulos en JavaScript para interactuar con formularios de Dynamics, procesarlos, y transformar respuestas de voz.
-2. **Backend:** Un plugin para Dynamics CRM que interactúa con Azure OpenAI para transformar texto y devolver JSON estructurado que facilita la interacción.
-3. **Servicios Externos:** Dependencias en servicios como Azure Speech SDK y Azure OpenAI para reconocimiento de voz y procesamiento de lenguaje natural (NLP).
+### Descripción de arquitectura
+La solución sigue una arquitectura **n capas**, con separación entre el nivel de presentación (JavaScript frontend), el nivel de negocio (manipulación de datos con Dynamics CRM y procesamiento de voz), y la capa de integración externa (llamadas al Azure Speech SDK y Azure OpenAI). 
 
-Las responsabilidades están claramente separadas: el frontend maneja la interacción y visualización, el backend procesa y estructura datos, y los servicios externos proveen capacidades avanzadas como síntesis de voz y transformación del lenguaje.
+Si bien el frontend opera de forma independiente al backend (C# plugin), se define una relación gracias al uso conjunto de Dynamics CRM, actuando este como una capa intermediaria para comunicar ambos.
 
----
-
-# Tecnologías Usadas
-1. **Frontend:**
-   - Azure Speech SDK para reconocimiento y síntesis de voz.
-   - Dinámica del entorno de Microsoft Dynamics CRM.
-   - API de Dynamics (`Xrm.WebApi`) para manipulación de datos del formulario.
-
-2. **Backend:**
-   - Microsoft Dynamics Plugin Framework (`IPlugin`).
-   - `System.Net.Http` para realización de peticiones al servicio Azure OpenAI.
-
-3. **Servicios Externos:**
-   - **Azure Speech SDK:** Procesa y sintetiza comandos de voz.
-   - **Azure OpenAI Cognitive Services:** Realiza transformaciones dinámicas de texto en JSON estructurado.
-
-4. **Librerías:** 
-   - `System.Text.Json` y `Newtonsoft.Json` para manipulación de JSON en el backend.
+Es importante destacar que:
+- La solución sigue patrones de desacoplamiento funcional, con un enfoque modular en el frontend para cada responsabilidad (lectura de formularios, síntesis de voz, procesamiento de transcripciones).
+- En el backend, los plugins extienden la funcionalidad del CRM mediante la arquitectura de servicios y patrones establecidos en Dynamics (plugin-based extensibility).
 
 ---
 
-# Diagrama Mermaid Válido para GitHub Markdown
+### Tecnologías usadas
+1. **Frontend**:
+   - JavaScript: Manipulación del DOM e interacción dinámica con el SDK y APIs de Dynamics.
+   - Azure Speech SDK: Síntesis de voz y procesamiento de entrada en tiempo real.
+   - Dynamics CRM API: Gestión del contexto del formulario y datos visibles.
+2. **Backend**:
+   - C# .NET Framework:
+     - Microsoft Dynamics CRM SDK: Implementación de plugins usando `IPlugin`.
+     - Azure OpenAI: Procesamiento de datos mediante inteligencia artificial.
+     - HttpClient (para integración con servicios REST API).
+3. **Patrones arquitectónicos**:
+   - Arquitectura **n capas**.
+   - Modularidad funcional en el frontend.
+   - Plugin architecture en el backend.
+   - Service-oriented architecture (integración externa con servicios de Azure).
+   - DTO (Data Transfer Object) para comunicación en formato JSON.
 
+---
+
+### Diagrama **Mermaid** válido para GitHub
 ```mermaid
 graph TD
-    A["Frontend - Resolución de voz y formularios"]
-    B["Azure Speech SDK - Reconocimiento y síntesis de voz"]
-    C["Backend - Dynamics CRM Plugins"]
-    D["Azure OpenAI Cognitive Service API"]
-    E["APIs - Dynamics API"]
-    F["Formulario - Contexto Dynamics"]
-
-    A --> B
-    A --> E
-    F --> A
-    B --> A
-    A --> C
-    C --> D
-    E --> F
-    F --> C
+    A["Usuario"] --> B["Frontend: Formularios - JS"]
+    B --> C["Azure Speech SDK"]
+    B --> D["Dynamics CRM API"]
+    D --> E["Backend: Plugins - C#"]
+    E --> F["Azure OpenAI"]
+    F --> E
 ```
 
 ---
 
-# Conclusión Final
-La solución es una arquitectura híbrida de capas diseñada para integrar servicios avanzados en un contexto monolítico, con apoyo de servicios en la nube como Azure Speech SDK y OpenAI. En el frontend, se usa JavaScript para interactuar con el Dynamics CRM, mientras que en el backend, los plugins proporcionan capacidades adicionales conectándose con Azure OpenAI. Toda la solución sigue patrones recomendados como separación de responsabilidades, uso de repositorios para API, y modularidad funcional.
+### Conclusión final
+La solución es altamente modular y extensible, diseñada para integrarse con plataformas empresariales mediante APIs y plugins. Su arquitectura en capas asegura la separación de responsabilidades entre la presentación, lógica de negocio y capa de integración externa. El uso de tecnologías modernas como Azure Speech SDK y OpenAI en combinación con Dynamics CRM permite funcionalidades avanzadas como síntesis de voz y procesamiento cognitivo directamente integrados en formularios interactivos.
+
+La estructura del código es organizada, orientada a funciones con buena legibilidad. Sin embargo, se podría mejorar el manejo de errores y asegurarse que las dependencias externas estén adecuadamente encapsuladas y documentadas para robustez y mantenibilidad.
