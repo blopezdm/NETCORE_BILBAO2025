@@ -1,50 +1,64 @@
-### Breve Resumen Técnico
-El repositorio contiene un sistema orientado a la interacción entre frontend y backend para automatización de formularios basado en voz e inteligencia artificial. Utilizando Azure Speech SDK para síntesis de voz y reconocimiento de voz, y un plugin Dynamics 365 con integración a Azure OpenAI, la solución permite transformar texto de entrada, reconocer comandos y mapear datos en formularios de la plataforma Dynamics 365.
+### Breve resumen técnico
+El análisis del repositorio GitHub indica que este proyecto está orientado a una solución integrada destinada al reconocimiento de voz y conversión de texto (para interfaces de usuario como formularios) en el contexto de aplicaciones web. También incluye un plugin que utiliza Azure OpenAI para enriquecer los datos mediante transformaciones avanzadas de texto. Está construido sobre Microsoft Dynamics CRM y utiliza servicios de Azure (Azure Speech SDK y Azure OpenAI).
 
 ---
 
-### Descripción de Arquitectura
-La arquitectura del sistema es de tipo **híbrido** entre **cliente-servidor** y **event-driven**:
-1. El frontend utiliza JavaScript para interactuar con formularios de Dynamics 365 y tecnologías de reconocimiento de voz (Azure Speech SDK).
-2. El backend extiende Dynamics 365 con un plugin que consume **Azure OpenAI API**, transformando texto de manera personalizada.
-3. Se aplica patrón de **n-capas**:
-   - Capa de presentación en frontend para interacción de usuarios.
-   - Capa de lógica en plugins.
-   - Capa de datos proveniente de Dynamics 365 y servicios de Azure.
+### Descripción de arquitectura
+El proyecto sigue una arquitectura **n-capas** debido a la separación lógica de responsabilidades:
+1. **Frontend:** Cuenta con scripts en JavaScript que operan en el navegador y tienen la capacidad de interactuar con servicios externos como Azure Speech SDK.
+2. **Backend:** Un plugin implementado en C# que extiende la funcionalidad de Dynamics CRM. Este plugin utiliza una arquitectura basada en capas: capa de lógica de negocio (donde hace la transformación del texto usando Azure OpenAI) y capa de datos (interacción con Dynamics CRM para obtener y manipular información).
+3. **Servicios externos:** Se integra con dos servicios de Azure: Speech SDK para síntesis/reconocimientos de voz, y OpenAI para transformaciones de texto.
+
+La solución combina patrones modernos de integración de servicios y buena separación de responsabilidades mediante arquitecturas modulares.
 
 ---
 
-### Tecnologías Usadas
+### Tecnologías usadas
 1. **Frontend:**
-   - **JavaScript**: Para captura de voz, interacción con formularios, síntesis y mapeo.
-   - **Azure Speech SDK**: Reconocimiento y síntesis de voz, cargado dinámicamente.
-   - **Dynamics 365 context (executionContext)**: Controles de formulario.
-   - **Custom API**: Migrar información a través de servicios en Dynamics 365.
-   
+   - **JavaScript**: Utilizado para manejar eventos del usuario, DOM y formularios.
+   - **Azure Speech SDK**: Carga dinámica para síntesis y reconocimiento de voz. Script: `https://aka.ms/csspeech/jsbrowserpackageraw`.
+   - **Microsoft Dynamics Framework/Xrm.WebApi**: Para interactuar con formularios de Dynamics CRM desde JavaScript.
+   - **Patterns**:
+     - Modular Programming.
+     - Callback/Promise-driven asynchronous programming.
+     - Practices for accessibility via voice interaction.
+
 2. **Backend:**
-   - **Microsoft Dynamics 365 SDK**: Extensión de sistema CRM con plugins.
-   - **Azure OpenAI API (GPT)**: Procesamiento y transformación de texto.
-   - **Newtonsoft.Json y System.Text.Json**: Manejo estructurado de JSON desde la API.
-   - **System.Net.Http**: Realiza peticiones HTTP.
+   - **C# (.NET Framework)**: Desarrollo del plugin convencional para Dynamics CRM.
+   - **Azure OpenAI**: Procesamiento del texto mediante HTTP requests para obtener respuestas JSON estructuradas.
+   - **Microsoft.Xrm.Sdk**: Para extender y manipular la funcionalidad del CRM.
+   - **Newtonsoft.Json**: Para procesar respuestas JSON y realizar transformaciones de datos.
+   - **HTTP Client Consumption Pattern**: Manejo dinámico de solicitudes HTTP para integrar servicios externos.
 
 ---
 
-### Diagrama Mermaid
-
+### Diagrama **Mermaid**
 ```mermaid
 graph TD
-    A["Usuario"] --> B["Frontend: SpeechForm.js y VozInputHandler.js"]
-    B --> C["Azure Speech SDK"]
-    B --> D["Custom API Dynamics 365"]
-    D --> E["Dynamics 365 Web API"]
-    E --> F["Base de datos interna Dynamics"]
-    D --> G["Plugin: TransformTextWithAzureAI.cs"]
-    G --> H["Azure OpenAI API"]
-    C --> I["Reconocimiento-Síntesis de Voz"]
-    H --> J["Transformación de Texto IA"]
+  A["Frontend-JS-Handler"]
+  B["Azure-Speech-SDK"]
+  C["Microsoft-Dynamics-CRM"]
+  D["Azure-OpenAI-Plugin"]
+  E["Azure Speech-Recognition"]
+  F["Azure Text-to-Speech"]
+  G["Dynamic CRM-Data"]
+  H["OpenAI Service"]
+
+  A --> B
+  B --> E
+  B --> F
+  A --> C
+  C --> D
+  D --> H
+  D --> G
 ```
 
 ---
 
-### Conclusión Final
-Esta solución implementa una arquitectura modular integrando herramientas de Microsoft Dynamics 365, Azure Speech SDK y OpenAI GPT. Está diseñada para automatizar la captura de datos mediante reconocimiento de voz y procesamiento textual avanzado. Su diseño utiliza un patrón de **n-capas**, con alta modularidad y extensibilidad hacia IA. Es eficaz para entornos donde la interacción usuario-formulario es clave, como aplicaciones CRM dinámicas.
+### Conclusión final
+Este proyecto se puede catalogar como una integración de tecnologías para la mejora de accesibilidad y automatización mediante una **solución híbrida**. Consta de varias capas claras:
+1. **Fronted web (JavaScript) dinámica**, especializada en reconocimiento y síntesis de voz.
+2. **Backend (C# plugin)** que aprovecha servicios de Azure OpenAI y Dynamics CRM para procesar y almacenar datos.
+3. **Servicios externos (Azure Speech SDK y OpenAI).**
+
+La arquitectura es **n-capas** con una orientación moderna que combina servicios externos y patrones de diseño como Modular Programming, External SDK Integration, y Dynamic API Consumption. Es ideal para aplicaciones con accesibilidad mejorada y procesamiento de datos avanzado, aunque requiere configuración externa y una dependencia fuerte en servicios de Microsoft Azure.
