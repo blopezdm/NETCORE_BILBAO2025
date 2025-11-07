@@ -1,56 +1,73 @@
-### Breve resumen técnico:
-El repositorio analiza una solución que integra Azure Speech SDK (frontend) y Azure OpenAI (backend) dentro de un entorno Dynamics CRM para procesos interactivos entre voz, datos estructurados y eventos de CRM. Esto incluye reconocimiento y síntesis de voz, procesamiento de datos mediante IA y manipulación de formularios y APIs de Dynamics CRM.
+### Breve resumen técnico
+El repositorio parece ser una solución integrada que implementa varias funciones relacionadas con formularios, reconocimiento de voz, síntesis de texto a voz y transformación de texto usando servicios de Azure. La solución incluye un frontend en JavaScript y un plugin desarrollado para Dynamics CRM especializado en interacción con Azure OpenAI.
 
 ---
 
-### Descripción de Arquitectura:
-La arquitectura combina patrones de **n-capas** y **integración híbrida**:
-1. **Frontend**:
-   - Procesa datos de formularios de usuario en tiempo real y aplica **reconocimiento/síntesis de voz** usando Azure Speech SDK.
-   - Modularidad centrada en rutinas de interacción con el formulario y capturas basadas en eventos.
-2. **Backend**:
-   - Es un plugin adjunto a Dynamics CRM que procesa texto con Azure OpenAI mediante REST para estructurarlo como JSON.
-   - Utiliza un estilo de **Plugin-based Architecture**, común en Dynamics CRM.
-3. **Dependencias externas**:
-   - Azure Speech SDK.
-   - OpenAI (GPT) hospedado en Azure para generar JSON estructurado.
-   - Dynamics CRM como punto central que orquesta las entradas y salidas.
+### Descripción de arquitectura
+La solución sigue una arquitectura híbrida de múltiples capas:
+1. **Capas presentes**:
+   - **Frontend (JavaScript)**: Manejo de interacción directa con el usuario (formulario, voz/speech).
+   - **Servicios Azure**: Uso de Azure Speech SDK y Azure OpenAI para análisis y transformación de datos.
+   - **Plugin (backend)**: Implementación de lógica empresarial y procesamiento dentro de Dynamics CRM. Además, interactúa con Azure OpenAI mediante una API REST.
 
---- 
-
-### Tecnologías usadas:
-1. **Frontend**:
-   - **Azure Speech SDK (JavaScript):** Reconocimiento y síntesis de voz.
-   - **Dynamics CRM JavaScript APIs** (Xrm.WebApi).
-   - **Asincronía:** Callbacks y promesas (`ensureSpeechSDKLoaded`, API calls).
-2. **Backend**:
-   - **C#:** Plugin para Dynamics que usa `Microsoft.Xrm.Sdk` para acceso al entorno CRM.
-   - **Azure OpenAI API:** GPT para texto a JSON estructurado.
-   - **HTTP Client:** Manejo de solicitudes RESTful
-3. **Diseño modular:** Uso de funciones específicas y desacopladas.
-4. **Patrones:** 
-   - Modular, integración externa, delegación de responsabilidades, y mapping de datos.
+2. **Patrones arquitectónicos**:
+   - **Service-Oriented Architecture (SOA)**: Los servicios de Azure (Speech SDK y OpenAI) son puntos centrales para la solución, delegando procesamiento complejo fuera de la aplicación.
+   - **Integración de SDKs de terceros y APIs externas**: Tanto el frontend como el backend interactúan con SDKs específicos.
+   - **Plugin Pattern**: En Dynamics CRM se usa el patrón estándar para extensibilidad con `IPlugin`.
+   - **Responsabilidad única/modularización**: Los módulos JavaScript y la clase C# están separadas con funciones específicas, siguiendo los principios SOLID.
 
 ---
 
-### Diagrama Mermaid válido para GitHub:
+### Tecnologías usadas
+1. **Frontend**:
+   - **Lenguaje principal**: JavaScript (ES6).
+   - **Frameworks/librerías**:
+     - Azure Speech SDK (`https://aka.ms/csspeech/jsbrowserpackageraw`).
+   - **Integraciones**:
+     - Formularios dinámicos de Dynamics 365 CRM.
+   - **Patrones utilizados**:
+     - Modularización y callbacks.
 
+2. **Backend (Plugins)**:
+   - **Lenguaje principal**: C# (.NET Framework/Standard).
+   - **Framework**: Dynamics CRM SDK (`IPlugin`).
+   - **Dependencias externas**:
+     - Azure OpenAI API.
+     - Librerías como `System.Net.Http` y `Newtonsoft.Json`.
+
+3. **Servicios Externos**:
+   - **Azure OpenAI Services** (REST API).
+   - **Azure Speech SDK** para procesamiento de voz y síntesis.
+
+---
+
+### Diagrama Mermaid válido para GitHub
 ```mermaid
 graph TD
-    A["Frontend: JS | Azure Speech SDK"]
-    B["Backend: Dynamics CRM Plugin (C#)"]
-    C["Azure OpenAI API"]
-    D["Dynamics CRM Database"]
-    E["User Form - Captura"]
-    
-    E --> A
-    A --> D
+    A["Frontend - JavaScript"]
+    B["Azure Speech SDK"]
+    C["Dynamics CRM plugin (C#)"]
+    D["Azure OpenAI Service"]
+    E["Form Context - Dynamics 365"]
+    F["Voice Input"]
+    G["API personalizada"]
+
+    F --> A
     A --> B
-    B --> C
+    A --> E
+    A --> G
+    B --> E
+    G --> E
+    E --> C
     C --> D
 ```
 
+**Explicación del diagrama**:
+- **Frontend (A)** interactúa con los usuarios mediante el formulario y voz (F), además de hacer llamadas al SDK de Azure Speech (B) y APIs personalizadas (G).
+- El **contexto del formulario (E)** es un vínculo entre el frontend y el plugin.
+- El **Plugin (C)** transforma datos mediante la lógica de negocio y delega el procesamiento avanzado al servicio externo Azure OpenAI (D).
+
 ---
 
-### Conclusión final:
-La solución representa una arquitectura híbrida que combina capacidades de frontend basadas en JavaScript (icónico en sistemas de entrada de voz) y backend enchufado en Dynamics CRM mediante C#. Es ideal para automatización de campos críticos en entornos empresariales usando IA y servicios de voz. La integración de SDKs de Azure y la estructura modular permiten escalabilidad y extensibilidad, aunque es dependiente de APIs externas (Azure Speech/OpenAI).
+### Conclusión final
+La solución es una implementación bien modularizada que combina frontend (JavaScript), backend (C#), y servicios externos (Azure Speech SDK y Azure OpenAI). Está diseñada para extender Dynamics CRM con funcionalidades de reconocimiento de voz y procesamiento avanzado, favoreciendo accesibilidad y automatización. La elección de tecnologías como Azure y el uso de SDKs dinámicos demuestra una integración limpia y un enfoque hacia el uso de arquitecturas orientadas a servicios.
