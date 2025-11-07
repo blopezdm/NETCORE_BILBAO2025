@@ -1,59 +1,72 @@
-### Resumen técnico
+### Breve resumen técnico:
+Este repositorio contiene tres archivos focalizados en la interacción con Azure Speech SDK y Azure OpenAI para convertir texto a voz, procesar entrada de voz en formularios de Dynamics CRM, y transformar texto utilizando reglas específicas definidas desde un plugin. La solución se integra con Dynamics CRM y servicios externos de Microsoft Azure.
 
-El repositorio está compuesto por tres componentes principales:
+---
 
-1. **Frontend/JS**:
-   - Archivos relacionados con la interacción por voz y lectura automática integrados con la capacidad del SDK de Azure Speech.
-   - Se exploran conceptos de reconocimiento de voz, síntesis de voz y manipulación dinámica de formularios.
+### Descripción de arquitectura:
+Este sistema se puede describir como una solución híbrida que combina:
+1. **Frontend modular:** Maneja interacciones directas con usuarios (formulario y entrada/salida de voz). Es de tipo **multicapa** debido a la separación por funciones como extracción de datos, procesamiento y síntesis.
+2. **Backend basado en plugins:** Utiliza el patrón **arquitectura de extensibilidad** típica de Microsoft Dynamics CRM, donde los plugins amplían la funcionalidad del sistema conectándola con Azure OpenAI.
+3. **Servicios externos:** Integra el SDK de Speech y Azure OpenAI siguiendo el patrón **Adaptador de servicios externos** en una arquitectura **n capas**.
 
-2. **Plugins**:
-   - Contienen lógica backend que utiliza Azure OpenAI para realizar transformaciones en texto como parte de un plugin CRM de Dynamics.
+---
 
-### Descripción de arquitectura
+### Tecnologías usadas:
+- **Frontend (JavaScript):**
+  - **SDKs y APIs:**
+    - **Azure Speech SDK:** Para síntesis de voz y reconocimiento de entrada.
+    - **Xrm.WebApi**: Para interacción con Dynamics CRM.
+  - **Patrones implementados:**
+    - Modularidad (separación de responsabilidades y funciones).
+    - Adaptadores de servicios (uso del SDK de Azure Speech y Xrm.WebApi).
+    - Procesadores de entrada y salida.
+  
+- **Backend (C#):**
+  - **Frameworks:**
+    - **.NET Framework** para plugins de Dynamics CRM.
+    - **Azure OpenAI REST API** para procesamiento avanzado de texto.
+    - **Newtonsoft.Json** para manejo eficiente de JSON estructurado.
+  - **Patrones implementados:**
+    - Factory (con `IOrganizationServiceFactory`).
+    - Servicios externos vía adaptadores.
+    - Integración con sistemas clientes (Dynamics CRM).
+  
+- **Servicios en la nube:**
+  - **Azure Speech Service**: Para síntesis y reconocimiento de voz.
+  - **Azure OpenAI**: Para transformación avanzada de texto.
 
-La arquitectura es híbrida: combina un **Frontend con capacidades de reconocimiento y síntesis de voz** basado en **Azure Speech SDK**, además de un **plugin backend** que implementa lógica en el servidor para Dynamics CRM y utiliza **Azure OpenAI** para procesamiento de texto. El diseño muestra aspectos de arquitectura de **n capas** con dos enfoques:
+---
 
-- **Frontend**: Con interacción de voz, lectura de datos y uso del framework de Dynamics 365 para manipulación de formularios y datos.
-- **Backend**: Repositorio basado en microservicios que ejecuta lógicas específicas y delega la responsabilidad de procesamiento complejo a servicios externos (Azure OpenAI).
-
-### Tecnologías usadas
-
-1. **Frontend**:
-   - **Azure Speech SDK**:
-     - Procesos de reconocimiento y síntesis de voz.
-   - **Navegador + JavaScript puro**:
-     - Manipulación del DOM y carga dinámica de servicios.
-   - **Dynamics 365 API**: Operaciones de datos dentro de formularios de Dynamics CRM.
-
-2. **Plugin (Backend)**:
-   - Framework de plugins **Microsoft Dynamics 365 CRM**.
-   - **Azure OpenAI**: Gestión de transformación textual optimizada con GPT-4.
-   - Bibliotecas .NET como:
-     - `Newtonsoft.Json` para JSON.
-     - `System.Net.Http` para comunicación con servicios externos.
-     - `Microsoft.Xrm.Sdk` para servicios CRM.
-
-### Diagrama Mermaid (GitHub Markdown compatible)
+### Diagrama Mermaid:
 
 ```mermaid
 graph TD
-    A["Frontend/JS: Azure Speech SDK"]
-    B["Frontend: Manipulación DOM/Formularios Dynamics"]
-    C["Azure Speech Service: Sintetización y Reconocimiento"]
-    D["Plugins: Transformación de Texto con Azure OpenAI"]
-    E["Dynamics CRM: Gestión de formularios/entidades"]
-    F["Azure OpenAI: Transformación JSON (GPT-4)"]
+A["Usuario-Interacciones"]
+B["Frontend-JavaScript"]
+C["Azure Speech SDK"]
+D["Dynamics CRM"]
+E["Input-Voz-A-SDK"]
+F["Azure OpenAI-TransformTexto"]
+G["Backend-CSharp Plugin"]
+H["REST Dynamics API"]
 
-    A --> C
-    B --> E
-    C --> B
-    D --> F
-    D --> E
-    F --> D
+A --> B
+B --> C
+B --> D
+C --> E
+D --> G
+G --> F
+G --> H
 ```
 
-### Conclusión final
+---
 
-La solución muestra una conexión entre dos capas funcionales: el frontend que interactúa con los usuarios para procesamiento vocal (reconocimiento y síntesis de voz), y el backend que realiza cálculos más complejos como transformaciones de texto vía **Azure OpenAI**. La arquitectura es modular y se apoya en servicios externos como Speech SDK y OpenAI, proporcionando escalabilidad y extensibilidad.
+### Conclusión final:
+Este repositorio muestra una integración avanzada entre frontend y backend, apoyada en sistemas externos como Azure Speech y Azure OpenAI. La arquitectura es híbrida, entre **n capas** para el frontend y **extensibilidad plugin** en backend para Dynamics CRM.
 
-El diseño presenta buena separación de responsabilidades, optimizando cada capa para tareas específicas. Sin embargo, podría enriquecer la seguridad, especialmente la gestión de claves API de Azure OpenAI y Speech SDK en entornos dedicados. Es adecuada para escenarios donde el procesamiento vocal y gestión de datos CRM son necesarios en sistemas complejos.
+La solución destaca por:
+1. Su modularidad en frontend para manejar entrada/salida de voz.
+2. Uso extensivo de servicios externos mediante adaptadores bien definidos.
+3. Interoperabilidad con Dynamics CRM, actuando como un puente entre la interacción directa del usuario y procesamiento avanzado en la nube.
+
+Es robusta, escalable y adecuada para entornos Microsoft-centric avanzados.
