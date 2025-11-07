@@ -1,51 +1,53 @@
-### Breve resumen técnico
-
-El repositorio parece ser una solución completa que integra funcionalidad avanzada dentro de una plataforma CRM, específicamente Microsoft Dynamics 365. Se enfoca en la interacción entre usuarios y formularios mediante entrada y salida de voz utilizando tecnologías como Azure Speech SDK y APIs personalizadas. Además, utiliza un plugin basado en Azure OpenAI para procesar y transformar texto de manera estructurada.
-
----
-
-### Descripción de arquitectura
-
-La arquitectura sigue un enfoque **n-capas**, separando la lógica de interacción con formularios, procesamiento de datos, y llamada a servicios externos (Azure Speech SDK y Azure OpenAI). Cada componente individual maneja una parte de la solución:
-- **Frontend JavaScript**: Trabaja encapsulado en Dynamics 365, manejando la lógica del cliente, integración con SDKs y APIs.
-- **Plugin C#**: Extiende la funcionalidad del servidor CRM para realizar transformaciones avanzadas con servicios de Azure.
-
-La solución utiliza un modelo híbrido:
-- **Modularidad** en el frontend para encapsular funcionalidades específicas del procesamiento de voz.
-- **Plugin-based** en el backend, como una extensión directa del ciclo de vida CRM.
+### Breve Resumen Técnico
+El repositorio parece estar diseñado para integrar funcionalidades de reconocimiento de voz, accesibilidad mediante síntesis de voz, y conversión de texto en datos estructurados dentro de la plataforma Dynamics 365. Se utiliza el **Azure Speech SDK** para procesamiento de voz y **Azure OpenAI Service** para transformación de texto en datos JSON. Esto permite enriquecer la experiencia de usuario con interacciones avanzadas mediante IA y servicios en la nube.
 
 ---
 
-### Tecnologías usadas
-1. **Frontend**:
-   - **Azure Speech SDK**: Para conversión de texto a voz y reconocimiento del habla.
-   - **JavaScript**: Para lógica del cliente, manipulación del DOM y interacción con APIs de Dynamics 365.
+### Descripción de la Arquitectura
+La arquitectura general es de **n capas**:
+1. **Capa Cliente** (Frontend JavaScript): Procesa datos de formularios dinámicos o comandos de voz y interactúa con servicios externos como Azure Speech SDK y una API personalizada alojada en Dynamics 365.
+2. **Capa de Servicios** (API Dynamics Plugins): Contiene lógica empresarial pesada mediante la interacción directa con Azure OpenAI y procesamiento de texto.
+3. **Capa de Datos**: Implementada por Dynamics CRM para almacenar y gestionar los registros resultantes de las interacciones.
 
-2. **Backend**:
-   - **Microsoft Dynamics CRM SDK (C#)**: Gestión de plugins y operaciones relacionadas con CRM.
-   - **Azure OpenAI**: Procesamiento avanzado de texto.
-   - **Newtonsoft.Json y System.Text.Json**: Manejo de datos en formato JSON.
-   - **System.Net.Http**: Envío de solicitudes HTTP al servicio de Azure.
+**Patrones usados**:
+- **Plugin Architecture**: Dynamics CRM utiliza plugins para extender su funcionalidad, integrándolo directamente con servicios externos como Azure.
+- **Event-Driven**: Los clientes JS dependen de eventos (como clics o contextos de ejecución) y callbacks para realizar operaciones asíncronas.
+- **Técnicas de accesibilidad** están diseñadas para mejorar la integración con formularios dinámicos y proporcionar voz sintetizada a los usuarios.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
+### Tecnologías Usadas
+1. **Frontend (JavaScript)**:
+   - **Azure Speech SDK**: Para reconocimiento y síntesis de voz.
+   - **D365 API**: Personalización y transformación de datos mediante llamadas API.
+   - **Browser-compatible JavaScript Dynamic Loading**: Para cargar dinámicamente el SDK de Azure.
+
+2. **Backend (C# Plugin)**:
+   - **Dynamics CRM SDK (Microsoft.Xrm.Sdk)**: Proporciona APIs para interacción con CRM.
+   - **System.Net.Http**: Ejecuta solicitudes HTTP para consumir la API de Azure OpenAI.
+   - **Azure OpenAI (GPT-4)**: IA generativa para procesamiento de texto.
+
+3. **Externo**:
+   - **Azure Services**: Funcionalidades basadas en la nube como reconocimiento de voz y GPT, utilizando claves de suscripción y configuraciones regionales.
+
+---
+
+### Diagrama Mermaid
+
 ```mermaid
 graph TD
-    A["Formulario Dynamics 365"] --> B["JS Frontend"]
-    B --> C["Azure Speech SDK"]
-    B --> D["API personalizada Azure"]
-    D --> E["Dynamics CRM Plugin"]
-    E --> F["Azure OpenAI"]
-    F --> E
-    C --> B
-    E --> B
+    A["User Client"] -->|Commands or Voice| B["Frontend JS (readForm.js)"]
+    B -->|Text to Speech| C["Azure Speech SDK"]
+    B -->|REST API| D["D365 API Plugin"]
+
+    D -->|Transform Text| E["Azure OpenAI"]
+    E -->|JSON Structured Data| F["Plugin Response to CRM"]
+    F -->|Save to DB| G["Dynamics CRM Database"]
 ```
 
 ---
 
-### Conclusión final
+### Conclusión Final
+Este repositorio implementa una solución sofisticada de accesibilidad y automatización en **Dynamics 365**, utilizando tecnologías avanzadas de IA como el **Azure OpenAI** para generación de datos estructurados y **Azure Speech SDK** para voz. La arquitectura es de **n capas**, con una comunicación fluida entre clientes, backend, y servicios externos, manteniendo principios de modularidad y extensibilidad.
 
-- **Tipo de solución**: La solución combina un **frontend** basado en JS y un **backend** basado en plugins (C#) integrados en Dynamics 365, extendiendo la funcionalidad CRM mediante Azure Speech SDK y OpenAI.
-- **Diseño arquitectónico**: Implementa una estructura **n-capas hídrida**, con integración de servicios externos, procesamiento de entrada/salida de voz y transformación de texto en varios niveles de la aplicación.
-- **Flexibilidad y escalabilidad**: Permite extender funcionalidades con servicios en la nube como Azure y facilita la personalización de reglas de negocio mediante plugins CRM. La modularidad en el frontend asegura que futuras extensiones sean manejables.
+Es adecuado para mejorar la experiencia del usuario en entornos empresariales, como CRM, mediante interacciones de voz, reconocimiento dinámico y acceso a datos transformados por IA. Puede ser extendido fácilmente para incluir funcionalidades adicionales como análisis de sentimiento o traducción automática con Azure Cognitive Services.
