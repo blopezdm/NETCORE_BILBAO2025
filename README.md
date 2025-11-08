@@ -1,54 +1,48 @@
-### Breve resumen técnico
-El repositorio analiza una solución que combina tecnologías para interfaces, reconocimiento de voz, síntesis de texto hacia voz, y comunicación con servicios de inteligencia artificial y CRM en un contexto de Microsoft Dynamics 365. El ecosistema utiliza componentes frontend (`readForm.js`, `speechForm.js`) y un plugin backend (`TransformTextWithAzureAI.cs`) que interactúan con servicios como Azure Speech SDK y Azure OpenAI.
+### Breve resumen técnico:
+
+El repositorio analiza archivos que implementan funcionalidades de reconocimiento de voz y texto, así como interacción con APIs externas. Utiliza tecnologías avanzadas como el **Azure Speech SDK** para reconocimiento y síntesis de voz, y **Azure OpenAI GPT-4** para procesamiento de texto en JSON. A través de una arquitectura modular, el código interactúa con formularios de **Dynamics 365** y servicios cloud como Azure AI para procesamiento de datos en tiempo real.
 
 ---
 
-### Descripción de la arquitectura
-La solución parece ser una **arquitectura híbrida** con componentes distribuidos. Combina un modelo de dos capas principales:
-1. **Frontend**:
-   - Encargado de la interacción con el usuario, incluyendo lectura de formularios en Dynamics 365 y reconocimiento de voz mediante Azure Speech SDK.
-   - Encapsula lógicas de procesamiento locales y coordinación con backend para realizar operaciones que requieran más capacidades (como transformación avanzada del texto usando IA).
-2. **Backend (Plugin en Dynamics 365)**:
-   - Alojado dentro de la arquitectura de Dynamics CRM.
-   - Responsable de procesar las solicitudes del frontend, invocar el servicio de Azure OpenAI para transformar el texto, y devolver respuestas JSON procesadas.
+### Descripción de la arquitectura:
 
-La solución utiliza servicios externos para realizar tareas clave, como el reconocimiento de voz y procesamiento de texto, siguiendo el principio de **orientación a servicios (SOA)**. Dado el diseño modular y la interacción con APIs externas, la arquitectura tiende hacia un enfoque **orientado a microservicios/separación de responsabilidades**.
+La solución se basa en una arquitectura **combinada de servicios** orientada a la integración con plataformas externas usando **plugins y SDKs**. A nivel de diseño, se exhiben principios de **modularidad, reutilización funcional y separación de responsabilidades**.
+
+- Los archivos JavaScript (como `readForm.js` y `speechForm.js`) implementan una capa lógica que interactúa con las UI de formularios en **Dynamics 365**, facilitando el reconocimiento de voz y el procesamiento de comandos mediante SDKs y APIs externas.
+- El archivo **C# TransformTextWithAzureAI.cs** implementa un **plugin de Dynamics CRM**, que actúa como una capa de interacción entre el sistema CRM y la API de Azure OpenAI. Esto aporta capacidad de procesamiento avanzado de texto para necesidades empresariales específicas.
 
 ---
 
-### Tecnologías usadas
-1. **Frontend (JavaScript)**:
-   - **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto en voz.
-   - **Dynamics 365 APIs**: Para operar sobre formularios y datos dinámicos.
-   - **Ecmascript módulos**: Para mantener código modular y facilitar reusabilidad.
+### Tecnologías usadas:
 
-2. **Backend (C# en Dynamics 365)**:
-   - **Azure OpenAI Service**: Procesamiento de texto basado en modelos GPT a través de servicios REST.
-   - **Microsoft Dynamics SDK (Xrm)**: Para desarrollo de plugins personalizados que actúan como extensiones dentro del CRM.
-   - **Newtonsoft.Json**: Para manejar y procesar objetos JSON.
+**Frontend/JavaScript:**
+1. **Azure Speech SDK**: Para reconocimiento de voz y síntesis de texto hablado.
+2. **Dynamics 365 API (formContext)**: Para extracción y manipulación de datos de formularios.
+3. **JavaScript (ES6+)**: Desarrollo modular con funciones reutilizables.
+4. **HTTP requests/API calls**: Llamadas a APIs externas (dinámicas para SDK y procesamiento en la nube).
+
+**Backend/C#:**
+1. **Microsoft Dynamics Plugin Framework**: Gestión de eventos en CRM.
+2. **Azure OpenAI GPT-4 model**: Procesamiento de texto avanzado, implementado vía peticiones HTTP.
+3. **JSON libraries**: Manejo de datos, serialización/deserialización.
 
 ---
 
-### Diagrama Mermaid válido para GitHub
-
+### Diagrama Mermaid:
 ```mermaid
 graph TD
-    A["Frontend - readForm.js"]
-    B["Frontend - speechForm.js"]
-    C["Azure Speech SDK"]
-    D["Microsoft Dynamics 365 (Xrm.WebApi)"]
-    E["Custom Plugin - TransformTextWithAzureAI.cs"]
-    F["Azure OpenAI Service"]
-
-    A --> C
-    A --> D
-    B --> C
-    B --> D
-    D --> E
-    E --> F
+  A["Dynamics 365 Form API"] -->|JavaScript SDK| B["readForm.js"]
+  A -->|JavaScript SDK| C["speechForm.js"]
+  B -->|Azure Speech SDK| D["voice recognition/synthesis"]
+  C -->|Azure Speech SDK| D
+  C -->|HTTP request| E["Custom API on Dynamics"]
+  E -->|REST| F["Azure OpenAI (GPT-4)"]
+  F -->|JSON| G["TransformTextWithAzureAI.cs"]
+  A -->|Plugin| G
 ```
 
 ---
 
-### Conclusión final
-Este repositorio representa una solución de integración que conecta servicios avanzados de Azure con una plataforma CRM (Dynamics 365). El diseño modular y la dependencia de APIs externas, como Azure Speech SDK y Azure OpenAI Service, le otorgan características de una arquitectura moderna orientada a servicios. Sin embargo, los módulos adolecen de ciertas prácticas de seguridad, como evitar almacenamiento directo de claves API en el código. Además, se podría mejorar la gestión de errores para robustecer la interacción con los servicios externos.
+### Conclusión final:
+
+La solución representa una **arquitectura modular orientada a eventos y servicios**, que integra las capacidades de **Azure Speech SDK**, **Dynamics 365 API**, y **Azure OpenAI GPT-4** para el reconocimiento y procesamiento de voz y texto. La aplicación utiliza un enfoque de **n capas**: el frontend (JavaScript) para la lógica de interacción con los formularios, la capa intermedia (API), y el backend (plugin en C#) para procesar y estructurar datos mediante una IA. Esto la convierte en una solución escalable y adaptable a necesidades empresariales modernas, con patrones como **Facade**, **Proxy**, y **Callback** para garantizar la modularidad y robustez del diseño.
