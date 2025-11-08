@@ -1,49 +1,55 @@
-### Breve resumen técnico:
-El repositorio contiene una solución híbrida que combina **frontend (JavaScript)**, **backend (plugin C#)** y servicios en la nube (Azure Speech SDK y Azure OpenAI). La funcionalidad está orientada a la integración de reconocimiento de voz y síntesis de voz con formularios, además de procesamiento avanzado de texto con inteligencia artificial. Los archivos están organizados en tres principales categorías: **frontend (JS)** para interactuar con el usuario, **backend (C# plugin)** para lógica extendida de procesamiento, y servicios de Azure para capacidades de IA.
+### **Resumen Técnico**
+Este repositorio alberga una solución centrada en la interacción con formularios mediante comandos de voz, utilizando servicios en la nube como Azure Speech SDK y Azure OpenAI. Los componentes presentes interactúan principalmente con Dynamics CRM, mejorando la accesibilidad y optimizando la actualización de datos en formularios.
 
 ---
 
-### Descripción de arquitectura:
-La arquitectura implementada en el repositorio es de tipo **n-capas**:
-1. **Presentación (UI Layer):** Representada por los archivos `readForm.js` y `speechForm.js`, que manejan la interacción de usuario con los formularios y el reconocimiento de voz.
-2. **Lógica de negocio (Business Layer):** Contenido en el archivo `TransformTextWithAzureAI.cs`, que implementa un plugin de Microsoft Dynamics CRM para transformar texto con reglas personalizadas mediante Azure OpenAI.
-3. **Capa de servicios externos:** Utilización de Azure Speech SDK para síntesis y reconocimiento de voz, así como del servicio Azure OpenAI (GPT-4) para procesamiento avanzado de texto.
-4. **Datos:** Aunque la capa de datos no está directamente explícita, se interactúa con entidades y datos de Microsoft Dynamics CRM para manipular formularios.
+### **Descripción de Arquitectura**
+La arquitectura sigue un enfoque modular con un diseño **n-capas**, incluyendo:
+1. **Frontend JavaScript**: Implementa la captación y lectura de voz en el navegador mediante Azure Speech SDK, además de manipular datos visibles en formularios dinámicamente.
+2. **Backend Plugins (Dynamics)**: Extensión de Microsoft Dynamics CRM mediante plugins que transforman texto hablado en datos estructurados (JSON) usando Azure OpenAI.
+3. **Servicios Externos**: Integración directa con APIs como Azure OpenAI y Azure Speech SDK.
+
+Los distintos módulos están organizados, pero se mantiene la impresión de una arquitectura monolítica ampliada, donde los servicios externos refuerzan funcionalidades específicas sin dividirse claramente en microservicios.
 
 ---
 
-### Tecnologías usadas:
-1. **Frontend:** JavaScript y la DOM API.
-   - Azure Speech SDK para síntesis y reconocimiento de voz.
-   - Microsoft Dynamics XRM JavaScript API para manipulación en el contexto del CRM.
-2. **Backend:** C#.
-   - Microsoft Dynamics SDK (`IPlugin`) para extender la funcionalidad nativa del CRM.
-   - Azure OpenAI Service para procesamiento de texto avanzado.
-   - NewtonSoft JSON para manejo de estructuras JSON.
-3. **Servicios en la nube:**
-   - Azure Speech SDK (síntesis y reconocimiento de voz).
-   - Azure OpenAI Service (procesamiento de texto).
-   
+### **Tecnologías Usadas**
+1. **Frontend**:
+   - **Lenguaje**: JavaScript.
+   - **APIs externas**: Azure Speech SDK.
+   - **Frameworks y SDK**: Dynamics CRM Web API (`Xrm.WebApi`) para interactuar con el backend.
+
+2. **Backend**:
+   - **Lenguaje**: C# en .NET Framework.
+   - **Frameworks**:
+     - Microsoft Dynamics SDK para creación de plugins.
+     - Azure OpenAI para procesamiento de lenguaje natural.
+   - **Librerías**:
+     - `Newtonsoft.Json` para manipulación JSON.
+     - `System.Net.Http` para llamadas REST.
+
+3. **Patrones arquitectónicos**:
+   - **Callback/Event-driven pattern**: Procesos activados mediante eventos o callbacks en el frontend.
+   - **External Service Integration**: Uso de APIs para operaciones como voz a texto y procesamiento de lenguaje natural.
+   - **Plugin Design Pattern**: Implementado a través de la extensión de Dynamics CRM.
+
 ---
 
-### Diagrama Mermaid válido para GitHub:
+### **Diagramas Mermaid válidos para GitHub**
+
 ```mermaid
 graph TD
-    A["Frontend - readForm.js"] --> B["Azure Speech SDK - síntesis de voz"]
-    C["Frontend - speechForm.js"] --> D["Azure Speech SDK - reconocimiento de voz"]
-    B --> E["Servicios en la nube"]
-    D --> E
-
-    F["Backend - TransformTextWithAzureAI.cs"] --> G["Azure OpenAI Service - GPT-4"]
-    G --> E
-
-    H["Microsoft Dynamics CRM"] --> A
-    H --> C
-    H --> F
-    E --> H
+    A["Frontend JS: VozInputHandler.js/readForm.js"] --> B["Azure Speech SDK"]
+    A --> C["Microsoft Dynamics CRM Web API"]
+    C --> D["Backend - Plugin: TransformTextWithAzureAI"]
+    D --> E["Azure OpenAI API"]
+    A --> F["Frontend JS: VoiceInputProcessor.js"]
+    F --> C
+    F --> B
+    F --> E
 ```
 
 ---
 
-### Conclusión final:
-Este sistema implementa una arquitectura de **n-capas** que combina interacción avanzada con formularios (frontend), procesamiento inteligente de texto (backend con Azure OpenAI), y reconocimiento/síntesis de voz (Azure Speech SDK). Los patrones de diseño son coherentes con los objetivos del sistema, priorizando modularidad y escalabilidad, además de una integración efectiva con servicios externos como Azure, para ampliar la funcionalidad básica de un CRM de Dynamics. La solución es ideal para sistemas dinámicos que requieren procesamiento contextual y capacidad de interacción mediante IA y voz, ofreciendo una excelente experiencia de usuario.
+### **Conclusión Final**
+Este proyecto implementa una solución API-centrada con enfoque modular, que puede ser considerado un monolito extendido. La interacción entra las partes frontend y backend facilita la accesibilidad mediante voz y procesamiento IA, pero apunta a ser limitado en escalabilidad horizontal. Para futuras mejoras, se podría reestructurar hacia microservicios o arquitectura hexagonal que permita separaciones más claras entre: frontend, procesamiento de voz y la lógica del plugin para Dynamics CRM.
