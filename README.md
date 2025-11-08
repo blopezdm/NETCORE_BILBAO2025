@@ -1,53 +1,59 @@
-### Breve resumen técnico
-El repositorio consta principalmente de tres archivos con funcionalidades interconectadas:
-1. Modulos **Frontend** en JavaScript que gestionan interacciones entre voz y formularios, utilizando **Azure Speech SDK** para síntesis y reconocimiento, así como conexiones con **Dynamics CRM**.
-2. Un **Plugin backend en .NET** que interactúa con **Dynamics CRM** y el servicio de **Azure OpenAI**, con el propósito de procesar texto ingresado, transformarlo según reglas y generar salidas estructuradas tipo JSON.
-
-### Descripción de arquitectura
-- **Tipo de solución**: Combina elementos **frondend y backend**, con integración hacia servicios externos como Azure Speech SDK y OpenAI. Es extensible para sistemas de CRM que requieran procesamiento avanzado de datos vía voz e inteligencia artificial.
-- **Arquitectura general**:
-  - **Front-end**: Modularidad con un diseño funcional basado en JavaScript. Utiliza servicios cloud y APIs externas para sintetizar voz y aplicar datos a formularios.
-  - **Back-End**: Plugin orientado a microservicios. A diferencia de un monolito, cada funcionalidad está encapsulada en servicios externos (CRM/Dynamics y Azure API).
-  - En general, la solución sigue una arquitectura de **n capas**, con separación entre una capa de presentación (JavaScript), lógica de negocio (backend en .NET) y una capa en la nube (Azure).
-
-### Tecnologías usadas
-1. **Frontend:**
-   - JavaScript ES6.
-   - SDKs externos: **Azure Speech SDK** y Dynamics 365 Web API.
-   - Programación asincrónica (`async/await`, Promesas).
-2. **Backend:**
-   - Lenguaje **C#**.
-   - Frameworks .NET para plugins: **Microsoft.Xrm.Sdk**, `HttpClient`.
-   - Serialización con **Newtonsoft.Json** o `System.Text.Json`.
-   - Conexión a servicios externos: Azure OpenAI.
-
-### Dependencias y componentes externos
-1. **Azure Speech SDK**: Para síntesis de voz y reconocimiento.
-2. **Azure OpenAI API**: Para transformaciones avanzadas de texto basadas en IA.
-3. **Dynamics 365 CRM Web API**: Para gestión de datos del CRM.
-4. **Componentes internos**:
-   - Capa lógica del formulario de Dynamics, con su estructura interna de atributos y procesos (`formContext`).
+## Breve Resumen Técnico:
+El repositorio contiene tres capas principales:
+1. **Frontend:** Implementa una interfaz de usuario orientada a la interacción de voz con formularios de Dynamics 365 mediante el **Azure Speech SDK**. Puede sintetizar texto visible en formularios y asignar campos desde comandos de voz transcritos por IA.
+2. **Backend (Plugin):** Mediante el archivo `TransformTextWithAzureAI.cs`, el sistema convierte texto ingresado en Dynamics 365 a objetos JSON estructurados usando el servicio **Azure OpenAI**.
+3. **Integraciones:** Interacción directa con APIs externas (Azure Speech SDK y Dynamics 365 Web API) para reconocimiento de voz, síntesis de voz y transformación de texto.
 
 ---
 
-### Diagrama Mermaid válido para GitHub:
+## Descripción de arquitectura:
+La solución combina conceptos de arquitectura basada en servicios (Azure Speech SDK y Azure OpenAI), junto con integraciones con Dynamics 365. Presenta un estilo **n-capas**:
+1. **Capa de Presentación:** Funcionalidad en el navegador para capturar y procesar entrada de voz.
+2. **Capa de Aplicación:** Lógica de negocio en plugins de Dynamics 365 junto con llamadas a APIs externas.
+3. **Capa de Servicios Externos:** Uso de SDKs y servicios como Azure Speech y OpenAI.
+
+Patrones específicos usados:
+- **Facade:** Simplifica la interacción entre el código de cliente y las APIs externas mediante una interfaz abstracta (Speech SDK y servicios).
+- **Plugin Pattern:** Extensión de funcionalidad de Dynamics 365 mediante un plugin registrado en la plataforma.
+- **Callback:** Utilizado ampliamente en la interacción del frontend con el Speech SDK.
+
+---
+
+## Tecnologías Usadas:
+1. **Frontend:** JavaScript (vanilla, sin frameworks evidentes) con procesamiento asíncrono (promesas y callbacks).
+2. **Backend (Plugin):** C# con **Microsoft.Xrm.Sdk** para interacción con Dynamics, y `System.Net.Http` para comunicación HTTP.
+3. **Servicios Externos:**
+   - **Azure Speech SDK:** Usado para síntesis y reconocimiento de voz.
+   - **Azure OpenAI (GPT):** Procesamiento de texto en formato JSON conforme a normas definidas.
+
+---
+
+## Diagrama Mermaid:
 
 ```mermaid
 graph TD
-    A["Frontend"] --> B["voiceInputHandler.js"]
-    A --> C["speechForm.js"]
-
-    B --> D["Azure Speech SDK"]
-    C --> E["Dynamics Web API"]
+    A["Frontend-JS-layer"]
+    B["SpeechInputHandler"]
+    C["Dynamics-Form-context"]
+    D["Azure-Speech-SDK"]
+    E["voiceInputHandler"]
+    F["Azure-OpenAI GPT"]
+    G["Dynamics-365-WebAPI"]
+    H["Plugin-TransformTextWithAzureAI"]
     
-    E --> F["Call custom API"]
-    F --> G["Plugins"]
-    
-    G --> H["TransformTextWithAzureAI.cs"]
-    H --> I["Azure OpenAI Service"]
+    A --> B
+    A --> E
+    B --> D
+    E --> D
+    E --> G
+    E --> F
+    G --> H
+    F --> H
+    C --> G
+    G --> H
 ```
 
 ---
 
-### Conclusión final
-Este repositorio implementa una solución técnica sólida que aprovecha tecnologías cloud con procesamiento basado en seguridad y modularidad. Sus capacidades en síntesis y reconocimiento de voz, además del manejo de textos con inteligencia artificial, lo hacen ideal para la entrada avanzada de datos en ambientes empresariales (como un CRM). Sin embargo, se puede mejorar con mayor seguridad en los datos sensibles y agregando tolerancia a fallos en los servicios.
+## Conclusión Final:
+La solución es una **integración orientada a servicios** en un entorno híbrido de Dynamics 365 y Azure. La arquitectura puede considerarse como **n-capas** con módulos desacoplados que usan servicios externos (Azure SDKs y OpenAI). Este enfoque modular facilita el mantenimiento, escalabilidad e integración en sistemas empresariales dinámicos. Añadiendo soporte de entrada, salida de voz y procesamiento IA, la solución potencia la usabilidad en escenarios de formularios. Finalmente, la implementación sigue buenas prácticas, donde cada capa se enfoca en su rol de responsabilidad.
