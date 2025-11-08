@@ -1,59 +1,80 @@
-### Breve resumen técnico
-El repositorio describe una solución para integrar la funcionalidad de síntesis y reconocimiento de voz, utilizando **Azure Speech SDK** y **Azure OpenAI Service**, dentro de un entorno **CRM basado en Dynamics**. El sistema incluye módulos frontend en **JavaScript** y Plugins en **C#** para extender las capacidades de los formularios CRM con interacción por voz.
+### Breve resumen técnico:
+El repositorio descrito corresponde a una solución híbrida con componentes frontend y backend que se integran principalmente con **Azure Speech SDK** y **Azure OpenAI Service**. Está diseñada para trabajar en un entorno de **Microsoft Dynamics CRM**, enfocándose en la captura, procesamiento y síntesis de texto basado en datos de formularios y entrada de voz.
 
 ---
 
-### Descripción de la arquitectura
-La solución parece estar implementada en una arquitectura **n capas** que divide la lógica entre presentación (frontend), negocio (plugins en C#) y servicios externos (integración con Azure). Aunque los componentes no están completamente desacoplados como en una arquitectura hexagonal, el uso del Azure Speech SDK y Azure OpenAI Service introduce un enfoque de microservicio dependiente de APIs externas para funcionalidades avanzadas.
+### Descripción de arquitectura:
+La arquitectura de la solución tiene características de una **arquitectura en capas**. El software posee claramente tres grandes capas funcionales:
 
-1. **Presentación (frontend)**:
-   - Implementada en **JavaScript**, configura la interacción con el usuario mediante voz y mapeo de formularios dinámicos en **Dynamics CRM**.
-   - Modulares funciones encapsulan operaciones específicas; estas interactúan con el SDK o servicios CRM para realizar síntesis de voz y reconocer datos usando la entrada de voz.
+1. **Frontend (readForm.js, speechForm.js)**:
+   - Capa de presentación que interactúa directamente con los usuarios mediante formularios y captura de voz.
+   - Proporciona la lógica para transformar datos visibles en texto hablable (readForm.js) y reconocer texto hablado para rellenar formularios (speechForm.js).
 
-2. **Negocio (C# Plugin)**:
-   - Implementa lógica para transformar datos mediante el modelo OpenAI de Azure y opera como plugin en el entorno Microsoft Dynamics CRM.
-   - Fuerte dependencia de la **interfaz IPlugin** del SDK de Dynamics.
+2. **Middleware (SpeechInputHandler.js)**:
+   - Capa de integración que conecta el frontend con APIs externas como Azure Speech SDK.
+   - Implementa lógica modular: conversión de voz, mapeo de datos y asociación con campos de formularios.
 
-3. **Servicios externos (API)**:
-   - Usa el **Azure Speech SDK** para síntesis/reconocimiento de voz y **Azure OpenAI** para el procesamiento avanzado de texto con IA.
+3. **Backend Plugins (TransformTextWithAzureAI.cs)**:
+   - Capa de negocio que extiende Microsoft Dynamics CRM mediante un plugin que ejecuta solicitudes HTTP hacia Azure OpenAI Service.
+   - Toma texto input, lo transforma en datos estructurados (JSON) y lo regresa al contexto CRM.
 
----
-
-### Tecnologías usadas
-1. **Frontend (JavaScript):**
-   - **Azure Speech SDK** para habilitar síntesis y reconocimiento de voz.
-   - **Microsoft Dynamics CRM ExecutionContext** para integrar elementos del sistema CRM (adición/modificación de valores de formularios).
-   - **Xrm.WebApi**: para realizar operaciones de datos del CRM a través de API.
-
-2. **Backend (C#):**
-   - **Microsoft.Xrm.Sdk API**: Extiende el CRM con lógica de negocio personalizada.
-   - **Azure OpenAI GPT-based**: Utiliza el servicio de completado de chat (gpt-4o) para procesar texto y devolver datos estructurados.
-   - Dependencias comunes de C#: `Newtonsoft.Json`, `System.Net.Http`.
+Este diseño no se ajusta a una arquitectura estrictamente **hexagonal** o de **microservicios**, sino que sigue una estructura tradicional de **n capas**. Sin embargo, usa componentes modulares y servicios externos como SDKs y APIs para expandir las funcionalidades, lo que habilitaría una futura transición a microservicios si fuera necesario.
 
 ---
 
-### Diagrama Mermaid válido para GitHub Markdown
+### Tecnologías usadas:
+1. **Frontend**:
+   - **JavaScript**: Principal lenguaje para las funcionalidades de frontend (readForm.js y speechForm.js).
+   - **Azure Speech SDK**: Permite la implementación de síntesis y reconocimiento de voz directamente en cliente.
+   
+2. **Backend**:
+   - **C#**: Lenguaje para desarrollar el plugin `TransformTextWithAzureAI` dentro del ecosistema de Dynamics CRM.
+   - **Microsoft Dynamics CRM SDK**: Framework para extensiones CRM basadas en la interfaz `IPlugin`.
+   - **Newtonsoft.Json**: Manejo de datos JSON en la lógica API del plugin.
+   - **Azure OpenAI Service (GPT-4)**: Explotación de IA (GPT-4) para transformar texto en objetos JSON estructurados.
+
+3. **Integración**:
+   - **Xrm.WebApi.online.execute**: Función para enviar datos del frontend al backend o entre plugins de Dynamics 365.
+
+---
+
+### Dependencias o componentes externos:
+1. **Azure Speech SDK**: Utilizada principalmente para la captura, reconocimiento y síntesis de voz directamente en el navegador.
+2. **Azure OpenAI Service**: Utilizado para procesamiento avanzado de texto mediante un modelo GPT-4.
+3. **Microsoft Dynamics 365 SDK**:
+   - `Xrm.WebApi`: API exclusiva de Dynamics CRM para operaciones remotas con servicios y datos de formularios.
+   - Plugins como `TransformTextWithAzureAI` extienden funcionalidad en el servidor de Dynamics CRM.
+4. **JSON Serialization Libraries**:
+   - **Newtonsoft.Json**: Popular para manipular objetos JSON en el backend.
+   - **System.Text.Json**: Alternativa nativa utilizada para serializar datos.
+
+---
+
+### Diagrama Mermaid
 ```mermaid
 graph TD
-    A["Frontend - VoiceInputHandler.js"] -->|Integración| B["Azure Speech SDK"]
-    A -->|Acceso| C["ExecutionContext - CRM"]
-    A -->|Actualización| D["Dynamics CRM Formulario"]
-    B -- "Síntesis de voz" --> E["Altavoces - sistema usuario"]
-    F["Frontend - VoiceInputHandler.js"] -->|Reconocimiento de voz| B
-    F -- "Input voz a texto" --> G["Actualizar formulario CRM"]
-    H["Plugin - TransformTextWithAzureAI.cs"] -->|Gestión lógica de CRM| C
-    H -->|Transformación de texto| I["Azure OpenAI Service"]
-    F -->|Llamada POST| I
-    J[Interaction] -->|Sistema| A
-    J -->|Sistema| F
-    J -->|Sistema| H
+    A["UI - Visualiza y capta datos del usuario"]
+    B["FRONTEND - JS Components"]
+    C["Middleware - Procesa Voz y Datos"]
+    D["Plugins Para Dynamics CRM"]
+    E["Microsoft Dynamics WebAPI"]
+    F["Azure OpenAI Service"]
+    G["Azure Speech SDK"]
+    
+    A --> B
+    B --> C
+    C --> G
+    C --> E
+    E --> D
+    D --> F
 ```
 
 ---
 
-### Conclusión final
-La solución en el repositorio describe un sistema basado en la integración de **Azure Cloud Services (Speech SDK, OpenAI)** y **Microsoft Dynamics CRM** para funcionalidades de reconocimiento de voz. 
-
-Tiene una arquitectura **n capa modular**, separando las responsabilidades en módulos frontend, plugins backend y servicios externos. Utiliza patrones de diseño como **facade** y **separación de intereses**, con una fuerte dependencia de APIs externas.
-
-Si bien la arquitectura es bastante organizada y encaja con los principios de Dynamics CRM, podría mejorar hacia una **arquitectura hexagonal** mediante una mayor desacopla de los módulos y las dependencias con los servicios externos, facilitando pruebas e independencia tecnológica.
+### Conclusión final:
+La solución integra funcionalidades específicas para formularios y voz en un entorno Dynamics 365, destacándose por:
+- Uso de Azure Speech SDK en el frontend para síntesis y reconocimiento de voz.
+- Uso de **Azure OpenAI Service** para transformar texto mediante IA en el backend.
+- Arquitectura basada en **n capas**, integrando APIs externas y SDKs adaptados.
+  
+Si bien la solución actual está diseñada para funcionar dentro de Microsoft Dynamics CRM, es robusta y modular, lo que sugiere potencial para su migración a paradigmas como microservicios con mayores capacidades de escalabilidad y flexibilidad.
