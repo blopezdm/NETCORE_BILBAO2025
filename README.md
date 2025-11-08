@@ -1,65 +1,66 @@
-### Análisis: Solución y su Arquitectura
+### Breve resumen técnico
 
-#### **Breve resumen técnico**:
-El repositorio es una solución que combina varios elementos: un **frontend** en JavaScript con integración de servicios externos (Azure Speech SDK) y un **backend plugin** desarrollado en C#. Su objetivo principal es proporcionar capacidades avanzadas de reconocimiento de voz, síntesis de texto a voz y procesamiento inteligente de texto, utilizando servicios de Microsoft Dynamics CRM y Azure OpenAI.
-
----
-
-#### **Descripción de la arquitectura**:
-La solución sigue un enfoque client-server que utiliza arquitectura orientada a servicios. Se integra con componentes externos mediante APIs, lo cual sugiere un diseño distribuido. Aunque hay un componente de backend (el plugin en C#) que interactúa con Microsoft Dynamics CRM, la mayor parte de la lógica para la síntesis de voz y reconocimiento parece estar orientada al cliente.
-
-La arquitectura puede clasificarse como **modular de cliente-servidor** con funciones que implementan ciertos patrones como:
-- **Facade**: Simplificando el uso de múltiples funciones clave dentro de frontend para iniciar flujos complejos de interacción.
-- **Adapter**: Mapeando atributos y transformando datos de manera dinámica entre sistemas (por ejemplo, transcripciones a datos de formularios o reglas de texto hacia JSON).
+El repositorio contiene una solución que integra funcionalidades de conversión de texto a voz y voz a texto, para la interacción con formularios en entornos de Microsoft Dynamics CRM. La integración utiliza el **Azure Speech SDK** y **Azure OpenAI API** mediante componentes JavaScript para la lógica en el frontend, mientras que un plugin `TransformTextWithAzureAI` en **C#** interactúa directamente con Dynamics CRM para realizar transformaciones programadas de texto utilizando AI.
 
 ---
 
-#### **Tecnologías, frameworks y patrones utilizados**:
-1. **Tecnologías**:
-   - **JavaScript** para el frontend.
-   - **Azure Speech SDK**: Reconocimiento y síntesis de voz.
-   - **Microsoft Dynamics CRM Web API**: Para la interacción con formularios y servicios CRM.
-   - **Azure OpenAI API**: Para procesamiento inteligente del texto en el backend.
+### Descripción de arquitectura
 
-2. **Frameworks, librerías y APIs:**
-   - `Microsoft.Xrm.Sdk`: Extensión específica para interactuar con la Metadata API y el modelo del CRM.
-   - **Newtonsoft.Json** y `System.Text.Json`: Para manejar la serialización/deserialización de JSON.
-   - **Azure Speech SDK**: Cargado de manera dinámica en el navegador desde un CDN oficial.
-
-3. **Patrones de diseño:**
-   - **Modularidad**: Se usan funciones específicas en archivos separados para encapsular lógica independiente.
-   - **Adapter Pattern**: Para conectar datos entre sistemas externos e internos (Dynamics CRM y Azure APIs).
-   - **Plugin Architecture**: En el backend se integra bajo el estándar de diseño de plugins de Dynamics CRM.
+- **Tipo de solución:** API integrada con Microsoft Dynamics CRM, una solución para mejorar la interacción con formularios mediante la extensión de funcionalidades de entrada y salida de voz.
+- **Arquitectura:**  
+  La solución está basada en una arquitectura de n capas, con el siguiente desglose:
+  1. **Capa de cliente (Frontend)**: Incluye scripts JavaScript ejecutados en el entorno del navegador. Usa Azure Speech SDK para interacción voz-texto en los formularios.
+  2. **Capa Backend (Plugins CRM)**: Desarrollada en C#, actúa como intermediaria para las operaciones en Dynamics CRM usando su SDK y realizando llamadas a APIs externas como Azure OpenAI.
+  3. **Capa externa (Servicios API)**: Incluye el Azure Speech SDK y la API de Azure OpenAI para la síntesis y transformación del texto.
 
 ---
 
-#### **Dependencias externas o componentes externos presentes**:
-1. **Azure Speech SDK:** Para la síntesis de texto a voz y reconocimiento de voz desde el frontend.
-   - Cargado dinámicamente desde un CDN.
-2. **Microsoft Dynamics Web API:** Interacción con formularios y datos de CRM (contextos de ejecución, mapas de campos, etc.).
-3. **Azure OpenAI API:** Utilizado en el plugin del backend para procesar texto y generar respuestas en JSON con reglas específicas.
-4. **HTTP Clients:** Usados para realizar las solicitudes al servicio OpenAI (por ejemplo, `System.Net.Http` en el plugin backend).
-5. **JSON Manipulation Libraries:** Para interpretar y procesar datos JSON.
+### Tecnologías usadas
+
+1. **Frontend (JavaScript):**
+   - **Azure Speech SDK**: Para el procesamiento de voz y generación de texto hablado.
+   - **Web APIs (window.SpeechSDK)**: Para interactuar con el navegador y cargar dinámicamente scripts.
+
+2. **Backend (C#, Plugins):**
+   - **Microsoft Dynamics CRM API (XRM SDK):** Para interacción directa con formularios, atributos y datos CRM.
+   - **Azure OpenAI API:** Para realizar transformaciones inteligentes de texto en el servidor mediante inteligencia artificial.
+   - **System.Net.Http:** Para realizar solicitudes HTTP a servidores externos.
+   - **JSON parsers:** Manejo de objetos JSON usando las bibliotecas `System.Text.Json` y `Newtonsoft.Json.Linq`.
+
+3. **APIs externas:**
+   - Azure Speech SDK.
+   - Azure OpenAI API.
+   - Custom APIs definidas para el procesamiento de texto en Dynamics CRM (ejemplo: `TransformTextWithAzureAI.cs`).
 
 ---
 
-### Diagrama de Arquitectura con **Mermaid**:
+### Diagrama **Mermaid** válido para GitHub
 
 ```mermaid
 graph TD
-
-Frontend --> Azure_Speech_SDK
-Frontend --> Dynamics_Web_API
-Frontend --> Custom_API
-Custom_API --> Azure_OpenAI_API
-
-Backend --> Dynamics_Web_API
-Backend --> Azure_OpenAI_API
+    A["Usuario - Formulario Dynamics"]
+    B["JS - SpeechInputHandler"] --> A
+    B --> C["SpeechInputHandler - 'startVoiceInput'"]
+    C --> D["Azure Speech SDK - texto-a-voz"]
+    B --> E["Azure Speech SDK - voz-a-texto"]
+    A --> F["VoiceInputHandler"]
+    F --> G["ejecutarGrabacion"]
+    G --> E
+    E --> H["callCustomApi"]
+    H --> I["Custom API - 'TransformTextWithAzureAI'"]
+    I --> J["Azure OpenAI API"]
+    J --> K["JSON estructurado"]
+    K --> L["MongoDB/Dynamics CRM Updates"]
 ```
 
 ---
 
-#### **Conclusión final**:
-La solución es un sistema de reconocimiento de voz y síntesis de texto desarrollado principalmente para integrarse con la plataforma Microsoft Dynamics CRM. Aprovecha servicios de Azure, como Speech SDK y OpenAI API, para proporcionar funcionalidades avanzadas de voz y procesamiento de texto. La arquitectura sigue un diseño modular orientado a servicios con una clara división entre el frontend y el backend, permitiendo extensibilidad y una potencial escalabilidad, aunque no implementa patrones complejos de arquitectura como microservicios o hexagonal.
+### Conclusión final
 
-A nivel estructural, sería ideal mejorar la documentación para aclarar algunos aspectos del flujo de datos y las dependencias dentro del código. Sin embargo, ya ofrece una solución concreta utilizable en sistemas CRM con capacidades mejoradas de IA y voz.
+La solución implementada es una aplicación de cliente y servidor basada en la integración con servicios en la nube de Microsoft Azure y Dynamics CRM. Presenta una arquitectura de n capas que permite separar claramente la lógica de negocio (frontend y backend) de los servicios externos (Azure Speech SDK y OpenAI API). Este enfoque facilita la escalabilidad y modularidad del sistema.
+
+- El uso del **Azure Speech SDK** permite la entrada y salida de voz para formularios en Dynamics, aportando accesibilidad y facilidad.
+- El backend en C# aprovecha la **Azure OpenAI API** para realizar transformaciones avanzadas en el texto mediante inteligencia artificial.
+- Las arquitecturas de servicio acopladas a Dynamics y Azure ofrecen una solución robusta pero con dependencia de servicios externos y del SDK de Dynamics.
+
+Se podrían explorar posibles mejoras, como encapsular aún más la lógica en clases y asegurar el manejo seguro de las claves de API. Esta solución es ideal para implementar funcionalidades de asistencia de voz basadas en AI para entornos específicos como Microsoft Dynamics CRM.
